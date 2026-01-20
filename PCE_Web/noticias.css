@@ -18,7 +18,7 @@
     /* Dark red background for the box */
     width: 100%;
     max-width: 900px;
-    height: 180px;
+    height: 220px;
     display: flex;
     align-items: center;
     padding: 0 40px;
@@ -32,15 +32,15 @@
 }
 
 .hero-shield {
-    width: 140px;
-    height: 140px;
+    width: 180px;
+    height: 180px;
     background-color: #D6C4C4;
     /* Light warm grey circle */
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 25px;
+    padding: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
