@@ -31,6 +31,7 @@ body {
     /* Standardized font */
     color: var(--text-white);
     line-height: 1.6;
+    overflow-x: hidden;
 
     /* Background: Image on top, Gradient below */
     background-image: url("../images/bg-pattern.png"), linear-gradient(to bottom, #B9AFB0, #723233);
