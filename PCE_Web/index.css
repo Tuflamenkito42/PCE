@@ -193,11 +193,12 @@
 }
 
 /* Newsletter Section */
+/* Newsletter Section */
 .newsletter-section {
-    background-color: #BDBDBD;
-    /* Silver background */
+    background-color: #B4A7A7;
+    /* Warm taupe */
     padding: 40px 20px;
-    color: #333;
+    color: #5E2C2C;
     margin-top: 50px;
 }
 
@@ -207,11 +208,14 @@
 }
 
 .newsletter-content h3 {
-    font-family: 'Courier New', monospace;
-    /* Typewriter style */
-    text-decoration: underline;
-    margin-bottom: 20px;
-    font-size: 1.2rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: #8B3A3A;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.4);
+    margin-bottom: 30px;
+    text-decoration: none;
+    letter-spacing: 0.5px;
 }
 
 .newsletter-form {
@@ -220,20 +224,45 @@
     gap: 15px;
 }
 
+.newsletter-form label[for="email"] {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    color: #5E2C2C;
+    font-size: 1.1rem;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
+    margin-bottom: -10px;
+    position: relative;
+    z-index: 1;
+}
+
 .newsletter-input {
     background: transparent;
     border: none;
-    border-bottom: 1px solid #333;
-    padding: 10px;
+    border-bottom: 2px solid #8B3A3A;
+    padding: 10px 0;
     width: 100%;
-    font-family: inherit;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1rem;
+    color: #333;
+    outline: none;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .checkbox-group {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    color: #5E2C2C;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.3);
+}
+
+.checkbox-group input[type="checkbox"] {
+    accent-color: #5E2C2C;
+    width: 18px;
+    height: 18px;
 }
 
 .form-footer-right {
@@ -242,10 +271,17 @@
 }
 
 .btn-submit {
-    background-color: #5e2c2c;
+    background-color: #6E3636;
     color: white;
-    padding: 10px 30px;
+    padding: 10px 40px;
     border: none;
     cursor: pointer;
     font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-submit:hover {
+    background-color: #804040;
 }
