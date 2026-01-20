@@ -28,7 +28,7 @@
 
 .form-section {
     flex: 2;
-    background-color: rgba(94, 44, 44, 0.9);
+    background-color: rgba(114, 50, 51, 0.9);
     /* Slightly darker backing */
     padding: 30px;
     border-radius: 20px;
@@ -61,7 +61,7 @@
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    color: #5e2c2c;
+    color: #723233;
     margin-bottom: 10px;
     font-size: 1.2rem;
 }
@@ -107,7 +107,7 @@
     border: none;
     background-color: #C4C4C4;
     /* Grey background */
-    color: #5e2c2c;
+    color: #723233;
     font-family: var(--font-body);
     font-size: 1rem;
 }
@@ -142,11 +142,11 @@
 .benefits-card {
     background-color: #C4C4C4;
     /* Light grey card */
-    color: #5e2c2c;
+    color: #723233;
     /* Interior text dark red */
     padding: 30px;
     border-radius: 20px;
-    border: 5px solid #5e2c2c;
+    border: 5px solid #723233;
     /* Dark red border */
     text-align: center;
     width: 100%;
@@ -157,7 +157,7 @@
 }
 
 .card-logo .logo-shield svg path {
-    fill: #5e2c2c;
+    fill: #723233;
     /* Invert colors for logo inside light card */
 }
 
@@ -175,7 +175,7 @@
 
 .benefits-list li {
     padding: 10px 0;
-    border-bottom: 1px solid #5e2c2c;
+    border-bottom: 1px solid #723233;
     font-size: 0.9rem;
 }
 
