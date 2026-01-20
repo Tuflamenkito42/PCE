@@ -131,3 +131,43 @@
     z-index: 0;
     transform: rotate(-10deg);
 }
+
+/* PDF Preview Section */
+.pdf-preview-section {
+    margin-top: 80px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.pdf-preview-box {
+    background-color: var(--card-bg);
+    width: 100%;
+    max-width: 800px;
+    min-height: 300px;
+    border-radius: 30px;
+    padding: 60px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.pdf-preview-box h2 {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    line-height: 1.4;
+}
+
+/* Newsletter override for programa page */
+.page-content .newsletter-section {
+    margin-top: 100px;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    width: 100vw;
+    position: relative;
+    left: 0;
+}
