@@ -33,7 +33,7 @@ body {
     line-height: 1.6;
 
     /* Background: Image on top, Gradient below */
-    background-image: url("images/bg-pattern.png"), linear-gradient(to bottom, #B9AFB0, #723233);
+    background-image: url("../images/bg-pattern.png"), linear-gradient(to bottom, #B9AFB0, #723233);
 
     /* Settings */
     background-repeat: no-repeat, no-repeat;
