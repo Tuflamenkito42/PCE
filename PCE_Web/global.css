@@ -12,7 +12,7 @@
     --btn-hover: #b0b0b0;
     --card-bg: #6E3636;
     --nav-height: 80px;
-    --font-heading: 'Montserrat', sans-serif;
+    --font-heading: 'Cinzel', serif;
     --font-body: 'Roboto', sans-serif;
 }
 
@@ -27,7 +27,7 @@ html {
 }
 
 body {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Cinzel', serif;
     /* Standardized font */
     color: var(--text-white);
     line-height: 1.6;
