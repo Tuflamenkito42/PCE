@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protección Civil Española - PCE</title>
+    <title>Noticias - Protección Civil Española</title>
     <link rel="stylesheet" href="global.css">
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="noticias.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -48,99 +48,75 @@
         </header>
 
         <!-- Main Content -->
-        <main>
-            <!-- Hero / Intro -->
-            <section class="hero-section">
-                <div class="hero-image-placeholder">
-                    <!-- Image of riot police/crowd as seen in reference -->
-                    <img src="https://c.files.bbci.co.uk/2AA5/production/_109271901_gettyimages-1176343938.jpg"
-                        alt="Hero Background" class="hero-bg">
-                </div>
-                <div class="hero-text-container">
-                    <p>
-                        Protección Civil Española (PCE) es un partido comprometido con la seguridad, el bienestar y la
-                        protección de la ciudadanía. Trabajamos por una sociedad más preparada, solidaria y
-                        transparente, poniendo en el centro la prevención, la respuesta ante emergencias y el apoyo a
-                        quienes más lo necesitan. Descubre quienes somos, nuestras propuestas y cómo puedes formar parte
-                        del cambio.
-                    </p>
-                </div>
-            </section>
-
-            <!-- Call to Action -->
-            <section class="cta-section">
-                <a href="#" class="btn btn-big-cta">AFILIATE</a>
-            </section>
-
-            <!-- News / Noticias -->
-            <section class="news-section">
-                <h2 class="section-title">NOTICIAS</h2>
-                <div class="news-grid">
-                    <div class="news-col-left">
-                        <article class="news-card">
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis aliquet lacus,
-                                vitae finibus diam.</p>
-                        </article>
-                        <article class="news-card">
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis aliquet lacus,
-                                vitae finibus diam.</p>
-                        </article>
-                        <article class="news-card">
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis aliquet lacus,
-                                vitae finibus diam.</p>
-                        </article>
-                    </div>
-                    <div class="news-col-right">
-                        <div class="social-link-box">
-                            <h3>enlace a red social</h3>
+        <main class="active-news-page">
+            <!-- News Hero Section -->
+            <section class="news-hero-container">
+                <div class="news-hero-box">
+                    <div class="hero-logo-wrapper">
+                        <!-- Use a slightly larger version or same logo -->
+                        <div class="logo-shield hero-shield">
+                            <img src="images/logo.png" alt="Logo PCE" class="logo-img">
                         </div>
                     </div>
-                </div>
-                <div class="news-actions">
-                    <a href="#" class="btn btn-load-more">CARGAR MÁS</a>
+                    <h1 class="news-hero-title">NOTICIAS</h1>
                 </div>
             </section>
 
-            <!-- Actions / Acciones -->
-            <section class="actions-section">
-                <h2 class="section-title">ACCIONES</h2>
-                <div class="actions-grid">
-                    <div class="action-card">
-                        <p class="action-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis
-                            aliquet lacus, vitae finibus diam.</p>
-                    </div>
-                    <div class="action-card">
-                        <p class="action-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis
-                            aliquet lacus, vitae finibus diam.</p>
-                    </div>
-                    <div class="action-card">
-                        <p class="action-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis
-                            aliquet lacus, vitae finibus diam.</p>
-                    </div>
-                </div>
-                <div class="actions-buttons">
-                    <a href="#" class="btn btn-action-large">Más promesas</a>
-                    <a href="#" class="btn btn-action-large">Descargar PDF electoral</a>
+            <!-- Search Section -->
+            <section class="news-search-section">
+                <h2 class="search-label">Buscar</h2>
+                <div class="search-input-wrapper">
+                    <!-- The filter icon would be an SVG/img -->
+                    <input type="text" class="news-search-input" placeholder="">
+                    <span class="filter-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 6H21" stroke="#5e2c2c" stroke-width="2" stroke-linecap="round" />
+                            <path d="M7 12H17" stroke="#5e2c2c" stroke-width="2" stroke-linecap="round" />
+                            <path d="M10 18H14" stroke="#5e2c2c" stroke-width="2" stroke-linecap="round" />
+                        </svg>
+                        <span class="filter-text">Filtro</span>
+                    </span>
                 </div>
             </section>
 
-            <!-- Newsletter -->
-            <section class="newsletter-section">
-                <div class="newsletter-content">
-                    <h3>Recibe todas las novedades en tu email</h3>
-                    <form class="newsletter-form">
-                        <label for="email">Dirección de correo</label>
-                        <input type="email" id="email" class="newsletter-input">
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="privacy">
-                            <label for="privacy">Acepto la política de privacidad</label>
-                        </div>
-                        <div class="form-footer-right">
-                            <button type="submit" class="btn btn-submit">Enviar</button>
-                        </div>
-                    </form>
+            <!-- News Grid Section -->
+            <section class="full-news-grid-section">
+                <div class="news-page-grid">
+                    <!-- 9 placeholder items as per image -->
+                    <article class="news-item-square">
+                        <h3>Noticia</h3>
+                    </article>
+                    <article class="news-item-square">
+                        <h3>Noticia</h3>
+                    </article>
+                    <article class="news-item-square">
+                        <h3>Noticia</h3>
+                    </article>
+                    <article class="news-item-square">
+                        <h3>Noticia</h3>
+                    </article>
+                    <article class="news-item-square">
+                        <h3>Noticia</h3>
+                    </article>
+                    <article class="news-item-square">
+                        <h3>Noticia</h3>
+                    </article>
+                    <article class="news-item-square">
+                        <h3>Noticia</h3>
+                    </article>
+                    <article class="news-item-square">
+                        <h3>Noticia</h3>
+                    </article>
+                    <article class="news-item-square">
+                        <h3>Noticia</h3>
+                    </article>
+                </div>
+
+                <div class="load-more-container">
+                    <a href="#" class="btn btn-load-more-sm">CARGAR MÁS</a>
                 </div>
             </section>
+
         </main>
 
         <!-- Footer -->
@@ -186,9 +162,9 @@
                 </div>
 
                 <div class="footer-links">
-                    <a href="#">POLÍTICA DE PRIVACIDAD</a>
-                    <a href="#">CONDICIONES DE USO</a>
-                    <a href="#">POLÍTICA DE COOKIES</a>
+                    <a href="#" class="footer-link">POLÍTICA DE PRIVACIDAD</a>
+                    <a href="#" class="footer-link">CONDICIONES DE USO</a>
+                    <a href="#" class="footer-link">POLÍTICA DE COOKIES</a>
                 </div>
             </div>
         </footer>

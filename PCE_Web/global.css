@@ -1,0 +1,222 @@
+:root {
+    --primary-red: #5e2c2c;
+    /* Main background color */
+    --primary-red-dark: #4a2222;
+    --acc-red: #8B3A3A;
+    /* Slightly lighter for cards */
+    --accent-gold: #c5a065;
+    /* Assuming potential gold accents */
+    --text-white: #ffffff;
+    --text-grey: #cccccc;
+    --btn-grey: #a0a0a0;
+    --btn-hover: #b0b0b0;
+    --card-bg: #6E3636;
+    --nav-height: 80px;
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Roboto', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    /* Standardized font */
+    color: var(--text-white);
+    line-height: 1.6;
+
+    /* Background: Image on top, Gradient below */
+    background-image: url("images/bg-pattern.png"), linear-gradient(to bottom, #B9AFB0, #723233);
+
+    /* Settings */
+    background-repeat: no-repeat, no-repeat;
+    background-position: center center, center center;
+    background-size: 850px, cover;
+    background-attachment: fixed, fixed;
+}
+
+/* Header */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 40px;
+    height: var(--nav-height);
+    background-color: #b2a3a4;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo-shield {
+    width: 50px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.big-shield {
+    width: 100px;
+    height: 120px;
+}
+
+.logo-img-lg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 0.8rem;
+    line-height: 1.2;
+    color: var(--text-white);
+    border-left: 1px solid var(--text-grey);
+    padding-left: 10px;
+}
+
+.main-nav {
+    display: none;
+    /* Mobile first, assume hidden or use media query */
+}
+
+@media (min-width: 1024px) {
+    .main-nav {
+        display: flex;
+        gap: 20px;
+    }
+}
+
+.main-nav a {
+    color: var(--text-white);
+    text-decoration: none;
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: color 0.3s;
+}
+
+.main-nav a:hover {
+    color: var(--text-grey);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn {
+    text-decoration: none;
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 0;
+    /* Square/Rectangular buttons as per images mostly */
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-donate {
+    background-color: #8E4040;
+    color: white;
+    font-size: 0.8rem;
+}
+
+.btn-join {
+    background-color: #000000;
+    color: white;
+    font-size: 0.8rem;
+}
+
+/* Footer, handled in HTML structure, styles here */
+.main-footer {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.footer-divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.3);
+    width: 80%;
+    margin: 0 auto 40px;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+.footer-social {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-donate-sm {
+    background-color: #C1A78E;
+    color: #333;
+    padding: 5px 15px;
+    font-size: 0.8rem;
+}
+
+.btn-join-sm {
+    background-color: black;
+    color: white;
+    padding: 5px 15px;
+    font-size: 0.8rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+
+.footer-links a:hover {
+    color: #ccc;
+}
