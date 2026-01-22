@@ -13,7 +13,7 @@
     text-transform: uppercase;
     text-align: center;
     margin-bottom: 60px;
-    color: white;
+    color: #B9AFB0;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(114, 50, 51, 0.8);
     position: relative;
     display: inline-block;
@@ -157,7 +157,7 @@
     font-family: var(--font-heading);
     font-size: 1.8rem;
     font-weight: 700;
-    color: white;
+    color: #B9AFB0;
     text-align: center;
     line-height: 1.4;
 }

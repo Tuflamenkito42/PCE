@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Seguro - PCE</title>
+    <link rel="stylesheet" href="../public/css/global.css">
+    <link rel="stylesheet" href="../public/css/votaciones.css"> <!-- Reusing glassmorphism and camera styles -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        .login-page-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #1a0f0f 0%, #2d1b1b 100%);
+        }
+
+        .login-card {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .login-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .login-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .auth-intro {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-intro h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-red);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="web-container">
+        <!-- Header -->
+        <header class="main-header">
+            <a href="index.html" class="logo-link">
+                <div class="logo-container">
+                    <div class="logo-shield">
+                        <img src="../public/images/logo.png" alt="Logo PCE" class="logo-img">
+                    </div>
+                    <div class="logo-text">
+                        <span>PROTECCION</span>
+                        <span>CIVIL</span>
+                        <span>ESPAÑOLA</span>
+                    </div>
+                </div>
+            </a>
+            <nav class="main-nav">
+                <a href="index.html">INICIO</a>
+                <a href="noticias.html">ACTUALIDAD</a>
+                <a href="afiliacion.html">ÚNETE</a>
+                <a href="programa.html">PROGRAMA</a>
+                <a href="votaciones.html">VOTACIONES</a>
+                <a href="index.html#transparencia">TRANSPARENCIA</a>
+            </nav>
+            <div class="header-actions">
+                <a href="#" class="btn btn-donate">DONA</a>
+                <a href="afiliacion.html" class="btn btn-join">AFILIATE</a>
+                <a href="login.html" class="user-auth-link active" title="Iniciar Sesión">
+                    <svg class="user-icon" viewBox="0 0 24 24">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                    </svg>
+                </a>
+            </div>
+        </header>
+
+        <main class="login-page-container">
+            <div class="login-card">
+                <div class="auth-intro">
+                    <h1>SISTEMA DE ACCESO SEGURO</h1>
+                    <p>Identifíquese para acceder a sus servicios personalizados y centro de votación.</p>
+                </div>
+
+                <div class="login-grid">
+                    <!-- Step 1: Login -->
+                    <section id="step-login" class="vote-card">
+                        <div class="card-header">
+                            <h2>1. Credenciales</h2>
+                        </div>
+                        <form id="login-form-main">
+                            <div class="form-group">
+                                <label>Usuario / Email</label>
+                                <input type="text" placeholder="Correo electrónico" id="auth-user" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Contraseña</label>
+                                <input type="password" placeholder="••••••••" id="auth-pass" required>
+                            </div>
+                            <button type="submit" class="btn btn-verify-submit active">Continuar a Biometría</button>
+                        </form>
+                    </section>
+
+                    <!-- Step 2: Biometry (Locked until Step 1) -->
+                    <section id="step-biometry" class="vote-card locked">
+                        <div class="lock-overlay auth-lock">
+                            <p>Complete el paso anterior</p>
+                        </div>
+                        <div class="card-header">
+                            <h2>2. Verificación Biometría</h2>
+                        </div>
+                        <div class="camera-module">
+                            <div class="video-wrapper">
+                                <video id="video" autoplay playsinline
+                                    style="width: 100%; border-radius: 10px;"></video>
+                                <canvas id="canvas" style="display:none;"></canvas>
+                                <div class="camera-overlay">
+                                    <div class="face-guide"></div>
+                                </div>
+                            </div>
+                            <div class="camera-controls">
+                                <button id="snap-dni" class="btn btn-camera">Capturar DNI</button>
+                                <button id="snap-selfie" class="btn btn-camera">Face Check</button>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 1rem;">
+                            <label>DNI / NIE Confirmación</label>
+                            <input type="text" placeholder="12345678A" id="dni-input">
+                        </div>
+                        <div class="captured-previews">
+                            <div class="preview-box" id="preview-dni"><span>DNI</span></div>
+                            <div class="preview-box" id="preview-selfie"><span>Face</span></div>
+                        </div>
+                        <button id="btn-final-login" class="btn btn-verify-submit" disabled>Iniciar Sesión</button>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <footer class="main-footer">
+            <p>&copy; 2026 Protección Civil Española (PCE). Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <script src="../controllers/loginController.js"></script>
+</body>
+
+</html>

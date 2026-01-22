@@ -6,7 +6,7 @@
     /* Slightly lighter for cards */
     --accent-gold: #b2a3a4;
     /* Updated per user request to #b2a3a4 */
-    --text-white: #ffffff;
+    --text-white: #B9AFB0;
     --text-grey: #cccccc;
     --btn-grey: #a0a0a0;
     --btn-hover: #b0b0b0;
@@ -41,6 +41,13 @@ body {
     background-position: center center, center center;
     background-size: 850px, cover;
     background-attachment: fixed, fixed;
+}
+
+h1,
+.page-title,
+h2.section-subtitle,
+.section-title {
+    color: #ffffff !important;
 }
 
 /* Header */
@@ -88,6 +95,11 @@ body {
     object-fit: contain;
 }
 
+.logo-link {
+    text-decoration: none;
+    display: block;
+}
+
 .logo-text {
     display: flex;
     flex-direction: column;
@@ -130,15 +142,40 @@ body {
 .header-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
+}
+
+.user-auth-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    background: #000;
+    border-radius: 50%;
+    color: #B9AFB0;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.user-auth-link:hover {
+    background: #723233;
+    border-color: #B9AFB0;
+    transform: scale(1.1);
+}
+
+.user-icon {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
 }
 
 .btn {
     text-decoration: none;
     display: inline-block;
     padding: 10px 20px;
-    border-radius: 0;
-    /* Square/Rectangular buttons as per images mostly */
+    border-radius: 4px;
     font-family: var(--font-heading);
     font-weight: 700;
     text-transform: uppercase;
@@ -149,13 +186,13 @@ body {
 
 .btn-donate {
     background-color: #8E4040;
-    color: white;
+    color: #B9AFB0;
     font-size: 0.8rem;
 }
 
 .btn-join {
     background-color: #000000;
-    color: white;
+    color: #B9AFB0;
     font-size: 0.8rem;
 }
 
@@ -199,7 +236,7 @@ body {
 
 .btn-join-sm {
     background-color: black;
-    color: white;
+    color: #B9AFB0;
     padding: 5px 15px;
     font-size: 0.8rem;
 }
@@ -212,7 +249,7 @@ body {
 }
 
 .footer-links a {
-    color: white;
+    color: #B9AFB0;
     text-decoration: none;
     font-size: 0.7rem;
     text-transform: uppercase;

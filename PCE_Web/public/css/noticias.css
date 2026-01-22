@@ -50,7 +50,7 @@
     font-family: var(--font-heading);
     font-size: 3rem;
     font-weight: 800;
-    color: white;
+    color: #B9AFB0;
     letter-spacing: 1px;
     /* Adjust text alignment to be more center-right if needed, strictly center for now */
     padding-right: 80px;
@@ -70,7 +70,7 @@
     font-family: var(--font-heading);
     font-size: 1.2rem;
     font-weight: 700;
-    color: white;
+    color: #B9AFB0;
     text-transform: uppercase;
 }
 
@@ -174,7 +174,7 @@
 
 .btn-load-more-sm {
     background-color: #723233;
-    color: white;
+    color: #B9AFB0;
     padding: 10px 40px;
     font-size: 0.9rem;
     font-weight: 700;
