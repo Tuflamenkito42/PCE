@@ -1,0 +1,138 @@
+:root {
+    --primary-red: #5e2c2c;
+    --primary-red-dark: #4a2222;
+    --acc-red: #8B3A3A;
+    --accent-gold: #b2a3a4;
+    --text-white: #B9AFB0;
+    --text-grey: #cccccc;
+    --btn-grey: #a0a0a0;
+    --btn-hover: #b0b0b0;
+    --card-bg: #6E3636;
+    --nav-height: 80px;
+    --font-heading: 'Cinzel', serif;
+    --font-body: 'Cinzel', serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-family: 'Cinzel', serif;
+}
+
+body {
+    font-family: var(--font-heading);
+    color: var(--text-white);
+    line-height: 1.6;
+    overflow-x: hidden;
+    background-image: url("/images/bg-pattern.png"), linear-gradient(to bottom, #B9AFB0, #723233);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 850px, cover;
+    background-attachment: fixed;
+}
+
+h1,
+.page-title,
+h2.section-subtitle,
+.section-title {
+    color: #ffffff !important;
+}
+
+.btn {
+    text-decoration: none;
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+
+    &.btn-donate {
+        background-color: #8E4040;
+        color: #B9AFB0;
+        font-size: 0.8rem;
+
+        &-sm {
+            background-color: #b2a3a4;
+            color: #723233;
+            padding: 5px 15px;
+            font-size: 0.8rem;
+        }
+    }
+
+    &.btn-join {
+        background-color: #000000;
+        color: #B9AFB0;
+        font-size: 0.8rem;
+
+        &-sm {
+            background-color: black;
+            color: #B9AFB0;
+            padding: 5px 15px;
+            font-size: 0.8rem;
+        }
+
+        &-inverse {
+            background-color: var(--accent-gold);
+            color: #4a2222;
+        }
+    }
+
+    &.btn-next,
+    &.btn-verify-submit {
+        background-color: var(--primary-red);
+        color: white;
+
+        &.active {
+            background-color: var(--acc-red);
+            box-shadow: 0 0 15px rgba(139, 58, 58, 0.4);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    &.btn-camera {
+        background: #333;
+        color: white;
+        font-size: 0.7rem;
+        padding: 8px 15px;
+
+        &:hover {
+            background: #444;
+        }
+    }
+}
+
+/* Common Layout Utilities */
+.card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.lock-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+}
