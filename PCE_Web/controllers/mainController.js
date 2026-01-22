@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (activeIndex < steps.length - 1) {
                 steps[activeIndex].classList.remove('active');
                 steps[activeIndex + 1].classList.add('active');
-                
+
                 // You would also show/hide form parts here
                 alert('Paso ' + (activeIndex + 2) + ': Demo');
             }
