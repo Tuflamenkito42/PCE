@@ -127,7 +127,7 @@ useHead({
   backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 40px;
-  border-radius: 30px;
+  border-radius: 4px;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -176,7 +176,7 @@ useHead({
       background-color: rgba(180, 167, 167, 0.9);
       border: none;
       padding: 18px 25px;
-      border-radius: 50px;
+      border-radius: 4px;
       color: #000;
       font-size: 1rem;
       font-family: 'Cinzel', serif;
@@ -199,7 +199,7 @@ useHead({
   background-color: #000 !important;
   color: #fff !important;
   padding: 18px !important;
-  border-radius: 50px !important;
+  border-radius: 4px !important;
   font-family: 'Cinzel', serif;
   font-size: 1.1rem !important;
   letter-spacing: 1px;
