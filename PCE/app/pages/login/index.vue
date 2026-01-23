@@ -1,18 +1,70 @@
+<script setup>
+import IdentityVerification from './components/IdentityVerification.vue'
+
+const currentStep = ref(1)
+const isLogin = ref(true)
+const email = ref('')
+const password = ref('')
+const fullName = ref('')
+const dni = ref('')
+
+const toggleAuthMode = () => {
+  isLogin.value = !isLogin.value
+}
+
+const handleStep1 = () => {
+  if (isLogin.value) {
+    const role = (email.value.toLowerCase().includes('staff') || email.value.toLowerCase().includes('pce')) ? 'staff' : 'public'
+    localStorage.setItem('pce_user_role', role)
+    localStorage.setItem('pce_logged_in', 'pending')
+    currentStep.value = 2
+    alert("Credenciales correctas. Realice la verificación biométrica.")
+  } else {
+    // Register flow
+    alert("¡Registro completado! Ahora verifique su identidad.")
+    localStorage.setItem('pce_user_role', 'public')
+    localStorage.setItem('pce_logged_in', 'pending')
+    currentStep.value = 2
+  }
+}
+
+const handleFinalSuccess = () => {
+  localStorage.setItem('pce_logged_in', 'true')
+  alert("¡Identidad verificada! Bienvenido al sistema PCE.")
+  navigateTo('/')
+}
+
+useHead({
+  title: isLogin.value ? 'Acceso Seguro - PCE' : 'Registro Seguro - PCE',
+  meta: [
+    { name: 'description', content: 'Identifíquese de forma segura para acceder al centro de votación y servicios de Protección Civil Española (PCE).' }
+  ]
+})
+</script>
+
 <template>
   <main class="login-page">
     <div class="login-container container">
       <div class="auth-intro">
-        <h1>SISTEMA DE ACCESO SEGURO</h1>
-        <p>Identifíquese para acceder a sus servicios personalizados y centro de votación.</p>
+        <h1>{{ isLogin ? 'SISTEMA DE ACCESO SEGURO' : 'REGISTRO DE NUEVO USUARIO' }}</h1>
+        <p>{{ isLogin ? 'Identifíquese para acceder a sus servicios personalizados y centro de votación.' : 'Cree su cuenta para participar en las consultas y votaciones de PCE.' }}</p>
       </div>
 
       <div class="auth-grid">
-        <!-- Step 1: Login Credentials -->
+        <!-- Step 1: Credentials -->
         <section class="auth-card" :class="{ completed: currentStep > 1 }">
           <div class="card-header">
-            <h2>1. Credenciales</h2>
+            <h2>1. {{ isLogin ? 'Credenciales' : 'Datos Personales' }}</h2>
           </div>
           <form class="auth-form" @submit.prevent="handleStep1">
+            <div v-if="!isLogin" class="form-group slide-in">
+              <label>Nombre Completo</label>
+              <input v-model="fullName" type="text" placeholder="Tu nombre y apellidos" required />
+            </div>
+            <div v-if="!isLogin" class="form-group slide-in">
+              <label>DNI / NIE</label>
+              <input v-model="dni" type="text" placeholder="12345678A" required />
+            </div>
             <div class="form-group">
               <label>Usuario / Email</label>
               <input v-model="email" type="text" placeholder="Correo electrónico" required />
@@ -21,7 +73,16 @@
               <label>Contraseña</label>
               <input v-model="password" type="password" placeholder="••••••••" required />
             </div>
-            <button type="submit" class="btn btn-verify-submit active">Continuar a Biometría</button>
+            
+            <div class="auth-actions">
+              <button type="submit" class="btn btn-verify-submit active">
+                {{ isLogin ? 'Continuar a Biometría' : 'Registrar y Continuar' }}
+              </button>
+              
+              <p class="toggle-auth" @click="toggleAuthMode">
+                {{ isLogin ? '¿No tienes cuenta? Regístrate aquí' : '¿Ya tienes cuenta? Inicia sesión' }}
+              </p>
+            </div>
           </form>
         </section>
 
@@ -35,36 +96,6 @@
     </div>
   </main>
 </template>
-
-<script setup>
-import IdentityVerification from './components/IdentityVerification.vue'
-
-const currentStep = ref(1)
-const email = ref('')
-const password = ref('')
-
-const handleStep1 = () => {
-  const role = (email.value.toLowerCase().includes('staff') || email.value.toLowerCase().includes('pce')) ? 'staff' : 'public'
-  localStorage.setItem('pce_user_role', role)
-  localStorage.setItem('pce_logged_in', 'pending')
-  
-  currentStep.value = 2
-  alert("Credenciales correctas. Realice la verificación biométrica.")
-}
-
-const handleFinalSuccess = () => {
-  localStorage.setItem('pce_logged_in', 'true')
-  alert("¡Identidad verificada! Bienvenido al sistema PCE.")
-  navigateTo('/')
-}
-
-useHead({
-  title: 'Acceso Seguro - PCE',
-  meta: [
-    { name: 'description', content: 'Identifíquese de forma segura para acceder al centro de votación y servicios de Protección Civil Española (PCE).' }
-  ]
-})
-</script>
 
 <style scoped>
 .login-page {
@@ -211,5 +242,33 @@ useHead({
     transform: translateY(-3px);
     box-shadow: 0 15px 30px rgba(0,0,0,0.5);
   }
+}
+.auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+
+  .toggle-auth {
+    color: var(--accent-gold);
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: 'Cinzel', serif;
+    transition: color 0.3s;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
