@@ -95,8 +95,17 @@ useHead({
 .votes-intro {
   text-align: center;
   margin-bottom: 60px;
-  font-size: 1.2rem;
-  color: var(--text-grey);
+  font-size: 1.1rem;
+  background-color: #723233;
+  color: #ffffff;
+  padding: 30px;
+  border-radius: 4px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+  p {
+    margin: 0;
+    line-height: 1.8;
+  }
 }
 
 .votes-layout {

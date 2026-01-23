@@ -111,12 +111,12 @@ watch(() => props.isLocked, (locked) => {
 .camera-module {
   background: rgba(0,0,0,0.2);
   padding: 15px;
-  border-radius: 20px;
+  border-radius: 4px;
   border: 1px solid rgba(255,255,255,0.05);
 
   .video-wrapper {
     position: relative;
-    border-radius: 15px;
+    border-radius: 4px;
     overflow: hidden;
     aspect-ratio: 4/3;
     background: #000;
@@ -147,7 +147,7 @@ watch(() => props.isLocked, (locked) => {
       background: #4a2222;
       color: #fff;
       padding: 10px;
-      border-radius: 50px;
+      border-radius: 4px;
       font-size: 0.75rem;
       font-family: 'Cinzel', serif;
       
@@ -175,7 +175,7 @@ watch(() => props.isLocked, (locked) => {
     background-color: rgba(180, 167, 167, 0.9);
     border: none;
     padding: 15px 25px;
-    border-radius: 50px;
+    border-radius: 4px;
     color: #000;
     font-size: 1rem;
     font-family: 'Cinzel', serif;
@@ -195,7 +195,7 @@ watch(() => props.isLocked, (locked) => {
   .preview-box {
     aspect-ratio: 3/2;
     background: rgba(0,0,0,0.3);
-    border-radius: 15px;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
