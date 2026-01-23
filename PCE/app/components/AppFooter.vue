@@ -2,11 +2,11 @@
   <footer class="main-footer">
     <div class="footer-divider"></div>
     <div class="footer-content">
-      <div class="footer-logo">
+      <NuxtLink to="/" class="footer-logo">
         <div class="logo-shield big-shield">
           <img src="/images/logo.png" alt="Logo PCE" class="logo-img-lg" />
         </div>
-      </div>
+      </NuxtLink>
 
       <div class="footer-social">
         <a href="#" class="social-icon youtube">
@@ -97,8 +97,9 @@
 
     .footer-buttons {
       display: flex;
-      gap: 10px;
+      gap: 20px;
       align-items: center;
+      margin: 20px 0;
     }
 
     .footer-links {

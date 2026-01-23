@@ -120,7 +120,7 @@ useHead({
     color: #B9AFB0;
     font-size: 1.5rem;
     padding: 15px 50px;
-    border-radius: 30px;
+    border-radius: 4px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 
     &:hover {
