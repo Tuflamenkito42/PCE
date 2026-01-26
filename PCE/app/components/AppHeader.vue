@@ -1,3 +1,14 @@
+<script setup>
+const { user, logout } = useAuth()
+// Optional: user initials
+const userInitials = computed(() => {
+  if (user.value?.full_name) {
+    return user.value.full_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+  }
+  return 'U'
+})
+</script>
+
 <template>
   <header class="main-header">
     <NuxtLink to="/" class="logo-link">
@@ -25,7 +36,19 @@
     <div class="header-actions">
       <a href="#" class="btn btn-donate">DONA</a>
       <NuxtLink to="/afiliacion" class="btn btn-join">AFILIATE</NuxtLink>
-      <NuxtLink to="/login" class="user-auth-link" title="Iniciar Sesión">
+      
+      <!-- Auth Actions -->
+      <div v-if="user" class="auth-controls">
+         <div class="user-badge" title="Usuario conectado">
+            {{ userInitials }}
+         </div>
+         <button @click="logout" class="btn-logout" title="Cerrar Sesión">
+            <svg viewBox="0 0 24 24" class="logout-icon">
+              <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+            </svg>
+         </button>
+      </div>
+      <NuxtLink v-else to="/login" class="user-auth-link" title="Iniciar Sesión">
         <svg class="user-icon" viewBox="0 0 24 24">
           <path
             d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"
@@ -113,6 +136,48 @@
     display: flex;
     align-items: center;
     gap: 15px;
+
+    .auth-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .user-badge {
+        width: 40px;
+        height: 40px;
+        background-color: #723233;
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-family: 'Cinzel', serif;
+        border: 2px solid #fff;
+      }
+
+      .btn-logout {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        color: #723233;
+        transition: transform 0.2s;
+
+        &:hover {
+          transform: scale(1.1);
+          color: #000;
+        }
+
+        .logout-icon {
+          width: 24px;
+          height: 24px;
+          fill: currentColor;
+        }
+      }
+    }
 
     .user-auth-link {
       display: flex;

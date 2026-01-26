@@ -22,15 +22,18 @@
                 <div class="form-grid">
                   <div class="form-group">
                     <label>NOMBRE *</label>
-                    <input type="text" placeholder="Nombre" required />
+                    <input v-model="formData.name" type="text" placeholder="Nombre" required :class="{ 'error': errors.name }" />
+                    <span v-if="errors.name" class="error-msg">{{ errors.name }}</span>
                   </div>
                   <div class="form-group">
                     <label>APELLIDOS *</label>
-                    <input type="text" placeholder="Apellidos" required />
+                    <input v-model="formData.lastname" type="text" placeholder="Apellidos" required :class="{ 'error': errors.lastname }" />
+                    <span v-if="errors.lastname" class="error-msg">{{ errors.lastname }}</span>
                   </div>
                   <div class="form-group">
                     <label>DNI / NIE *</label>
-                    <input type="text" placeholder="Ejemplo: 12345678A" required />
+                    <input v-model="formData.dni" type="text" placeholder="Ejemplo: 12345678A" required :class="{ 'error': errors.dni }" />
+                    <span v-if="errors.dni" class="error-msg">{{ errors.dni }}</span>
                   </div>
                   <div class="form-group">
                     <label>FECHA DE NACIMIENTO *</label>
@@ -42,11 +45,13 @@
                   </div>
                   <div class="form-group">
                     <label>EMAIL PRINCIPAL *</label>
-                    <input type="email" placeholder="Email principal" required />
+                    <input v-model="formData.email" type="email" placeholder="Email principal" required :class="{ 'error': errors.email }" />
+                    <span v-if="errors.email" class="error-msg">{{ errors.email }}</span>
                   </div>
                   <div class="form-group">
                     <label>TELÉFONO PRINCIPAL *</label>
-                    <input type="tel" placeholder="Teléfono principal" required />
+                    <input v-model="formData.phone" type="tel" placeholder="Teléfono principal" required :class="{ 'error': errors.phone }" />
+                    <span v-if="errors.phone" class="error-msg">{{ errors.phone }}</span>
                   </div>
                 </div>
               </div>
@@ -70,7 +75,7 @@
 
           <div class="form-nav">
             <button v-if="currentStep > 1" type="button" class="btn" @click="currentStep--">Anterior</button>
-            <button v-if="currentStep < 4" type="button" class="btn btn-next" @click="currentStep++">Siguiente</button>
+            <button v-if="currentStep < 4" type="button" class="btn btn-next" @click="nextStep">Siguiente</button>
             <button v-if="currentStep === 4" type="submit" class="btn btn-next">Finalizar Afiliación</button>
           </div>
         </form>
@@ -84,9 +89,53 @@
 
 <script setup>
 import AffiliationSidebar from './components/AffiliationSidebar.vue'
+import { isValidEmail, isValidDNI } from '@/utils/validation'
 
 const currentStep = ref(1)
 const stepLabels = ['Datos personales', 'Cuota', 'Datos Bancarios', 'Confirmación']
+
+// Form Data - Making them reactive to validate
+const formData = reactive({
+  name: '',
+  lastname: '',
+  dni: '',
+  email: '',
+  phone: ''
+})
+
+const errors = ref({})
+
+const validateStep1 = () => {
+  errors.value = {}
+  let valid = true
+
+  if (!formData.name) { errors.value.name = "El nombre es obligatorio"; valid = false; }
+  if (!formData.lastname) { errors.value.lastname = "Los apellidos son obligatorios"; valid = false; }
+  
+  if (!isValidDNI(formData.dni)) {
+    errors.value.dni = "DNI/NIE inválido"; 
+    valid = false; 
+  }
+
+  if (!isValidEmail(formData.email)) {
+    errors.value.email = "Email inválido"; 
+    valid = false; 
+  }
+
+  if (!formData.phone) { errors.value.phone = "El teléfono es obligatorio"; valid = false; }
+
+  return valid
+}
+
+const nextStep = () => {
+  if (currentStep.value === 1) {
+    if (validateStep1()) {
+      currentStep.value++
+    }
+  } else {
+    currentStep.value++
+  }
+}
 
 const handleSubmit = () => {
   alert("¡Gracias por afiliarte a PCE! Pronto recibirás un correo de confirmación.")
@@ -291,5 +340,18 @@ useHead({
 .fade-leave-to {
   opacity: 0;
   transform: translateX(-20px);
+}
+.error-msg {
+  color: #ff9999;
+  font-size: 0.8rem;
+  margin-top: 5px;
+  font-weight: 700;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+  margin-left: 10px;
+}
+
+input.error {
+  border: 2px solid #ff6b6b !important;
+  background-color: rgba(255, 107, 107, 0.2) !important;
 }
 </style>

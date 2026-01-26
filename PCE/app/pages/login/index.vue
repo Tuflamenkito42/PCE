@@ -1,18 +1,44 @@
 <script setup>
 import IdentityVerification from './components/IdentityVerification.vue'
 
+import { isValidEmail, isStrongPassword, isValidDNI } from '@/utils/validation'
+
 const currentStep = ref(1)
 const isLogin = ref(true)
 const email = ref('')
 const password = ref('')
 const fullName = ref('')
 const dni = ref('')
+const errors = ref({})
 
 const toggleAuthMode = () => {
   isLogin.value = !isLogin.value
+  errors.value = {}
 }
 
 const handleStep1 = () => {
+  errors.value = {}
+  
+  if (!isValidEmail(email.value)) {
+    errors.value.email = "Introduce un email válido (ej: usuario@dominio.com)"
+  }
+  
+  if (password.value.length < 8) {
+     errors.value.password = "La contraseña debe tener al menos 8 caracteres"
+     // If you want strict enforcement:
+     // if (!isStrongPassword(password.value)) {
+     //    errors.value.password = "La contraseña debe tener minúsculas, mayúsculas y números"
+     // }
+  }
+
+  if (!isLogin.value) {
+    if (!isValidDNI(dni.value)) {
+      errors.value.dni = "DNI/NIE no válido. Formato incorrecto o letra no coincide."
+    }
+  }
+
+  if (Object.keys(errors.value).length > 0) return
+
   if (isLogin.value) {
     const role = (email.value.toLowerCase().includes('staff') || email.value.toLowerCase().includes('pce')) ? 'staff' : 'public'
     localStorage.setItem('pce_user_role', role)
@@ -63,18 +89,22 @@ useHead({
             </div>
             <div v-if="!isLogin" class="form-group slide-in">
               <label>DNI / NIE</label>
-              <input v-model="dni" type="text" placeholder="12345678A" required />
+              <input v-model="dni" type="text" placeholder="12345678A" required :class="{ 'error': errors.dni }" />
+              <span v-if="errors.dni" class="error-msg">{{ errors.dni }}</span>
             </div>
             <div class="form-group">
               <label>Usuario / Email</label>
-              <input v-model="email" type="text" placeholder="Correo electrónico" required />
+              <input v-model="email" type="text" placeholder="Correo electrónico" required :class="{ 'error': errors.email }" />
+              <span v-if="errors.email" class="error-msg">{{ errors.email }}</span>
             </div>
             <div class="form-group">
               <label>Contraseña</label>
-              <input v-model="password" type="password" placeholder="••••••••" required />
+              <input v-model="password" type="password" placeholder="••••••••" required :class="{ 'error': errors.password }" />
+              <span v-if="errors.password" class="error-msg">{{ errors.password }}</span>
             </div>
             
             <div class="auth-actions">
+              <p v-if="Object.keys(errors).length > 0" class="general-error">Por favor revise los errores en el formulario.</p>
               <button type="submit" class="btn btn-verify-submit active">
                 {{ isLogin ? 'Continuar a Biometría' : 'Registrar y Continuar' }}
               </button>
@@ -268,7 +298,30 @@ useHead({
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+.error-msg {
+  color: #ff9999;
+  font-size: 0.8rem;
+  margin-top: 5px;
+  font-weight: 700;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+}
+
+.general-error {
+  color: #ff9999;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: 700;
+  background: rgba(0,0,0,0.3);
+  padding: 5px;
+  border-radius: 4px;
+}
+
+input.error {
+  border: 2px solid #ff6b6b !important;
+  background-color: rgba(255, 107, 107, 0.2) !important;
 }
 </style>
