@@ -6,13 +6,15 @@ export const useAuth = () => {
     // Check auth on startup
     const checkAuth = async () => {
         try {
-            const { data } = await useFetch('/api/auth/me');
+            const headers = useRequestHeaders(['cookie']);
+            const { data } = await useFetch('/api/auth/me', { headers });
+
             if (data.value && data.value.user) {
                 user.value = data.value.user;
                 return true;
             }
         } catch (e) {
-            console.error(e);
+            console.error('Auth check failed:', e);
         }
         user.value = null;
         return false;
