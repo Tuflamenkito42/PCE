@@ -60,7 +60,7 @@
 
   .footer-divider {
     height: 1px;
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: hsla(0, 0%, 100%, 0.3);
     width: 80%;
     margin: 0 auto 40px;
   }
