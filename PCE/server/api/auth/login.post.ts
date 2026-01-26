@@ -36,7 +36,12 @@ export default defineEventHandler(async (event) => {
 
     // Actually, setting an HttpOnly cookie is best for security.
     // Let's create a simple session token (mock) or just store the user ID.
-    const token = Buffer.from(JSON.stringify({ id: user.id, email: user.email, role: user.role })).toString('base64');
+    const token = Buffer.from(JSON.stringify({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        full_name: user.full_name
+    })).toString('base64');
 
     setCookie(event, 'auth_token', token, {
         httpOnly: false, // Let frontend read it for now to know we are logged in, or use a separate composable.

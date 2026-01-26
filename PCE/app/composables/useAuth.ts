@@ -1,4 +1,4 @@
-export const useUser = () => useState('user', () => null);
+export const useUser = () => useState<any>('user', () => null);
 
 export const useAuth = () => {
     const user = useUser();
@@ -9,8 +9,8 @@ export const useAuth = () => {
             const headers = useRequestHeaders(['cookie']);
             const { data } = await useFetch('/api/auth/me', { headers });
 
-            if (data.value && data.value.user) {
-                user.value = data.value.user;
+            if (data.value && (data.value as any).user) {
+                user.value = (data.value as any).user;
                 return true;
             }
         } catch (e) {
@@ -20,20 +20,22 @@ export const useAuth = () => {
         return false;
     };
 
-    const login = async (email, password) => {
-        const { data, error } = await useFetch('/api/auth/login', {
+    const login = async (email: string, password: string) => {
+        const { data, error } = await useFetch<any>('/api/auth/login', {
             method: 'POST',
             body: { email, password }
         });
 
         if (error.value) throw error.value;
 
-        user.value = data.value.user;
-        return data.value;
+        if (data.value) {
+            user.value = data.value.user;
+            return data.value;
+        }
     };
 
-    const register = async (userData) => {
-        const { data, error } = await useFetch('/api/auth/register', {
+    const register = async (userData: any) => {
+        const { data, error } = await useFetch<any>('/api/auth/register', {
             method: 'POST',
             body: userData
         });
