@@ -11,11 +11,13 @@ export const useAuth = () => {
 
             if (data.value && (data.value as any).user) {
                 user.value = (data.value as any).user;
+                console.log('Auth restored:', user.value);
                 return true;
             }
         } catch (e) {
             console.error('Auth check failed:', e);
         }
+        console.log('No active session found');
         user.value = null;
         return false;
     };

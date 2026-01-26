@@ -55,9 +55,9 @@ const handleStep1 = () => {
 }
 
 const handleFinalSuccess = () => {
-  localStorage.setItem('pce_logged_in', 'true')
-  alert("¡Identidad verificada! Bienvenido al sistema PCE.")
-  navigateTo('/')
+  alert("¡Verificación completada! Bienvenido al sistema PCE.")
+  // Force full reload to ensure auth state is consistent
+  window.location.href = '/'
 }
 
 useHead({
