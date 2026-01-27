@@ -1,3 +1,7 @@
+<script setup>
+const isOpen = useCookieControl()
+</script>
+
 <template>
   <footer class="main-footer">
     <div class="footer-divider"></div>
@@ -47,7 +51,7 @@
       <div class="footer-links">
         <a href="#">POLÍTICA DE PRIVACIDAD</a>
         <a href="#">CONDICIONES DE USO</a>
-        <a href="#">POLÍTICA DE COOKIES</a>
+        <a href="#" @click.prevent="isOpen = true">POLÍTICA DE COOKIES</a>
       </div>
     </div>
   </footer>
