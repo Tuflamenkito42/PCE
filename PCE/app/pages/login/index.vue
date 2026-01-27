@@ -16,7 +16,7 @@ const toggleAuthMode = () => {
   errors.value = {}
 }
 
-const handleStep1 = () => {
+const handleStep1 = async () => {
   errors.value = {}
   
   if (!isValidEmail(email.value)) {
@@ -39,24 +39,42 @@ const handleStep1 = () => {
 
   if (Object.keys(errors.value).length > 0) return
 
-  if (isLogin.value) {
-    const role = (email.value.toLowerCase().includes('staff') || email.value.toLowerCase().includes('pce')) ? 'staff' : 'public'
-    localStorage.setItem('pce_user_role', role)
-    localStorage.setItem('pce_logged_in', 'pending')
-    currentStep.value = 2
-    alert("Credenciales correctas. Realice la verificación biométrica.")
-  } else {
-    // Register flow
-    alert("¡Registro completado! Ahora verifique su identidad.")
-    localStorage.setItem('pce_user_role', 'public')
-    localStorage.setItem('pce_logged_in', 'pending')
-    currentStep.value = 2
+  try {
+    if (isLogin.value) {
+      // Real Login Flow
+      const { login } = useAuth()
+      await login(email.value, password.value)
+      
+      // If successful, proceed to biometrics
+      currentStep.value = 2
+    } else {
+      // Register flow
+      const { register, login } = useAuth()
+      await register({
+        email: email.value,
+        password: password.value,
+        fullName: fullName.value,
+        dni: dni.value
+      })
+      
+      // Auto-login after registration
+      await login(email.value, password.value)
+      
+      alert("¡Registro completado! Ahora verifique su identidad.")
+       currentStep.value = 2
+    }
+  } catch (err) {
+    console.error(err)
+    if (err.data && err.data.message) {
+      errors.value.general = err.data.message
+    } else {
+      errors.value.general = "Error de conexión o credenciales incorrectas"
+    }
   }
 }
 
 const handleFinalSuccess = () => {
   alert("¡Verificación completada! Bienvenido al sistema PCE.")
-  // Force full reload to ensure auth state is consistent
   window.location.href = '/'
 }
 
@@ -104,7 +122,9 @@ useHead({
             </div>
             
             <div class="auth-actions">
-              <p v-if="Object.keys(errors).length > 0" class="general-error">Por favor revise los errores en el formulario.</p>
+              <p v-if="Object.keys(errors).length > 0" class="general-error">
+                 {{ errors.general || 'Por favor revise los errores en el formulario.' }}
+              </p>
               <button type="submit" class="btn btn-verify-submit active">
                 {{ isLogin ? 'Continuar a Biometría' : 'Registrar y Continuar' }}
               </button>

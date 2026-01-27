@@ -1,16 +1,19 @@
 <template>
   <section class="newsletter-section">
     <div class="newsletter-content">
-      <h3>Recibe todas las novedades en tu email</h3>
+      <h3>RECIBE TODAS LAS NOVEDADES EN TU EMAIL</h3>
       <form class="newsletter-form" @submit.prevent="handleSubmit">
-        <label for="email">Dirección de correo</label>
-        <input v-model="email" type="email" id="email" class="newsletter-input" required />
-        <div class="checkbox-group">
-          <input v-model="privacy" type="checkbox" id="privacy" required />
-          <label for="privacy">Acepto la política de privacidad</label>
+        <div class="input-group">
+          <label for="email">DIRECCIÓN DE CORREO</label>
+          <input v-model="email" type="email" id="email" class="newsletter-input" required />
         </div>
-        <div class="form-footer-right">
-          <button type="submit" class="btn btn-submit">Enviar</button>
+        
+        <div class="form-actions">
+          <div class="checkbox-group">
+            <input v-model="privacy" type="checkbox" id="privacy" required />
+            <label for="privacy">ACEPTO LA POLÍTICA DE PRIVACIDAD</label>
+          </div>
+          <button type="submit" class="btn btn-submit">ENVIAR</button>
         </div>
       </form>
     </div>
@@ -32,63 +35,103 @@ const handleSubmit = () => {
 <style scoped>
 .newsletter-section {
   background-color: #B4A7A7;
-  padding: 40px 20px;
+  padding: 40px 20px; /* Reduced from 60px */
   color: #5E2C2C;
-  margin-top: 50px;
+  width: 100%;
+  margin-top: 0;
 
   .newsletter-content {
-    max-width: 800px;
+    max-width: 800px; /* Reduced from 900px */
     margin: 0 auto;
 
     h3 {
       font-family: 'Cinzel', serif;
       font-weight: 700;
-      font-size: 1.4rem;
+      font-size: 1.25rem; /* Reduced from 1.5rem */
       color: #8B3A3A;
-      margin-bottom: 30px;
+      margin-bottom: 25px; /* Reduced from 40px */
+      letter-spacing: 2px;
     }
 
     .newsletter-form {
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 20px; /* Reduced from 30px */
 
-      label {
-        font-family: 'Cinzel', serif;
-        font-weight: 700;
-        color: #5E2C2C;
-      }
-
-      .newsletter-input {
-        background: transparent;
-        border: none;
-        border-bottom: 2px solid #8B3A3A;
-        padding: 10px 0;
-        width: 100%;
-        font-family: 'Cinzel', serif;
-        font-size: 1rem;
-        outline: none;
-      }
-
-      .checkbox-group {
+      .input-group {
         display: flex;
+        flex-direction: column;
+        gap: 10px; /* Reduced from 15px */
+
+        label {
+          font-family: 'Cinzel', serif;
+          font-weight: 700;
+          color: #5E2C2C;
+          font-size: 0.8rem; /* Reduced from 0.9rem */
+          letter-spacing: 1px;
+        }
+
+        .newsletter-input {
+          background: transparent;
+          border: none;
+          border-bottom: 2px solid #5E2C2C;
+          padding: 8px 0; /* Reduced from 10px */
+          width: 100%;
+          font-family: 'Cinzel', serif;
+          font-size: 1rem; /* Reduced from 1.1rem */
+          color: #000;
+          outline: none;
+          transition: border-color 0.3s;
+
+          &:focus {
+            border-bottom-color: #8B3A3A;
+          }
+        }
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 10px;
-        font-size: 0.9rem;
-        font-weight: 700;
-      }
+        flex-wrap: wrap;
+        gap: 15px;
 
-      .form-footer-right {
-        display: flex;
-        justify-content: flex-end;
+        .checkbox-group {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          font-size: 0.8rem; /* Reduced from 0.85rem */
+          font-weight: 700;
+          
+          input[type="checkbox"] {
+            accent-color: #5E2C2C;
+            width: 16px; /* Reduced from 18px */
+            height: 16px;
+            cursor: pointer;
+          }
+
+          label {
+            cursor: pointer;
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+          }
+        }
 
         .btn-submit {
-          background-color: #6E3636;
-          color: #B9AFB0;
-          padding: 10px 40px;
+          background-color: #723233;
+          color: #fff;
+          padding: 10px 35px; /* Reduced from 12px 45px */
+          border-radius: 4px;
+          font-family: 'Cinzel', serif;
+          font-weight: 700;
+          font-size: 0.9rem; /* Reduced from 1rem */
+          letter-spacing: 1px;
+          transition: all 0.3s ease;
           
           &:hover {
-            background-color: #804040;
+            background-color: #5e2c2c;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
           }
         }
       }

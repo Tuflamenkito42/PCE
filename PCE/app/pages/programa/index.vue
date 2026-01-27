@@ -16,8 +16,12 @@
       </div>
     </section>
 
-    <Newsletter />
+    <section class="promises-actions">
+        <NuxtLink to="/programa" class="btn btn-action-large">MÁS PROMESAS</NuxtLink>
+        <a href="#" class="btn btn-action-large">DESCARGAR PDF ELECTORAL</a>
+    </section>
   </main>
+  <Newsletter />
 </template>
 
 <script setup>
@@ -91,6 +95,34 @@ useHead({
     iframe {
       border: none;
       border-radius: 4px;
+    }
+  }
+}
+
+.promises-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 50px;
+  flex-wrap: wrap;
+
+  .btn-action-large {
+    background-color: #5e2c2c;
+    color: #B9AFB0;
+    width: 100%;
+    max-width: 480px; /* Slightly larger for the layout */
+    padding: 20px;
+    font-size: 1.1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: #723233;
+      transform: translateY(-3px);
     }
   }
 }
