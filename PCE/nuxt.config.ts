@@ -12,5 +12,15 @@ export default defineNuxtConfig({
         }
       ]
     }
+  },
+  runtimeConfig: {
+    // Private keys (server-side only)
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
+
+    // Public keys (exposed to client)
+    public: {
+      stripePublicKey: process.env.STRIPE_PUBLIC_KEY || 'pk_test_51QcVxwEwVGPRPrSBVGPRPrSBVGPRPrSBVGPRPrSBVGPRPrSB'
+    }
   }
 })
