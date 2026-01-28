@@ -3,9 +3,7 @@ import Stripe from 'stripe'
 export default defineEventHandler(async (event) => {
     try {
         const config = useRuntimeConfig()
-        const stripe = new Stripe(config.stripeSecretKey as string, {
-            apiVersion: '2025-12-15.clover'
-        })
+        const stripe = new Stripe(config.stripeSecretKey as string)
 
         const body = await readBody(event)
         const { amount, currency = 'eur', metadata = {} } = body

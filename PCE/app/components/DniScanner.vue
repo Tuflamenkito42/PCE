@@ -28,7 +28,7 @@
     </div>
 
     <!-- Canvas for Face Detection -->
-    <div v-if="imageLoaded && !isProcessing" class="canvas-container">
+    <div v-if="imageLoaded" v-show="!isProcessing" class="canvas-container">
       <canvas ref="canvas"></canvas>
       <div v-if="faceDetected" class="face-indicator">
         ✅ Cara detectada
@@ -72,15 +72,9 @@
         </div>
       </div>
 
-      <!-- JSON Output -->
-      <details class="json-output">
-        <summary>Ver JSON completo</summary>
-        <pre>{{ JSON.stringify(dniData, null, 2) }}</pre>
-      </details>
-
       <!-- Action Buttons -->
       <div class="action-buttons">
-        <button @click="useDniData" class="btn-use" :disabled="!dniData.valido">
+        <button @click="useDniData" class="btn-use" :disabled="!dniData.nombre && !dniData.dni">
           Usar estos datos
         </button>
         <button @click="resetScanner" class="btn-reset">
@@ -140,7 +134,6 @@ onMounted(async () => {
     
     modelsLoaded.value = true
     isProcessing.value = false
-    console.log('✅ Face-API models loaded successfully')
   } catch (error) {
     console.error('❌ Error loading Face-API models:', error)
     errorMessage.value = 'Error al cargar los modelos de detección facial. Asegúrate de que los modelos estén en /public/models/'
@@ -171,6 +164,9 @@ const uploadDNI = async (event) => {
     // Load image
     const img = await loadImage(file)
     
+    // Draw on canvas IMMEDIATELY so the user sees the photo
+    drawDetection(img, null)
+    
     // Detect face
     processingMessage.value = 'Detectando rostro...'
     const detection = await detectFace(img)
@@ -184,7 +180,7 @@ const uploadDNI = async (event) => {
     
     faceDetected.value = true
     
-    // Draw on canvas
+    // Re-draw with detection box
     drawDetection(img, detection)
     
     // Extract text with OCR
@@ -293,8 +289,6 @@ const performOCR = async (img) => {
  * Parse DNI data from OCR text
  */
 const parseDniData = (text) => {
-  console.log('OCR Text:', text)
-  
   const data = {
     cara_detectada: faceDetected.value,
     dni: null,
@@ -304,57 +298,105 @@ const parseDniData = (text) => {
     fecha_caducidad: null,
     valido: false
   }
+
+  const rawLines = text.toUpperCase().split('\n').map(l => l.trim()).filter(l => l.length > 0);
   
-  // Extract DNI/NIE
-  const dniMatch = text.match(/\b([0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE])\b/)
-  const nieMatch = text.match(/\b([XYZ][0-9]{7}[TRWAGMYFPDXBNJZSQVHLCKE])\b/)
+  // 1. EXTRACT DNI/NIE (More aggressive)
+  // Try finding it in normalized block first (removes noise)
+  const normalizedText = text.toUpperCase().replace(/\s+/g, '');
+  const dniMatch = normalizedText.match(/([0-9]{8}[A-Z])/) || normalizedText.match(/([XYZ][0-9]{7}[A-Z])/);
   
   if (dniMatch) {
-    data.dni = dniMatch[1]
-    data.valido = DNI_REGEX.test(data.dni) && validateDniLetter(data.dni)
-  } else if (nieMatch) {
-    data.dni = nieMatch[1]
-    data.valido = NIE_REGEX.test(data.dni) && validateNieLetter(data.dni)
+    data.dni = dniMatch[1];
+    data.valido = validateDniLetter(data.dni) || validateNieLetter(data.dni);
   }
-  
-  // Extract dates (DD/MM/YYYY or DD.MM.YYYY)
-  const dateMatches = text.match(/\b(\d{2})[\/\.](\d{2})[\/\.](\d{4})\b/g)
-  if (dateMatches && dateMatches.length >= 1) {
-    data.fecha_nacimiento = dateMatches[0]
-    if (dateMatches.length >= 2) {
-      data.fecha_caducidad = dateMatches[1]
+
+  // If not valid, try fixing common letter misreads
+  if (!data.valido && data.dni) {
+    const numPart = data.dni.substring(0, data.dni.length - 1);
+    const correctedLetter = getDniLetter(numPart);
+    if (correctedLetter) {
+      data.dni = numPart + correctedLetter;
+      data.valido = true;
     }
   }
-  
-  // Extract name (simplified - looks for uppercase words)
-  // This is a basic implementation - real DNI parsing would need more sophisticated logic
-  const lines = text.split('\n').filter(line => line.trim().length > 0)
-  const namePattern = /^[A-ZÁÉÍÓÚÑ\s]{3,}$/
-  
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim()
-    if (namePattern.test(line)) {
-      const words = line.split(/\s+/)
-      if (words.length >= 2) {
-        // Assume first word is name, rest are surnames
-        data.nombre = words[0]
-        data.apellidos = words.slice(1).join(' ')
-        break
+
+  // 2. EXTRACT NAMES & SURNAMES (Keyword based)
+  for (let i = 0; i < rawLines.length; i++) {
+    const line = rawLines[i];
+    
+    // APELLIDOS
+    if (line.includes('APELLIDO') && i + 1 < rawLines.length) {
+      // The next line(s) usually contain the surnames
+      let nextLine = rawLines[i+1];
+      if (!nextLine.includes(':') && nextLine.length > 2) {
+        data.apellidos = nextLine.replace(/[^A-ZÁÉÍÓÚÑ\s]/g, '').trim();
       }
     }
+    
+    // NOMBRE
+    if (line.includes('NOMBRE') && !line.includes('DOC') && i + 1 < rawLines.length) {
+      let nextLine = rawLines[i+1];
+      if (!nextLine.includes(':') && nextLine.length > 2) {
+        data.nombre = nextLine.replace(/[^A-ZÁÉÍÓÚÑ\s]/g, '').trim();
+      }
+    }
+
+    // 3. EXTRACT DATES (Support Spanish Month names like MAR, SEP)
+    const months = {
+      'ENE': '01', 'FEB': '02', 'MAR': '03', 'ABR': '04', 'MAY': '05', 'JUN': '06',
+      'JUL': '07', 'AGO': '08', 'SEP': '09', 'OCT': '10', 'NOV': '11', 'DIC': '12'
+    };
+
+    // Regex for DD MMM YYYY (e.g. 15 MAR 1985)
+    const monthNames = Object.keys(months).join('|');
+    const datePattern = new RegExp(`(\\d{2})\\s+(${monthNames})\\s+(\\d{4})`, 'i');
+    const dateMatch = line.match(datePattern);
+    
+    if (dateMatch) {
+      const day = dateMatch[1];
+      const month = months[dateMatch[2].toUpperCase()];
+      const year = dateMatch[3];
+      const finalDate = `${day}/${month}/${year}`;
+      
+      // Determine if it's birth or expiry
+      if (line.includes('NACIMIENTO') || i > 0 && rawLines[i-1].includes('NACIMIENTO')) {
+        data.fecha_nacimiento = finalDate;
+      } else if (line.includes('VALIDEZ') || line.includes('HASTA') || line.includes('CADUC')) {
+        data.fecha_caducidad = finalDate;
+      } else if (!data.fecha_nacimiento) {
+        data.fecha_nacimiento = finalDate; // Fallback
+      } else if (!data.fecha_caducidad) {
+        data.fecha_caducidad = finalDate; // Fallback
+      }
+    }
+
+    // Support standard DD/MM/YYYY patterns
+    const stdDateMatch = line.match(/(\d{2})[\/\.](\d{2})[\/\.](\d{4})/);
+    if (stdDateMatch) {
+      const finalDate = stdDateMatch[0].replace(/\./g, '/');
+      if (line.includes('NACIMIENTO')) data.fecha_nacimiento = finalDate;
+      else if (line.includes('VALIDEZ') || line.includes('HASTA')) data.fecha_caducidad = finalDate;
+    }
   }
-  
-  return data
+
+  return data;
+}
+
+const getDniLetter = (numberStr) => {
+  const letters = 'TRWAGMYFPDXBNJZSQVHLCKE'
+  const number = parseInt(numberStr.replace(/[^0-9]/g, ''), 10)
+  if (isNaN(number)) return null
+  return letters.charAt(number % 23)
 }
 
 /**
  * Validate DNI letter
  */
 const validateDniLetter = (dni) => {
-  const letters = 'TRWAGMYFPDXBNJZSQVHLCKE'
-  const number = parseInt(dni.substring(0, 8), 10)
-  const letter = dni.charAt(8)
-  return letters.charAt(number % 23) === letter
+  const letter = dni.charAt(dni.length - 1)
+  const numPart = dni.substring(0, dni.length - 1)
+  return getDniLetter(numPart) === letter
 }
 
 /**
@@ -373,9 +415,13 @@ const validateNieLetter = (nie) => {
  * Use extracted DNI data
  */
 const useDniData = () => {
-  if (dniData.value && dniData.value.valido) {
+  if (dniData.value) {
     emit('dataExtracted', dniData.value)
-    alert('Datos del DNI aplicados correctamente')
+    if (dniData.value.valido) {
+      alert('Datos del DNI aplicados correctamente')
+    } else {
+      alert('Datos detectados aplicados. Por favor, verifica que sean correctos.')
+    }
   }
 }
 
@@ -558,30 +604,6 @@ const resetScanner = () => {
 
 .data-item span.invalid {
   color: #ff6b6b;
-}
-
-.json-output {
-  margin: 20px 0;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 15px;
-  border-radius: 10px;
-}
-
-.json-output summary {
-  cursor: pointer;
-  font-family: 'Cinzel', serif;
-  font-weight: bold;
-  padding: 10px;
-}
-
-.json-output pre {
-  margin-top: 15px;
-  padding: 15px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 5px;
-  overflow-x: auto;
-  font-size: 0.9rem;
-  color: #00ff00;
 }
 
 .action-buttons {

@@ -51,11 +51,6 @@
       </div>
     </div>
 
-    <!-- Debug Info -->
-    <details class="debug-section">
-      <summary>🐛 Debug Info</summary>
-      <pre>{{ JSON.stringify(formData, null, 2) }}</pre>
-    </details>
   </div>
 </template>
 

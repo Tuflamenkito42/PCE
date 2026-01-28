@@ -34,7 +34,7 @@ const userInitials = computed(() => {
     </nav>
 
     <div class="header-actions">
-      <a href="#" class="btn btn-donate">DONA</a>
+      <NuxtLink to="/dona" class="btn btn-donate">DONA</NuxtLink>
       <NuxtLink to="/afiliacion" class="btn btn-join">AFILIATE</NuxtLink>
       
       <!-- Auth Actions -->

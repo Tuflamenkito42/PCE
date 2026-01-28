@@ -44,7 +44,7 @@ const isOpen = useCookieControl()
       </div>
 
       <div class="footer-buttons">
-        <a href="#" class="btn btn-donate-sm">DONA</a>
+        <NuxtLink to="/dona" class="btn btn-donate-sm">DONA</NuxtLink>
         <NuxtLink to="/afiliacion" class="btn btn-join-sm">AFILIATE</NuxtLink>
       </div>
 

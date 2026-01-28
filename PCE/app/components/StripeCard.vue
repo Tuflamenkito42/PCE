@@ -2,18 +2,20 @@
   <div class="stripe-card-element">
     <div v-if="loading" class="loading-state">
       <div class="spinner"></div>
-      <p>Cargando formulario de pago...</p>
+      <p>Cargando pasarela de pago segura...</p>
     </div>
     
     <div v-else-if="error" class="error-state">
-      <p>❌ {{ error }}</p>
+      <p>❌ Error: {{ error }}</p>
     </div>
     
     <div v-else>
-      <!-- Card Element Container -->
-      <div ref="cardElement" class="card-element"></div>
+      <!-- Contenedor del campo con fondo blanco para máxima visibilidad -->
+      <div class="card-input-wrapper">
+        <div ref="cardElement" class="card-element"></div>
+      </div>
       
-      <!-- Card Errors -->
+      <!-- Errores de la tarjeta -->
       <div v-if="cardError" class="card-error">
         {{ cardError }}
       </div>
@@ -22,25 +24,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import type { StripeCardElement } from '@stripe/stripe-js'
+import { ref, onMounted } from 'vue'
+import { useStripe } from '@/composables/useStripe'
 
-const props = defineProps<{
-  clientSecret?: string
-}>()
-
-const emit = defineEmits<{
-  ready: []
-  change: [complete: boolean]
-  error: [error: string]
-}>()
+const emit = defineEmits(['ready', 'change', 'error'])
 
 const { stripe, loading, error, initStripe } = useStripe()
 const cardElement = ref<HTMLElement | null>(null)
 const cardError = ref<string>('')
 const cardComplete = ref(false)
 
-let card: StripeCardElement | null = null
+let card: any = null
 
 onMounted(async () => {
   await initStripe()
@@ -51,48 +45,35 @@ onMounted(async () => {
     card = elements.create('card', {
       style: {
         base: {
-          fontSize: '16px',
-          color: '#fff',
-          fontFamily: 'var(--font-body), sans-serif',
+          fontSize: '18px',
+          color: '#1a1a1a', // Texto casi negro para que se vea perfecto sobre blanco
+          fontFamily: 'system-ui, -apple-system, sans-serif',
           '::placeholder': {
-            color: 'rgba(255, 255, 255, 0.5)'
+            color: '#aab7c4'
           },
-          backgroundColor: 'rgba(255, 255, 255, 0.1)',
-          padding: '12px'
         },
         invalid: {
-          color: '#ff6b6b',
-          iconColor: '#ff6b6b'
+          color: '#e53e3e',
+          iconColor: '#e53e3e'
         }
       },
-      hidePostalCode: false
+      hidePostalCode: true,
+      showIcon: true // Usa los logos oficiales y "normales" de Stripe
     })
     
     card.mount(cardElement.value)
     
-    // Listen for changes
-    card.on('change', (event) => {
+    card.on('change', (event: any) => {
       cardError.value = event.error ? event.error.message : ''
       cardComplete.value = event.complete
-      
       emit('change', event.complete)
-      
-      if (event.error) {
-        emit('error', event.error.message)
-      }
     })
     
-    card.on('ready', () => {
-      emit('ready')
-    })
+    card.on('ready', () => emit('ready'))
   }
 })
 
-// Expose card element for parent component
-defineExpose({
-  card,
-  cardComplete
-})
+defineExpose({ card, cardComplete })
 </script>
 
 <style scoped>
@@ -100,52 +81,55 @@ defineExpose({
   width: 100%;
 }
 
+.card-input-wrapper {
+  background: white; /* Blanco para que el texto se vea perfecto */
+  border: 1px solid #ddd;
+  border-radius: 50px;
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+}
+
+.card-input-wrapper:focus-within {
+  border-color: #fff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
+}
+
+.card-element {
+  padding: 15px 20px;
+  min-height: 56px;
+}
+
 .loading-state {
   text-align: center;
-  padding: 40px;
+  padding: 20px;
+  color: white;
 }
 
 .spinner {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border: 3px solid rgba(255, 255, 255, 0.3);
   border-top-color: #fff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin: 0 auto 15px;
+  margin: 0 auto 10px;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-.error-state {
-  padding: 20px;
-  background: rgba(255, 107, 107, 0.2);
-  border: 2px solid #ff6b6b;
-  border-radius: 10px;
-  color: #ff6b6b;
-  text-align: center;
-}
-
-.card-element {
-  padding: 18px 25px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50px;
-  transition: all 0.3s ease;
-}
-
-.card-element:focus-within {
-  border-color: rgba(255, 255, 255, 0.5);
-  background: rgba(255, 255, 255, 0.15);
-}
-
 .card-error {
-  margin-top: 10px;
+  margin-top: 15px;
   color: #ff6b6b;
-  font-size: 0.9rem;
-  font-weight: bold;
+  font-size: 0.85rem;
+  font-weight: 600;
   text-align: center;
+  padding: 10px;
+  background: rgba(255, 107, 107, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+  font-family: 'Cinzel', serif;
 }
 </style>

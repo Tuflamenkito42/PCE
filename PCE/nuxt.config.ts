@@ -18,6 +18,13 @@ export default defineNuxtConfig({
     stripeSecretKey: process.env.STRIPE_SECRET_KEY || '',
     stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
 
+    // Email Configuration
+    smtpHost: process.env.SMTP_HOST || '',
+    smtpPort: process.env.SMTP_PORT || '587',
+    smtpUser: process.env.SMTP_USER || '',
+    smtpPass: process.env.SMTP_PASS || '',
+    smtpFrom: process.env.SMTP_FROM || 'PCE Web',
+
     // Public keys (exposed to client)
     public: {
       stripePublicKey: process.env.STRIPE_PUBLIC_KEY || 'pk_test_51QcVxwEwVGPRPrSBVGPRPrSBVGPRPrSBVGPRPrSBVGPRPrSB'
