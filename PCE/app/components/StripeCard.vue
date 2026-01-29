@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, shallowRef } from 'vue'
 import { useStripe } from '@/composables/useStripe'
 
 const emit = defineEmits(['ready', 'change', 'error'])
@@ -34,7 +34,7 @@ const cardElement = ref<HTMLElement | null>(null)
 const cardError = ref<string>('')
 const cardComplete = ref(false)
 
-let card: any = null
+const card = shallowRef<any>(null)
 
 onMounted(async () => {
   await initStripe()
@@ -42,7 +42,7 @@ onMounted(async () => {
   if (stripe.value && cardElement.value) {
     const elements = stripe.value.elements()
     
-    card = elements.create('card', {
+    card.value = elements.create('card', {
       style: {
         base: {
           fontSize: '18px',
@@ -61,15 +61,15 @@ onMounted(async () => {
       showIcon: true // Usa los logos oficiales y "normales" de Stripe
     })
     
-    card.mount(cardElement.value)
+    card.value.mount(cardElement.value)
     
-    card.on('change', (event: any) => {
+    card.value.on('change', (event: any) => {
       cardError.value = event.error ? event.error.message : ''
       cardComplete.value = event.complete
       emit('change', event.complete)
     })
     
-    card.on('ready', () => emit('ready'))
+    card.value.on('ready', () => emit('ready'))
   }
 })
 
