@@ -102,6 +102,7 @@
                   <span v-else>Donar ahora</span>
                 </button>
               </div>
+
             </div>
           </div>
 

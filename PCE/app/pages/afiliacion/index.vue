@@ -123,12 +123,10 @@
                   </div>
                 </div>
 
-                <div class="stripe-container">
-                  <label class="input-label">DATOS DE LA TARJETA</label>
-                  <StripeCard ref="stripeCardRef" @ready="stripeReady = true" @change="handleCardChange" />
-                  
-
-                </div>
+                  <div class="stripe-container">
+                    <label class="input-label">DATOS DE LA TARJETA</label>
+                    <StripeCard ref="stripeCardRef" @ready="stripeReady = true" @change="handleCardChange" />
+                  </div>
 
                 <transition name="shake">
                   <div v-if="paymentError" :class="['payment-alert', paymentStatus]">
