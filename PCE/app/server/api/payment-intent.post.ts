@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
         const stripe = new Stripe(config.stripeSecretKey as string)
 
         const body = await readBody(event)
-        const { amount, currency = 'eur', metadata = {} } = body
+        const { amount, currency = 'eur', metadata = {}, email } = body
 
         if (!amount || amount <= 0) {
             throw createError({
@@ -15,15 +15,26 @@ export default defineEventHandler(async (event) => {
             })
         }
 
-        // Create payment intent
-        const paymentIntent = await stripe.paymentIntents.create({
+        // Prepare PaymentIntent parameters
+        const paymentIntentParams: Stripe.PaymentIntentCreateParams = {
             amount: Math.round(amount * 100), // Convert to cents
             currency,
             automatic_payment_methods: {
                 enabled: true
             },
-            metadata
-        })
+            metadata: {
+                ...metadata,
+                email: email || null // Store validation-safe value
+            }
+        }
+
+        // Only add receipt_email if explicitly provided and not empty
+        if (email && email.trim().length > 0) {
+            paymentIntentParams.receipt_email = email
+        }
+
+        // Create payment intent
+        const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams)
 
         return {
             clientSecret: paymentIntent.client_secret,
