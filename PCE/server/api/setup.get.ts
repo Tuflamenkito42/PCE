@@ -1,5 +1,3 @@
-import bcrypt from 'bcryptjs';
-
 export default defineEventHandler(async (event) => {
     const db = useDb();
 
@@ -46,31 +44,34 @@ export default defineEventHandler(async (event) => {
             )
         `);
 
-        // Initialize admin user
-        const adminEmail = 'admin@pce-web.com';
-        const adminPass = 'admin123';
-        const hashedAdminPass = await bcrypt.hash(adminPass, 10);
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                active BOOLEAN DEFAULT TRUE
+            )
+        `);
 
-        const [adminRows] = await db.query('SELECT id FROM users WHERE email = ?', [adminEmail]);
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS contact_messages (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                subject VARCHAR(255),
+                message TEXT NOT NULL,
+                status VARCHAR(50) DEFAULT 'new',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
 
-        if ((adminRows as any[]).length === 0) {
-            await db.query(
-                `INSERT INTO users (email, password, full_name, dni, role) 
-                 VALUES (?, ?, ?, ?, ?)`,
-                [adminEmail, hashedAdminPass, 'Administrador Sistema', '00000000A', 'admin']
-            );
-            console.log('Admin user created');
-        } else {
-            // Update password for existing admin to ensure it matches 'admin123'
-            await db.query('UPDATE users SET password = ? WHERE email = ?', [hashedAdminPass, adminEmail]);
-            console.log('Admin password updated');
-        }
-
-        return { status: 'ok', message: 'Database tables initialized and admin user checked' };
+        return { status: 'ok', message: 'Database tables initialized' };
     } catch (error: any) {
+        const errorDetail = error.message || error.code || 'Error desconocido';
+        console.error('Setup error:', errorDetail);
         throw createError({
             statusCode: 500,
-            message: 'Database initialization failed: ' + error.message
+            message: 'Database initialization failed: ' + errorDetail
         });
     }
 });

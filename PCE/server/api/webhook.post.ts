@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
     try {
         const config = useRuntimeConfig()
         const stripe = new Stripe(config.stripeSecretKey as string, {
-            apiVersion: '2026-01-28.clover'
+            apiVersion: '2025-12-15.clover'
         })
 
         const body = await readRawBody(event)
@@ -29,51 +29,7 @@ export default defineEventHandler(async (event) => {
             case 'payment_intent.succeeded':
                 const paymentIntent = webhookEvent.data.object as Stripe.PaymentIntent
                 console.log('✅ Payment succeeded:', paymentIntent.id)
-
-                try {
-                    const donorEmail = paymentIntent.metadata?.email || paymentIntent.receipt_email
-                    const amount = (paymentIntent.amount / 100).toFixed(2)
-                    const currency = paymentIntent.currency.toUpperCase()
-
-                    // 1. Send receipt to donor
-                    if (donorEmail) {
-                        await sendEmail(
-                            donorEmail,
-                            'Confirmación de Donación - PCE',
-                            `
-                            <div style="font-family: Arial, sans-serif; color: #333;">
-                                <h1 style="color: #5E2C2C;">¡Gracias por tu donación!</h1>
-                                <p>Hemos recibido tu donación de <strong>${amount} ${currency}</strong>.</p>
-                                <p>Tu apoyo es fundamental para nosotros.</p>
-                                <br>
-                                <p>Atentamente,</p>
-                                <p><strong>PCE</strong></p>
-                            </div>
-                            `
-                        )
-                        console.log('📧 Confirmation email sent to:', donorEmail)
-                    }
-
-                    // 2. Send notification to ADMIN (Dedicated Email)
-                    // "el correo dedicado aun recibe la notificación"
-                    await sendEmail(
-                        'pcepartidopolitico@gmail.com',
-                        '💰 Nueva Donación Recibida',
-                        `
-                        <div style="font-family: Arial, sans-serif;">
-                            <h2 style="color: #2c5e2e;">Nueva Donación</h2>
-                            <p><strong>Cantidad:</strong> ${amount} ${currency}</p>
-                            <p><strong>Email Donante:</strong> ${donorEmail || 'No proporcionado'}</p>
-                            <p><strong>ID Pago:</strong> ${paymentIntent.id}</p>
-                            <p><strong>Fecha:</strong> ${new Date().toLocaleString()}</p>
-                        </div>
-                        `
-                    )
-                    console.log('📧 Admin notification sent to pcepartidopolitico@gmail.com')
-
-                } catch (emailError) {
-                    console.error('Failed to send donation emails:', emailError)
-                }
+                // TODO: Update database, send confirmation email, etc.
                 break
 
             case 'payment_intent.payment_failed':

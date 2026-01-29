@@ -30,6 +30,7 @@ const userInitials = computed(() => {
       <NuxtLink to="/afiliacion">ÚNETE</NuxtLink>
       <NuxtLink to="/programa">PROGRAMA</NuxtLink>
       <NuxtLink to="/votaciones">VOTACIONES</NuxtLink>
+      <NuxtLink to="/contacto">CONTACTO</NuxtLink>
       <NuxtLink to="/#transparencia">TRANSPARENCIA</NuxtLink>
     </nav>
 
@@ -40,9 +41,6 @@ const userInitials = computed(() => {
       <!-- Auth Actions -->
       <ClientOnly>
         <div v-if="user" class="auth-controls">
-           <NuxtLink v-if="user.role === 'admin'" to="/admin" class="btn-admin" title="Panel Administración">
-             ⚙️ PANEL
-           </NuxtLink>
            <div class="user-badge" title="Usuario conectado">
               {{ userInitials }}
            </div>
@@ -142,28 +140,10 @@ const userInitials = computed(() => {
     align-items: center;
     gap: 15px;
 
-      .auth-controls {
+    .auth-controls {
       display: flex;
       align-items: center;
       gap: 10px;
-
-      .btn-admin {
-        background: #723233;
-        color: #fff;
-        padding: 5px 12px;
-        border-radius: 4px;
-        font-size: 0.7rem;
-        text-decoration: none;
-        font-weight: bold;
-        border: 1px solid rgba(255,255,255,0.2);
-        font-family: 'Cinzel', serif;
-        transition: all 0.2s;
-
-        &:hover {
-          background: #5e2c2c;
-          transform: translateY(-1px);
-        }
-      }
 
       .user-badge {
         width: 40px;

@@ -5,16 +5,38 @@
       <form class="newsletter-form" @submit.prevent="handleSubmit">
         <div class="input-group">
           <label for="email">DIRECCIÓN DE CORREO</label>
-          <input v-model="email" type="email" id="email" class="newsletter-input" required />
+          <input 
+            v-model="email" 
+            type="email" 
+            id="email" 
+            class="newsletter-input" 
+            :disabled="loading"
+            required 
+          />
         </div>
         
         <div class="form-actions">
           <div class="checkbox-group">
-            <input v-model="privacy" type="checkbox" id="privacy" required />
+            <input 
+              v-model="privacy" 
+              type="checkbox" 
+              id="privacy" 
+              :disabled="loading"
+              required 
+            />
             <label for="privacy">ACEPTO LA POLÍTICA DE PRIVACIDAD</label>
           </div>
-          <button type="submit" class="btn btn-submit">ENVIAR</button>
+          <button 
+            type="submit" 
+            class="btn btn-submit"
+            :disabled="loading"
+          >
+            {{ loading ? 'ENVIANDO...' : 'ENVIAR' }}
+          </button>
         </div>
+        <p v-if="message" :class="['feedback-message', { error: isError }]">
+          {{ message }}
+        </p>
       </form>
     </div>
   </section>
@@ -23,12 +45,32 @@
 <script setup>
 const email = ref('')
 const privacy = ref(false)
+const loading = ref(false)
+const message = ref('')
+const isError = ref(false)
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (!email.value || !privacy.value) return
-  alert("¡Gracias por suscribirte!")
-  email.value = ''
-  privacy.value = false
+  
+  loading.value = true
+  message.value = ''
+  isError.value = false
+
+  try {
+    await $fetch('/api/newsletter/subscribe', {
+      method: 'POST',
+      body: { email: email.value }
+    })
+    message.value = '¡Gracias por suscribirte! Te hemos enviado un correo de confirmación.'
+    email.value = ''
+    privacy.value = false
+  } catch (error) {
+    console.error(error)
+    isError.value = true
+    message.value = error.data?.message || 'Ha ocurrido un error. Por favor, inténtalo de nuevo.'
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
@@ -133,6 +175,19 @@ const handleSubmit = () => {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
           }
+        }
+      }
+
+      .feedback-message {
+        margin-top: 15px;
+        font-family: 'Cinzel', serif;
+        font-size: 0.9rem;
+        color: #2e7d32;
+        text-align: center;
+        font-weight: bold;
+
+        &.error {
+          color: #c62828;
         }
       }
     }
