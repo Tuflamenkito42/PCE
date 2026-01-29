@@ -1,3 +1,5 @@
+import bcrypt from 'bcryptjs';
+
 export default defineEventHandler(async (event) => {
     const db = useDb();
 
@@ -44,7 +46,27 @@ export default defineEventHandler(async (event) => {
             )
         `);
 
-        return { status: 'ok', message: 'Database tables initialized' };
+        // Initialize admin user
+        const adminEmail = 'admin@pce-web.com';
+        const adminPass = 'admin123';
+        const hashedAdminPass = await bcrypt.hash(adminPass, 10);
+
+        const [adminRows] = await db.query('SELECT id FROM users WHERE email = ?', [adminEmail]);
+
+        if ((adminRows as any[]).length === 0) {
+            await db.query(
+                `INSERT INTO users (email, password, full_name, dni, role) 
+                 VALUES (?, ?, ?, ?, ?)`,
+                [adminEmail, hashedAdminPass, 'Administrador Sistema', '00000000A', 'admin']
+            );
+            console.log('Admin user created');
+        } else {
+            // Update password for existing admin to ensure it matches 'admin123'
+            await db.query('UPDATE users SET password = ? WHERE email = ?', [hashedAdminPass, adminEmail]);
+            console.log('Admin password updated');
+        }
+
+        return { status: 'ok', message: 'Database tables initialized and admin user checked' };
     } catch (error: any) {
         throw createError({
             statusCode: 500,
