@@ -44,11 +44,34 @@ export default defineEventHandler(async (event) => {
             )
         `);
 
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                active BOOLEAN DEFAULT TRUE
+            )
+        `);
+
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS contact_messages (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                subject VARCHAR(255),
+                message TEXT NOT NULL,
+                status VARCHAR(50) DEFAULT 'new',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
         return { status: 'ok', message: 'Database tables initialized' };
     } catch (error: any) {
+        const errorDetail = error.message || error.code || 'Error desconocido';
+        console.error('Setup error:', errorDetail);
         throw createError({
             statusCode: 500,
-            message: 'Database initialization failed: ' + error.message
+            message: 'Database initialization failed: ' + errorDetail
         });
     }
 });

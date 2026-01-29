@@ -1,8 +1,28 @@
 version: '3.8'
 
 services:
+  app:
+    build: .
+    container_name: pce_app
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=db
+      - DB_USER=pce_user
+      - DB_PASSWORD=pce_password
+      - DB_NAME=pce_db
+      - NODE_ENV=development
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - pce_network
+
   db:
     image: mysql:8.0
+    container_name: pce_db_container
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -13,18 +33,25 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+    networks:
+      - pce_network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
+    container_name: pce_phpmyadmin
     restart: always
-    links:
-      - db
     depends_on:
       - db
     ports:
       - "8080:80"
     environment:
       PMA_HOST: db
+    networks:
+      - pce_network
+
+networks:
+  pce_network:
+    driver: bridge
 
 volumes:
   db_data:
