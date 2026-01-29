@@ -2,7 +2,12 @@
   <div class="admin-dashboard container">
     <div class="header">
       <h1 class="page-title">PANEL DE ADMINISTRACIÓN</h1>
-      <button @click="refresh" class="btn-refresh">🔄 Actualizar</button>
+      <button @click="refresh" class="btn-refresh">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+        </svg>
+        ACTUALIZAR
+      </button>
     </div>
 
     <div v-if="pending" class="loading">Cargando datos del sistema...</div>
@@ -158,13 +163,28 @@ const formatDate = (dateString) => {
 }
 
 .btn-refresh {
-  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
   background: #723233;
   color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-family: 'Cinzel', serif;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  
+  svg {
+    flex-shrink: 0;
+  }
+  
+  &:hover {
+    background: #8a3d3e;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(114, 50, 51, 0.4);
+  }
 }
 
 .kpi-grid {
@@ -175,10 +195,11 @@ const formatDate = (dateString) => {
 }
 
 .kpi-card {
-  background: rgba(255, 255, 255, 0.1);
+  background: #5E2C2C;
   padding: 20px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   
   h3 {
     font-size: 1rem;
@@ -217,10 +238,11 @@ const formatDate = (dateString) => {
 }
 
 .table-container {
-  background: rgba(0, 0, 0, 0.2);
+  background: #5E2C2C;
   border-radius: 12px;
   padding: 20px;
   overflow-x: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .admin-table {
@@ -241,7 +263,7 @@ const formatDate = (dateString) => {
   }
   
   tr:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.2);
   }
 }
 
