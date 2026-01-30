@@ -23,16 +23,35 @@
       <h2 class="section-title">NOTICIAS</h2>
       <div class="news-layout">
         <div class="news-list">
-          <NewsCard excerpt="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis aliquet lacus, vitae finibus diam." />
-          <NewsCard excerpt="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis aliquet lacus, vitae finibus diam." />
-          <NewsCard excerpt="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus quis aliquet lacus, vitae finibus diam." />
+          <NewsCard 
+            title="Programa Electoral PCE"
+            excerpt="Nuestro equipo presenta las soluciones reales para las próximas elecciones." 
+            date="2024-03-20"
+            url="/noticias/1"
+            image="https://images.unsplash.com/photo-1555848962-6e79363ec58f?auto=format&fit=crop&q=80&w=400"
+          />
+          <NewsCard 
+            title="Nueva Sede Madrid"
+            excerpt="Inauguramos nuestro nuevo espacio de atención al ciudadano." 
+            date="2024-03-15"
+            url="/noticias/2"
+            image="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=400"
+          />
+          <NewsCard 
+            title="Prevención de Incendios"
+            excerpt="Campaña informativa para la protección de nuestros bosques." 
+            date="2024-03-10"
+            url="/noticias/3"
+            image="https://images.unsplash.com/photo-1542353436-312f02c1629e?auto=format&fit=crop&q=80&w=400"
+          />
         </div>
         <div class="social-box">
-          <h3>enlace a red social</h3>
+          <h3>SÍGUENOS EN REDES</h3>
+          <p>Mantente al día en X, Facebook e Instagram</p>
         </div>
       </div>
       <div class="news-more">
-        <NuxtLink to="/noticias" class="btn btn-load-more">CARGAR MÁS</NuxtLink>
+        <NuxtLink to="/noticias" class="btn btn-load-more">MÁS NOTICIAS</NuxtLink>
       </div>
     </section>
 

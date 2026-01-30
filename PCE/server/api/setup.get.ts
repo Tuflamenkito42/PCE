@@ -46,7 +46,6 @@ export default defineEventHandler(async (event) => {
             )
         `);
 
-<<<<<<< HEAD
         await db.query(`
             CREATE TABLE IF NOT EXISTS newsletter_subscribers (
                 id INT AUTO_INCREMENT PRIMARY KEY,
@@ -68,8 +67,6 @@ export default defineEventHandler(async (event) => {
             )
         `);
 
-        return { status: 'ok', message: 'Database tables initialized' };
-=======
         // Initialize admin user
         const adminEmail = 'admin@pce-web.com';
         const adminPass = 'admin123';
@@ -91,7 +88,6 @@ export default defineEventHandler(async (event) => {
         }
 
         return { status: 'ok', message: 'Database tables initialized and admin user checked' };
->>>>>>> 7a6ddd48c225937ba7b8aa4c668c02cb47cbfd74
     } catch (error: any) {
         const errorDetail = error.message || error.code || 'Error desconocido';
         console.error('Setup error:', errorDetail);

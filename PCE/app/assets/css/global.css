@@ -30,11 +30,23 @@ body {
     color: var(--text-white);
     line-height: 1.6;
     overflow-x: hidden;
-    background-image: url("/images/bg-pattern.png"), linear-gradient(to bottom, #B9AFB0, #723233);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 850px, cover;
+    background: linear-gradient(to bottom, #B9AFB0, #723233);
     background-attachment: fixed;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("/images/logo.png");
+    background-repeat: space;
+    background-size: 180px;
+    opacity: 0.15;
+    z-index: -1;
+    pointer-events: none;
 }
 
 h1,
