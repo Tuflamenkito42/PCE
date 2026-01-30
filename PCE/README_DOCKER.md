@@ -38,5 +38,23 @@ docker-compose down
 docker-compose logs -f
 ```
 
+## 5. Compartir Datos con el Equipo (Dump SQL)
+
+Si quieres pasarle tus datos a un compañero o viceversa:
+
+### Exportar Datos (El que tiene la info):
+Ejecuta este comando en la terminal:
+```powershell
+docker exec pce_db /usr/bin/mysqldump -u root --password=root pce_db > dump.sql
+```
+O usa **phpMyAdmin** (`http://localhost:8080`), ve a **Exportar** y descarga el archivo.
+
+### Importar Datos (El que la recibe):
+Pon el archivo `dump.sql` en la carpeta raíz y ejecuta:
+```powershell
+docker exec -i pce_db /usr/bin/mysql -u root --password=root pce_db < dump.sql
+```
+O usa **phpMyAdmin** (`http://localhost:8080`), ve a **Importar** y sube el archivo.
+
 ---
 **Nota para el equipo**: Con esto todos tendremos exactamente la misma base de datos, usuario y contraseña, sin importar si usamos Windows, Mac o Linux. 🚀
