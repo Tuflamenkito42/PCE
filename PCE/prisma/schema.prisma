@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  fullName  String?  @map("full_name")
+  dni       String?
+  role      String?  @default("public")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("users")
+}
+
+model Affiliation {
+  id               Int      @id @default(autoincrement())
+  name             String
+  lastname         String
+  dni              String
+  birthdate        DateTime?
+  email            String
+  phone            String?
+  quota            Decimal  @db.Decimal(10, 2)
+  message          String?  @db.Text
+  paymentIntentId String?  @map("payment_intent_id")
+  status           String?  @default("pending")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@map("affiliations")
+}
+
+model Donation {
+  id               Int      @id @default(autoincrement())
+  name             String?
+  email            String?
+  amount           Decimal  @db.Decimal(10, 2)
+  message          String?  @db.Text
+  paymentIntentId String?  @map("payment_intent_id")
+  status           String?  @default("pending")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@map("donations")
+}
+
+model NewsletterSubscriber {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  subscribedAt DateTime @default(now()) @map("subscribed_at")
+  active       Boolean  @default(true)
+
+  @@map("newsletter_subscribers")
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String?
+  message   String   @db.Text
+  status    String?  @default("new")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("contact_messages")
+}

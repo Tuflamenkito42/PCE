@@ -25,6 +25,12 @@ export default defineNuxtConfig({
     smtpPass: process.env.SMTP_PASS || '',
     smtpFrom: process.env.SMTP_FROM || 'PCE Web',
 
+    // Database Configuration
+    dbHost: process.env.DB_HOST || 'localhost',
+    dbUser: process.env.DB_USER || 'pce_user',
+    dbPassword: process.env.DB_PASSWORD || 'pce_password',
+    dbName: process.env.DB_NAME || 'pce_db',
+
     // Public keys (exposed to client)
     public: {
       stripePublicKey: process.env.STRIPE_PUBLIC_KEY || 'pk_test_51QcVxwEwVGPRPrSBVGPRPrSBVGPRPrSBVGPRPrSBVGPRPrSB'
