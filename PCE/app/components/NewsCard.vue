@@ -1,27 +1,11 @@
 <template>
-  <article class="news-card">
-    <a :href="url" target="_blank" rel="noopener noreferrer" class="news-link">
-      <div class="news-image">
-        <img 
-          :src="image" 
-          :alt="title" 
-          @error="(e) => (e.target.src = 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=800&auto=format&fit=crop')"
-        />
-      </div>
-      <div class="news-content">
-        <div class="news-meta">
-          <span class="news-date">{{ formattedDate }}</span>
-        </div>
-        <h3 v-if="title">{{ title }}</h3>
-        <p v-if="excerpt" class="news-excerpt">{{ excerpt }}</p>
-        <button class="read-more-btn">
-          Leer noticia completa
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="arrow-icon">
-            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
-    </a>
+  <article :class="['news-card', { square: isSquare }]">
+    <div class="news-content">
+      <h3 v-if="title">{{ title }}</h3>
+      <slot>
+        <p>{{ excerpt }}</p>
+      </slot>
+    </div>
   </article>
 </template>
 
@@ -66,56 +50,14 @@ const formattedDate = computed(() => {
     text-decoration: none;
     color: inherit;
     display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-
-  .news-image {
-    position: relative;
-    width: 100%;
-    height: 220px;
-    overflow: hidden;
-    background: linear-gradient(135deg, #2a1a1a 0%, #1a1010 100%);
-
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.5s ease;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    
+    h3 {
+      font-size: 1.5rem;
+      margin: 0;
     }
-
-    .news-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.3) 0%,
-        rgba(0, 0, 0, 0) 50%,
-        rgba(0, 0, 0, 0.6) 100%
-      );
-      display: flex;
-      align-items: flex-start;
-      padding: 16px;
-
-      .news-source-badge {
-        background: linear-gradient(135deg, #b2a3a4 0%, #9d8e8f 100%);
-        color: #723233;
-        padding: 6px 14px;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-      }
-    }
-  }
-
-  &:hover .news-image img {
-    transform: scale(1.08);
   }
 
   .news-content {
@@ -226,3 +168,4 @@ const formattedDate = computed(() => {
   }
 }
 </style>
+

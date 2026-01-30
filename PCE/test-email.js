@@ -2,7 +2,7 @@
 import nodemailer from 'nodemailer';
 
 const user = 'pcepartidopolitico@gmail.com';
-const pass = 'kzyk htry rdep adfv'; // Hardcoded for this test script ONLY as user provided it
+const pass = 'ffta ahtk bugi vjne'; // Updated to test new credentials
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',

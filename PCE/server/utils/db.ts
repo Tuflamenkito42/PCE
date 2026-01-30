@@ -1,21 +1,14 @@
 import mysql from 'mysql2/promise';
 
-let pool: any;
+const pool = mysql.createPool({
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'pce_user',
+    password: process.env.DB_PASSWORD || 'pce_password',
+    database: process.env.DB_NAME || 'pce_db',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
 
-export const useDb = () => {
-    const config = useRuntimeConfig();
-
-    if (!pool) {
-        pool = mysql.createPool({
-            host: config.dbHost,
-            user: config.dbUser,
-            password: config.dbPassword,
-            database: config.dbName,
-            waitForConnections: true,
-            connectionLimit: 10,
-            queueLimit: 0
-        });
-    }
-
-    return pool;
+return pool;
 };

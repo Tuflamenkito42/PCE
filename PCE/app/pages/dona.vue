@@ -204,6 +204,7 @@ const handleDonation = async () => {
       body: {
         amount: finalAmount.value,
         currency: 'eur',
+        email: donorData.email,
         metadata: {
           type: 'donation',
           timestamp: new Date().toISOString()
