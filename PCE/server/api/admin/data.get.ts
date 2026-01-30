@@ -1,18 +1,5 @@
-
 export default defineEventHandler(async (event) => {
-    // Basic Auth Check
-    const token = getCookie(event, 'auth_token');
-    if (!token) {
-        throw createError({ statusCode: 401, message: 'Unauthorized' });
-    }
-
-    // Role Check (Decoding manually for now, should be verified properly in production)
-    const buffer = globalThis.Buffer || await import('node:buffer').then(m => m.Buffer);
-    const decoded = JSON.parse(buffer.from(token, 'base64').toString('utf-8'));
-
-    if (decoded.role !== 'admin') {
-        throw createError({ statusCode: 403, message: 'Forbidden' });
-    }
+    validateAdmin(event);
 
     const db = useDb();
 
