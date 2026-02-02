@@ -6,7 +6,7 @@
       <!-- Left: Form -->
       <div class="form-container card">
         <!-- Steps Header -->
-        <div class="form-steps">
+        <div class="form-steps" v-if="!isAlreadyAffiliated">
           <div v-for="step in 5" :key="step" :class="['step', { active: currentStep === step, completed: currentStep > step }]">
             <div class="step-circle">
               <span v-if="currentStep > step">✓</span>
@@ -19,9 +19,35 @@
         <!-- Form Content -->
         <form class="main-form" @submit.prevent="handleSubmit">
           <transition name="fade" mode="out-in">
-            <div :key="currentStep">
+            <div :key="isAlreadyAffiliated ? 'affiliated' : currentStep">
+              
+              <!-- ALREADY AFFILIATED VIEW -->
+              <div v-if="isAlreadyAffiliated" class="step-content text-center">
+                 <div class="success-animation">
+                  <div class="check-container" style="background: #000; color: #723233;">
+                    <div class="check-mark">✓</div>
+                  </div>
+                </div>
+                <h2 class="form-subtitle">YA ERES AFILIADO</h2>
+                <div class="success-message">
+                  <p>Hola <strong>{{ affiliationData.name }}</strong>, gracias por tu compromiso.</p>
+                  <p>Tu afiliación está activa y contribuyes con <strong>{{ affiliationData.quota }}€/mes</strong>.</p>
+                  
+                  <div class="affiliation-number">
+                    <span>NÚMERO DE AFILIADO</span>
+                    <strong>#{{ affiliationData.id }}</strong>
+                  </div>
+                </div>
+                
+                <div class="success-actions">
+                  <button @click="handleCancelSubscription" class="btn" style="background: #723233; color: white;">
+                    {{ isCancelling ? 'Cancelando...' : 'Cancelar Suscripción' }}
+                  </button>
+                </div>
+              </div>
+
               <!-- STEP 1: DATOS PERSONALES + DNI SCANNER -->
-              <div v-if="currentStep === 1" class="step-content">
+              <div v-else-if="currentStep === 1" class="step-content">
                 <h2 class="form-subtitle">DATOS PERSONALES</h2>
                 
                 <!-- DNI SCANNER -->
@@ -221,7 +247,7 @@
               <!-- STEP 5: ÉXITO -->
               <div v-else-if="currentStep === 5" class="step-content success-step">
                 <div class="success-animation">
-                  <div class="check-container">
+                  <div class="check-container" style="background: #000; color: #723233;">
                     <div class="check-mark">✓</div>
                   </div>
                 </div>
@@ -304,6 +330,61 @@ const paymentStatus = ref('error') // 'error', 'success', or 'processing'
 const stripeReady = ref(false)
 const cardComplete = ref(false)
 const stripeCardRef = ref(null)
+
+// Affiliation Status State
+const isAlreadyAffiliated = ref(false)
+const isCancelling = ref(false)
+const affiliationData = ref({})
+
+const { user } = useAuth()
+
+onMounted(async () => {
+    if (user.value?.email) {
+        await checkAffiliationExisting(user.value.email)
+    }
+})
+
+watch(() => user.value, async (newUser) => {
+    if (newUser?.email) {
+        await checkAffiliationExisting(newUser.email)
+    }
+})
+
+const checkAffiliationExisting = async (email) => {
+    try {
+        const { data } = await useFetch('/api/afiliacion/check', {
+            query: { email }
+        })
+        if (data.value && data.value.affiliated) {
+            isAlreadyAffiliated.value = true
+            affiliationData.value = data.value.data
+        }
+    } catch (e) {
+        console.error("Error checking affiliation:", e)
+    }
+}
+
+const handleCancelSubscription = async () => {
+    if (!confirm('¿Estás seguro de que quieres cancelar tu afiliación?')) return
+    
+    isCancelling.value = true
+    try {
+        const { error } = await useFetch('/api/afiliacion/cancel', {
+            method: 'POST',
+            body: { email: affiliationData.value.email }
+        })
+
+        if (error.value) throw error.value
+
+        alert('Suscripción cancelada correctamente.')
+        isAlreadyAffiliated.value = false
+        // Reset form or redirect
+    } catch (e) {
+        alert('Error al cancelar: ' + (e.message || 'Error desconocido'))
+    } finally {
+        isCancelling.value = false
+    }
+}
 
 // Quota options
 const quotaOptions = [
@@ -451,7 +532,8 @@ const handleSubmit = async () => {
       const errorMsg = fetchError.value.data?.message || ''
       
       // If error is about API keys, we allow simulation for testing
-      if (errorMsg.includes('API key') || errorMsg.includes('secret')) {
+      const lowerMsg = errorMsg.toLowerCase()
+      if (lowerMsg.includes('api key') || lowerMsg.includes('secret') || lowerMsg.includes('stripe')) {
         console.warn('Entrando en modo simulación (Claves de Stripe no configuradas)')
         
         paymentStatus.value = 'processing'
@@ -1204,18 +1286,18 @@ useHead({
   .check-container {
     width: 100px;
     height: 100px;
-    background: #00ff00;
+    background: #000;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 40px rgba(0, 255, 0, 0.4);
+    margin: 0 auto 20px;
     animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .check-mark {
     font-size: 50px;
-    color: #000;
+    color: #723233;
     font-weight: bold;
   }
 }
@@ -1250,7 +1332,7 @@ useHead({
 
   strong {
     font-size: 2rem;
-    color: #00ff00;
+    color: #ffffff;
     letter-spacing: 5px;
   }
 }

@@ -629,7 +629,7 @@ const sendBulkNewsletter = async () => {
 }
 
 .glass {
-  background: rgba(114, 50, 51, 0.4); /* Opaque brand color instead of black */
+  background: rgba(114, 50, 51, 0.85); /* Opaque brand color instead of black */
   backdrop-filter: blur(20px);
 }
 
@@ -781,9 +781,10 @@ const sendBulkNewsletter = async () => {
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary-red) 0%, var(--acc-red) 100%);
+  background: linear-gradient(90deg, #999999 0%, #ffffff 100%);
   border-radius: 5px;
   transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
 }
 
 .empty-results {
