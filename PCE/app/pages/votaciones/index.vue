@@ -19,25 +19,27 @@
         <div class="polls-grid">
           <!-- Poll Interna -->
           <PollCard 
-            v-if="isLoggedIn && userRole === 'staff'"
+            v-if="isLoggedIn && (userRole === 'staff' || userRole === 'admin')"
+            :class="{ 'voted': isVoted('Presupuestos Participativos PCE 2026') }"
             type="intern"
             title="Presupuestos Participativos PCE 2026"
             description="Gestión interna de asignación de recursos operativos para el próximo año fiscal."
             :options="['Inversión en Nuevas Sedes', 'Mejora de Equipos Emergencias']"
             @vote="handleVote"
           >
-            <template #tag>SÓLO PERSONAL PCE</template>
+            <template #tag>{{ isVoted('Presupuestos Participativos PCE 2026') ? 'VOTO REGISTRADO' : 'SÓLO PERSONAL PCE' }}</template>
           </PollCard>
 
           <!-- Poll Pública -->
           <PollCard 
+            :class="{ 'voted': isVoted('Prioridades de Seguridad en Barrios') }"
             type="public"
             title="Prioridades de Seguridad en Barrios"
             description="¿Qué medidas considera más urgentes para mejorar la seguridad en su distrito?"
             :options="['Más Vigilancia Policial', 'Instalación Lumínica', 'Alarmas Vecinales']"
             @vote="handleVote"
           >
-            <template #tag>CONSULTA PÚBLICA</template>
+            <template #tag>{{ isVoted('Prioridades de Seguridad en Barrios') ? 'VOTO REGISTRADO' : 'CONSULTA PÚBLICA' }}</template>
           </PollCard>
         </div>
       </section>
@@ -52,25 +54,56 @@
 import PollCard from './components/PollCard.vue'
 import ProposalForm from './components/ProposalForm.vue'
 
-const isLoggedIn = ref(false)
-const userRole = ref('public')
+const { user } = useAuth()
+const isLoggedIn = computed(() => !!user.value)
+const userRole = computed(() => user.value?.role || 'public')
+
+const votedPolls = ref([])
+
+const fetchVotedPolls = async () => {
+  if (user.value?.id) {
+    const data = await $fetch('/api/votes/my-votes', {
+      params: { userId: user.value.id }
+    })
+    votedPolls.value = data.polls || []
+  }
+}
 
 onMounted(() => {
-  isLoggedIn.value = localStorage.getItem('pce_logged_in') === 'true'
-  userRole.value = localStorage.getItem('pce_user_role') || 'public'
+  fetchVotedPolls()
 })
+
+// Re-fetch when user changes
+watch(() => user.value, () => {
+    fetchVotedPolls()
+})
+
+const isVoted = (title) => votedPolls.value.includes(title)
 
 const pollsTitle = computed(() => {
   if (!isLoggedIn.value) return 'Consultas Disponibles'
-  return userRole.value === 'staff' ? 'Consultas Corporativas (Staff PCE)' : 'Consultas Ciudadanas Activas'
+  return (userRole.value === 'staff' || userRole.value === 'admin') 
+    ? 'Consultas Corporativas (Personal PCE)' 
+    : 'Consultas Ciudadanas Activas'
 })
 
-const handleVote = (e) => {
-  alert("Tu voto ha sido registrado de forma anónima e encriptada.")
-  const btn = e.target
-  const card = btn.closest('.poll-card')
-  card.style.opacity = '0.5'
-  card.style.pointerEvents = 'none'
+const handleVote = async (data) => {
+  try {
+    await $fetch('/api/votes/record', {
+      method: 'POST',
+      body: {
+        pollTitle: data.title,
+        option: data.option,
+        userId: user.value?.id
+      }
+    })
+    
+    alert("¡TU VOTO HA SIDO REGISTRADO DE FORMA SEGURA E ENCRIPTADA!")
+    await fetchVotedPolls() // Refresh the locked state
+  } catch (error) {
+    console.error(error)
+    alert("HUBO UN ERROR AL REGISTRAR TU VOTO.")
+  }
 }
 
 const handleProposalSubmit = (text) => {
@@ -125,6 +158,13 @@ useHead({
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 30px;
+}
+
+.poll-card.voted {
+  opacity: 0.6;
+  pointer-events: none;
+  filter: grayscale(0.5);
+  border-left-color: #2e7d32 !important; /* Green to indicate success/done */
 }
 
 </style>
