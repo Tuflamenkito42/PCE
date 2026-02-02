@@ -30,12 +30,22 @@
           <h3>Total Donaciones</h3>
           <p class="value">{{ formatMoney(data.stats.total_donations) }}</p>
         </div>
+        <div class="kpi-card">
+          <h3>Mensajes de Contacto</h3>
+          <p class="value">{{ data.stats.total_messages }}</p>
+        </div>
+        <div class="kpi-card">
+          <h3>Votos Registrados</h3>
+          <p class="value">{{ data.stats.total_votes }}</p>
+        </div>
       </div>
 
       <!-- Tabs -->
       <div class="tabs">
         <button :class="{ active: activeTab === 'affiliates' }" @click="activeTab = 'affiliates'">Afiliaciones</button>
         <button :class="{ active: activeTab === 'donations' }" @click="activeTab = 'donations'">Donaciones</button>
+        <button :class="{ active: activeTab === 'messages' }" @click="activeTab = 'messages'">Mensajes</button>
+        <button :class="{ active: activeTab === 'votes' }" @click="activeTab = 'votes'">Escrutinio</button>
         <button :class="{ active: activeTab === 'users' }" @click="activeTab = 'users'">Usuarios Web</button>
       </div>
 
@@ -89,6 +99,53 @@
             </tr>
           </tbody>
         </table>
+
+        <!-- Messages Table -->
+        <table v-if="activeTab === 'messages'" class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Asunto</th>
+              <th>Mensaje</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in data.messages" :key="item.id">
+              <td>#{{ item.id }}</td>
+              <td>{{ item.name }}</td>
+              <td>{{ item.email }}</td>
+              <td>{{ item.subject }}</td>
+              <td class="msg-cell" :title="item.message">{{ item.message.substring(0, 50) }}{{ item.message.length > 50 ? '...' : '' }}</td>
+              <td>{{ formatDate(item.created_at) }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Votes Results (Escrutinio) -->
+        <div v-if="activeTab === 'votes'" class="votes-results">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Consulta / Pregunta</th>
+                        <th>Opción Seleccionada</th>
+                        <th style="text-align: right;">Total Votos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="(vote, idx) in data.votes" :key="idx">
+                        <td style="font-weight: bold; color: #fbbf24;">{{ vote.poll_title }}</td>
+                        <td>{{ vote.option_selected }}</td>
+                        <td style="text-align: right; font-size: 1.2rem; font-weight: bold;">{{ vote.total }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p v-if="data.votes.length === 0" style="padding: 20px; text-align: center; color: rgba(255,255,255,0.5);">
+                No hay votos registrados todavía.
+            </p>
+        </div>
 
         <!-- Users Table -->
         <table v-if="activeTab === 'users'" class="admin-table">
@@ -265,6 +322,15 @@ const formatDate = (dateString) => {
   tr:hover {
     background: rgba(0, 0, 0, 0.2);
   }
+}
+
+.msg-cell {
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  opacity: 0.9;
 }
 
 .badge {

@@ -67,6 +67,16 @@ export default defineEventHandler(async (event) => {
             )
         `);
 
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS votes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                poll_title VARCHAR(255) NOT NULL,
+                option_selected VARCHAR(255) NOT NULL,
+                user_id INT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
         // Initialize admin user
         const adminEmail = 'admin@pce-web.com';
         const adminPass = 'admin123';

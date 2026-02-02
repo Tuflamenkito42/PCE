@@ -375,22 +375,22 @@ const validateStep1 = () => {
   errors.value = {}
   let valid = true
 
-  if (!formData.name) { errors.value.name = "El nombre es obligatorio"; valid = false; }
-  if (!formData.lastname) { errors.value.lastname = "Los apellidos son obligatorios"; valid = false; }
+  if (!formData.name) { errors.value.name = "EL NOMBRE ES OBLIGATORIO"; valid = false; }
+  if (!formData.lastname) { errors.value.lastname = "LOS APELLIDOS SON OBLIGATORIOS"; valid = false; }
   
   if (!isValidDNI(formData.dni)) {
-    errors.value.dni = "DNI/NIE inválido"; 
+    errors.value.dni = "DNI/NIE INVÁLIDO"; 
     valid = false; 
   }
 
-  if (!formData.birthdate) { errors.value.birthdate = "La fecha de nacimiento es obligatoria"; valid = false; }
+  if (!formData.birthdate) { errors.value.birthdate = "LA FECHA DE NACIMIENTO ES OBLIGATORIA"; valid = false; }
 
   if (!isValidEmail(formData.email)) {
-    errors.value.email = "Email inválido"; 
+    errors.value.email = "EMAIL INVÁLIDO"; 
     valid = false; 
   }
 
-  if (!formData.phone) { errors.value.phone = "El teléfono es obligatorio"; valid = false; }
+  if (!formData.phone) { errors.value.phone = "EL TELÉFONO ES OBLIGATORIO"; valid = false; }
 
   return valid
 }
@@ -423,7 +423,7 @@ const handleCardChange = (complete) => {
 
 const handleSubmit = async () => {
   if (!formData.acceptTerms) {
-    alert('Debes aceptar los términos y condiciones')
+    alert('DEBES ACEPTAR LOS TÉRMINOS Y CONDICIONES')
     return
   }
 
@@ -455,13 +455,13 @@ const handleSubmit = async () => {
         console.warn('Entrando en modo simulación (Claves de Stripe no configuradas)')
         
         paymentStatus.value = 'processing'
-        paymentError.value = 'Verificando datos de tarjeta...'
+        paymentError.value = 'VERIFICANDO DATOS DE TARJETA...'
         
         // Brief delay to simulate a real check
         await new Promise(resolve => setTimeout(resolve, 1500))
         
         paymentStatus.value = 'success'
-        paymentError.value = '¡Pago aceptado correctamente!'
+        paymentError.value = '¡PAGO ACEPTADO CORRECTAMENTE!'
         await new Promise(resolve => setTimeout(resolve, 1000))
 
         // Save to DB (Simulated)
@@ -477,18 +477,18 @@ const handleSubmit = async () => {
         currentStep.value = 5
         return
       }
-      throw new Error(errorMsg || 'Error de conexión con el servidor')
+      throw new Error(errorMsg || 'ERROR DE CONEXIÓN CON EL SERVIDOR')
     }
 
     if (!paymentData.value?.clientSecret) {
-      throw new Error('No se recibió respuesta del servidor de pagos')
+      throw new Error('NO SE RECIBIÓ RESPUESTA DEL SERVIDOR DE PAGOS')
     }
 
     // 3. Confirm payment with Stripe
     const { stripe: stripeInstance, initStripe } = useStripe()
     await initStripe()
 
-    if (!stripeInstance.value) throw new Error('Error al inicializar Stripe')
+    if (!stripeInstance.value) throw new Error('ERROR AL INICIALIZAR STRIPE')
 
     const { error } = await stripeInstance.value.confirmCardPayment(paymentData.value.clientSecret, {
       payment_method: {
@@ -516,7 +516,7 @@ const handleSubmit = async () => {
     
   } catch (error) {
     console.error('Payment error:', error)
-    paymentError.value = error.message || 'Error al procesar el pago'
+    paymentError.value = (error.message || 'ERROR AL PROCESAR EL PAGO').toUpperCase()
     paymentStatus.value = 'error'
     isProcessing.value = false
   }

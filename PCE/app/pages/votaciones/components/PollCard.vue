@@ -8,7 +8,7 @@
         v-for="(option, idx) in options" 
         :key="idx" 
         class="btn-option" 
-        @click="$emit('vote', $event)"
+        @click="$emit('vote', { option, title })"
       >
         {{ option }}
       </button>

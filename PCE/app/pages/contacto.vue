@@ -12,21 +12,27 @@
 
         <div class="info-items">
           <div class="info-item">
-            <div class="icon">📍</div>
+            <div class="icon-wrapper">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#723233" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
             <div class="text">
               <strong>OFICINA CENTRAL</strong>
               <span>Calle de la Protección, 42, Madrid</span>
             </div>
           </div>
           <div class="info-item">
-            <div class="icon">📧</div>
+            <div class="icon-wrapper">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#723233" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </div>
             <div class="text">
               <strong>EMAIL</strong>
-              <span>contacto@pce-web.com</span>
+              <span>pcepartidopolitico@gmail.com</span>
             </div>
           </div>
           <div class="info-item">
-            <div class="icon">📞</div>
+            <div class="icon-wrapper">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#723233" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.27-2.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
             <div class="text">
               <strong>TELÉFONO</strong>
               <span>+34 900 123 456</span>
@@ -209,30 +215,43 @@ useHead({
   gap: 15px;
   align-items: center;
 
-  .icon {
-    font-size: 1.5rem;
-    background: rgba(255,255,255,0.1);
-    width: 50px;
-    height: 50px;
+  .icon-wrapper {
+    background: #b2a3a4; /* Matching your theme's lighter grey-beige */
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0; /* Important for alignment */
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+
+    &:hover {
+      background: #ffffff;
+      transform: scale(1.1);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
   }
 
   .text {
     display: flex;
     flex-direction: column;
+    gap: 4px;
     
     strong {
       color: #fff;
-      font-size: 0.8rem;
-      letter-spacing: 1px;
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      font-family: 'Cinzel', serif;
+      font-weight: 800;
     }
 
     span {
       color: #B9AFB0;
-      font-size: 0.9rem;
+      font-size: 1rem;
+      font-weight: 500;
     }
   }
 }
