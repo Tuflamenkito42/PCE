@@ -23,7 +23,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
         <h3>Error de Acceso</h3>
         <p>{{ error.message }}. Asegúrate de haber iniciado sesión como Administrador.</p>
-        <NuxtLink to="/login" class="btn-action primary">VOLVER AL LOGIN</NuxtLink>
+        <NuxtLink to="/login" class="btn-action primary" style="margin-top: 20px;">VOLVER AL LOGIN</NuxtLink>
       </div>
     </div>
 
@@ -52,35 +52,33 @@
           </div>
         </div>
         <div class="kpi-card">
-          <h3>Mensajes de Contacto</h3>
-          <p class="value">{{ data.stats.total_messages }}</p>
+          <div class="kpi-icon messages">✉️</div>
+          <div>
+            <h3>Mensajes</h3>
+            <p class="value">{{ data.stats.total_messages }}</p>
+          </div>
         </div>
         <div class="kpi-card">
-          <h3>Votos Registrados</h3>
-          <p class="value">{{ data.stats.total_votes }}</p>
+          <div class="kpi-icon votes">🗳️</div>
+          <div>
+            <h3>Votos</h3>
+            <p class="value">{{ data.stats.total_votes }}</p>
+          </div>
         </div>
       </div>
 
-<<<<<<< HEAD
       <!-- Tabs and Search -->
       <div class="controls-row">
         <div class="tabs">
-          <button :class="{ active: activeTab === 'affiliates' }" @click="activeTab = 'affiliates'">Socios</button>
+          <button :class="{ active: activeTab === 'affiliates' }" @click="activeTab = 'affiliates'">Afiliados</button>
           <button :class="{ active: activeTab === 'donations' }" @click="activeTab = 'donations'">Donaciones</button>
+          <button :class="{ active: activeTab === 'messages' }" @click="activeTab = 'messages'">Mensajes</button>
+          <button :class="{ active: activeTab === 'votes' }" @click="activeTab = 'votes'">Escrutinio</button>
           <button :class="{ active: activeTab === 'users' }" @click="activeTab = 'users'">Admins</button>
         </div>
         <div class="search-box">
-          <input v-model="searchQuery" type="text" placeholder="Buscar..." class="search-input" />
+          <input v-model="searchQuery" type="text" placeholder="Buscar registros..." class="search-input" />
         </div>
-=======
-      <!-- Tabs -->
-      <div class="tabs">
-        <button :class="{ active: activeTab === 'affiliates' }" @click="activeTab = 'affiliates'">Afiliaciones</button>
-        <button :class="{ active: activeTab === 'donations' }" @click="activeTab = 'donations'">Donaciones</button>
-        <button :class="{ active: activeTab === 'messages' }" @click="activeTab = 'messages'">Mensajes</button>
-        <button :class="{ active: activeTab === 'votes' }" @click="activeTab = 'votes'">Escrutinio</button>
-        <button :class="{ active: activeTab === 'users' }" @click="activeTab = 'users'">Usuarios Web</button>
->>>>>>> 95fd444fe5fb5c4259e17720eff4abaa6f26f1ed
       </div>
 
       <!-- Tables -->
@@ -161,22 +159,29 @@
         <table v-if="activeTab === 'messages'" class="admin-table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Email</th>
+              <th>Remitente</th>
               <th>Asunto</th>
               <th>Mensaje</th>
               <th>Fecha</th>
+              <th class="text-right">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in data.messages" :key="item.id">
-              <td>#{{ item.id }}</td>
-              <td>{{ item.name }}</td>
-              <td>{{ item.email }}</td>
-              <td>{{ item.subject }}</td>
+            <tr v-for="item in filteredMessages" :key="item.id" class="table-row">
+              <td>
+                <div class="user-info">
+                  <span class="user-name">{{ item.name }}</span>
+                  <span class="user-email">{{ item.email }}</span>
+                </div>
+              </td>
+              <td class="font-bold">{{ item.subject }}</td>
               <td class="msg-cell" :title="item.message">{{ item.message.substring(0, 50) }}{{ item.message.length > 50 ? '...' : '' }}</td>
-              <td>{{ formatDate(item.created_at) }}</td>
+              <td class="text-muted">{{ formatDate(item.created_at) }}</td>
+              <td class="text-right">
+                <button @click="deleteItem('contact_messages', item.id)" class="btn-delete" title="Eliminar">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -193,14 +198,14 @@
                 </thead>
                 <tbody>
                     <tr v-for="(vote, idx) in data.votes" :key="idx">
-                        <td style="font-weight: bold; color: #fbbf24;">{{ vote.poll_title }}</td>
+                        <td style="font-weight: bold; color: #fbbf24; padding: 20px;">{{ vote.poll_title }}</td>
                         <td>{{ vote.option_selected }}</td>
-                        <td style="text-align: right; font-size: 1.2rem; font-weight: bold;">{{ vote.total }}</td>
+                        <td style="text-align: right; font-size: 1.2rem; font-weight: bold; padding: 20px;">{{ vote.total }}</td>
                     </tr>
                 </tbody>
             </table>
-            <p v-if="data.votes.length === 0" style="padding: 20px; text-align: center; color: rgba(255,255,255,0.5);">
-                No hay votos registrados todavía.
+            <p v-if="data.votes.length === 0" style="padding: 40px; text-align: center; color: rgba(255,255,255,0.4);">
+                No hay votos registrados todavía en el sistema.
             </p>
         </div>
 
@@ -258,6 +263,16 @@ const filteredDonations = computed(() => {
   if (!data.value?.donations) return []
   return data.value.donations.filter(d => 
     (d.email || '').toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+})
+
+const filteredMessages = computed(() => {
+  if (!data.value?.messages) return []
+  return data.value.messages.filter(m => 
+    m.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    m.email.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    m.subject.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+    m.message.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
 
@@ -321,6 +336,7 @@ const updateStatus = async (type, id, newStatus) => {
   margin: 0;
   letter-spacing: 2px;
   background: linear-gradient(135deg, #fff 0%, #723233 100%);
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -377,21 +393,21 @@ const updateStatus = async (type, id, newStatus) => {
 /* KPI Cards */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
   margin-bottom: 50px;
 }
 
 .kpi-card {
   background: rgba(94, 44, 44, 0.4);
-  padding: 25px;
-  border-radius: 20px;
+  padding: 20px;
+  border-radius: 15px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(15px);
   display: flex;
   align-items: center;
-  gap: 20px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  gap: 15px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease;
 
   &:hover {
@@ -400,18 +416,18 @@ const updateStatus = async (type, id, newStatus) => {
   }
   
   .kpi-icon {
-    font-size: 2rem;
-    width: 60px;
-    height: 60px;
+    font-size: 1.5rem;
+    width: 45px;
+    height: 45px;
     background: rgba(0,0,0,0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 15px;
+    border-radius: 12px;
   }
 
   h3 {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.5);
     margin: 0;
     text-transform: uppercase;
@@ -419,9 +435,9 @@ const updateStatus = async (type, id, newStatus) => {
   }
   
   .value {
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     font-weight: 700;
-    margin: 5px 0 0 0;
+    margin: 2px 0 0 0;
     font-family: 'Cinzel', serif;
   }
 }
@@ -494,7 +510,7 @@ const updateStatus = async (type, id, newStatus) => {
   
   th {
     background: rgba(0, 0, 0, 0.3);
-    padding: 20px;
+    padding: 15px 20px;
     text-align: left;
     font-family: 'Cinzel', serif;
     font-size: 0.8rem;
@@ -503,17 +519,18 @@ const updateStatus = async (type, id, newStatus) => {
   }
   
   td {
-    padding: 15px 20px;
+    padding: 12px 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
 }
 
-<<<<<<< HEAD
 .table-row {
   transition: background 0.2s ease;
   &:hover {
     background: rgba(255, 255, 255, 0.03);
-=======
+  }
+}
+
 .msg-cell {
   max-width: 300px;
   overflow: hidden;
@@ -521,33 +538,6 @@ const updateStatus = async (type, id, newStatus) => {
   white-space: nowrap;
   font-size: 0.85rem;
   opacity: 0.9;
-}
-
-.badge {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  font-weight: bold;
-  
-  &.paid, &.success, &.active, &.admin {
-    background: rgba(0, 255, 0, 0.2);
-    color: #4ade80;
-    border: 1px solid rgba(0, 255, 0, 0.3);
-  }
-  
-  &.pending, &.processing {
-    background: rgba(255, 165, 0, 0.2);
-    color: #fbbf24;
-    border: 1px solid rgba(255, 165, 0, 0.3);
-  }
-  
-  &.error, &.failed {
-    background: rgba(255, 0, 0, 0.2);
-    color: #f87171;
-    border: 1px solid rgba(255, 0, 0, 0.3);
->>>>>>> 95fd444fe5fb5c4259e17720eff4abaa6f26f1ed
-  }
 }
 
 .user-info {
@@ -619,7 +609,7 @@ const updateStatus = async (type, id, newStatus) => {
 .loading-state, .error-card {
   display: flex;
   flex-direction: column;
-  items-align: center;
+  align-items: center;
   justify-content: center;
   padding: 100px 0;
   text-align: center;
