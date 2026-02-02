@@ -74,6 +74,7 @@
           <button :class="{ active: activeTab === 'affiliates' }" @click="activeTab = 'affiliates'">Afiliados</button>
           <button :class="{ active: activeTab === 'donations' }" @click="activeTab = 'donations'">Donaciones</button>
           <button :class="{ active: activeTab === 'messages' }" @click="activeTab = 'messages'">Mensajes</button>
+          <button :class="{ active: activeTab === 'newsletter' }" @click="activeTab = 'newsletter'">Newsletter</button>
           <button :class="{ active: activeTab === 'votes' }" @click="activeTab = 'votes'">Escrutinio</button>
           <button :class="{ active: activeTab === 'users' }" @click="activeTab = 'users'">Admins</button>
         </div>
@@ -347,6 +348,13 @@ const filteredMessages = computed(() => {
     m.email.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     m.subject.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     m.message.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+})
+
+const filteredSubscribers = computed(() => {
+  if (!data.value?.subscribers) return []
+  return data.value.subscribers.filter(s => 
+    s.email.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
 
