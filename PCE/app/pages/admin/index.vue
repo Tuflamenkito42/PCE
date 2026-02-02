@@ -31,38 +31,33 @@
       <!-- KPI Cards -->
       <div class="kpi-grid">
         <div class="kpi-card">
-          <div class="kpi-icon affiliates">👤</div>
-          <div>
-            <h3>Total Afiliados</h3>
-            <p class="value">{{ data.stats.total_affiliates }}</p>
+          <div class="kpi-content-simple">
+            <span class="kpi-label-simple">AFILIADOS:</span>
+            <span class="kpi-value-simple">{{ data.stats.total_affiliates }}</span>
           </div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-icon income">💶</div>
-          <div>
-            <h3>Ingresos Mensuales</h3>
-            <p class="value">{{ formatMoney(data.stats.monthly_income) }}</p>
+          <div class="kpi-content-simple">
+            <span class="kpi-label-simple">INGRESOS:</span>
+            <span class="kpi-value-simple">{{ formatMoney(data.stats.monthly_income) }}</span>
           </div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-icon donations">❤️</div>
-          <div>
-            <h3>Total Donaciones</h3>
-            <p class="value">{{ formatMoney(data.stats.total_donations) }}</p>
+          <div class="kpi-content-simple">
+            <span class="kpi-label-simple">DONACIONES:</span>
+            <span class="kpi-value-simple">{{ formatMoney(data.stats.total_donations) }}</span>
           </div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-icon messages">✉️</div>
-          <div>
-            <h3>Mensajes</h3>
-            <p class="value">{{ data.stats.total_messages }}</p>
+          <div class="kpi-content-simple">
+            <span class="kpi-label-simple">MENSAJES:</span>
+            <span class="kpi-value-simple">{{ data.stats.total_messages }}</span>
           </div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-icon votes">🗳️</div>
-          <div>
-            <h3>Votos</h3>
-            <p class="value">{{ data.stats.total_votes }}</p>
+          <div class="kpi-content-simple">
+            <span class="kpi-label-simple">VOTOS:</span>
+            <span class="kpi-value-simple">{{ data.stats.total_votes }}</span>
           </div>
         </div>
       </div>
@@ -70,11 +65,26 @@
       <!-- Tabs and Search -->
       <div class="controls-row">
         <div class="tabs">
-          <button :class="{ active: activeTab === 'affiliates' }" @click="activeTab = 'affiliates'">Afiliados</button>
-          <button :class="{ active: activeTab === 'donations' }" @click="activeTab = 'donations'">Donaciones</button>
-          <button :class="{ active: activeTab === 'messages' }" @click="activeTab = 'messages'">Mensajes</button>
-          <button :class="{ active: activeTab === 'votes' }" @click="activeTab = 'votes'">Escrutinio</button>
-          <button :class="{ active: activeTab === 'users' }" @click="activeTab = 'users'">Admins</button>
+          <button :class="{ active: activeTab === 'affiliates' }" @click="activeTab = 'affiliates'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            Afiliados
+          </button>
+          <button :class="{ active: activeTab === 'donations' }" @click="activeTab = 'donations'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            Donaciones
+          </button>
+          <button :class="{ active: activeTab === 'messages' }" @click="activeTab = 'messages'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            Mensajes
+          </button>
+          <button :class="{ active: activeTab === 'votes' }" @click="activeTab = 'votes'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2"></path><path d="M21 7v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7"></path><path d="M21 7H3"></path><path d="M9 11l2 2 4-4"></path></svg>
+            Escrutinio
+          </button>
+          <button :class="{ active: activeTab === 'users' }" @click="activeTab = 'users'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            Admins
+          </button>
         </div>
         <div class="search-box">
           <input v-model="searchQuery" type="text" placeholder="Buscar registros..." class="search-input" />
@@ -187,26 +197,26 @@
         </table>
 
         <!-- Votes Results (Escrutinio) -->
-        <div v-if="activeTab === 'votes'" class="votes-results">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Consulta / Pregunta</th>
-                        <th>Opción Seleccionada</th>
-                        <th style="text-align: right;">Total Votos</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(vote, idx) in data.votes" :key="idx">
-                        <td style="font-weight: bold; color: #fbbf24; padding: 20px;">{{ vote.poll_title }}</td>
-                        <td>{{ vote.option_selected }}</td>
-                        <td style="text-align: right; font-size: 1.2rem; font-weight: bold; padding: 20px;">{{ vote.total }}</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p v-if="data.votes.length === 0" style="padding: 40px; text-align: center; color: rgba(255,255,255,0.4);">
-                No hay votos registrados todavía en el sistema.
-            </p>
+        <div v-if="activeTab === 'votes'" class="votes-results animate-in">
+          <div class="results-grid">
+            <div v-for="(group, pollTitle) in groupedVotes" :key="pollTitle" class="poll-result-card glass">
+              <h3 class="poll-title-display">{{ pollTitle }}</h3>
+              <div class="options-container">
+                <div v-for="vote in group" :key="vote.option_selected" class="option-row">
+                  <div class="option-info">
+                    <span class="option-label">{{ vote.option_selected }}</span>
+                    <span class="option-stats font-bold">{{ vote.total }} votos ({{ calculatePercent(vote.total, pollTitle) }}%)</span>
+                  </div>
+                  <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" :style="{ width: calculatePercent(vote.total, pollTitle) + '%' }"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p v-if="data.votes.length === 0" class="empty-results">
+            No hay votos registrados todavía en el sistema.
+          </p>
         </div>
 
         <!-- Users Table -->
@@ -284,6 +294,25 @@ const filteredUsers = computed(() => {
   )
 })
 
+// Scrutiny Logic
+const groupedVotes = computed(() => {
+  if (!data.value?.votes) return {}
+  return data.value.votes.reduce((acc, vote) => {
+    if (!acc[vote.poll_title]) acc[vote.poll_title] = []
+    acc[vote.poll_title].push(vote)
+    return acc
+  }, {})
+})
+
+const calculatePercent = (votes, pollTitle) => {
+  if (!data.value?.votes) return 0
+  const totalPollVotes = data.value.votes
+    .filter(v => v.poll_title === pollTitle)
+    .reduce((sum, v) => sum + Number(v.total), 0)
+  
+  return totalPollVotes > 0 ? ((votes / totalPollVotes) * 100).toFixed(1) : 0
+}
+
 const formatMoney = (val) => {
   return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val)
 }
@@ -331,14 +360,14 @@ const updateStatus = async (type, id, newStatus) => {
 }
 
 .page-title {
-  font-family: 'Cinzel', serif;
-  font-size: 2.5rem;
+  font-family: var(--font-heading);
+  font-size: 3.5rem;
   margin: 0;
-  letter-spacing: 2px;
-  background: linear-gradient(135deg, #fff 0%, #723233 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  letter-spacing: 4px;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  background: none;
+  -webkit-text-fill-color: initial;
 }
 
 .subtitle {
@@ -359,12 +388,12 @@ const updateStatus = async (type, id, newStatus) => {
   align-items: center;
   gap: 10px;
   padding: 12px 24px;
-  background: rgba(114, 50, 51, 0.2);
+  background: #723233;
   color: #fff;
-  border: 1px solid rgba(114, 50, 51, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   cursor: pointer;
-  font-family: 'Cinzel', serif;
+  font-family: var(--font-heading);
   font-weight: bold;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
@@ -399,47 +428,44 @@ const updateStatus = async (type, id, newStatus) => {
 }
 
 .kpi-card {
-  background: rgba(94, 44, 44, 0.4);
-  padding: 20px;
-  border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
+  background: rgba(114, 50, 51, 0.7);
+  padding: 20px 30px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 15px;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
 
   &:hover {
     transform: translateY(-5px);
-    border-color: rgba(114, 50, 51, 0.5);
+    border-color: #fff;
   }
-  
-  .kpi-icon {
-    font-size: 1.5rem;
-    width: 45px;
-    height: 45px;
-    background: rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-  }
+}
 
-  h3 {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.5);
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-  
-  .value {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin: 2px 0 0 0;
-    font-family: 'Cinzel', serif;
-  }
+.kpi-content-simple {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+}
+
+.kpi-label-simple {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: bold;
+}
+
+.kpi-value-simple {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #fff;
 }
 
 /* Controls */
@@ -458,18 +484,21 @@ const updateStatus = async (type, id, newStatus) => {
   border-radius: 12px;
   
   button {
-    padding: 10px 25px;
+    padding: 10px 20px;
     background: transparent;
     border: none;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.6);
     cursor: pointer;
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-heading);
     font-weight: bold;
     border-radius: 10px;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     
     &.active {
-      background: #723233;
+      background: var(--primary-red);
       color: #fff;
       box-shadow: 0 4px 12px rgba(114, 50, 51, 0.3);
     }
@@ -484,10 +513,11 @@ const updateStatus = async (type, id, newStatus) => {
   color: #fff;
   width: 300px;
   transition: all 0.3s ease;
+  font-family: var(--font-heading);
 
   &:focus {
     outline: none;
-    border-color: #723233;
+    border-color: var(--primary-red);
     background: rgba(255, 255, 255, 0.1);
   }
 }
@@ -509,13 +539,14 @@ const updateStatus = async (type, id, newStatus) => {
   border-collapse: collapse;
   
   th {
-    background: rgba(0, 0, 0, 0.3);
-    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
     text-align: left;
-    font-family: 'Cinzel', serif;
-    font-size: 0.8rem;
-    letter-spacing: 1px;
-    color: rgba(255, 255, 255, 0.6);
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    color: #ffffff;
+    text-transform: uppercase;
   }
   
   td {
@@ -605,6 +636,65 @@ const updateStatus = async (type, id, newStatus) => {
   }
 }
 
+/* Results Scrutiny Visualization */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 25px;
+  padding: 10px;
+}
+
+.poll-result-card {
+  padding: 25px;
+  border-radius: 20px;
+}
+
+.poll-title-display {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  margin-bottom: 25px;
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 15px;
+}
+
+.option-row {
+  margin-bottom: 20px;
+  
+  &:last-child { margin-bottom: 0; }
+}
+
+.option-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.option-label { opacity: 0.9; }
+
+.progress-bar-bg {
+  height: 10px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-red) 0%, var(--acc-red) 100%);
+  border-radius: 5px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.empty-results {
+  padding: 60px;
+  text-align: center;
+  color: rgba(255,255,255,0.4);
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+}
+
 /* States */
 .loading-state, .error-card {
   display: flex;
@@ -619,7 +709,7 @@ const updateStatus = async (type, id, newStatus) => {
   width: 40px;
   height: 40px;
   border: 4px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #723233;
+  border-top-color: var(--primary-red);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: 0 auto 20px;
