@@ -428,10 +428,10 @@ const updateStatus = async (type, id, newStatus) => {
 }
 
 .kpi-card {
-  background: rgba(114, 50, 51, 0.7);
+  background: rgba(114, 50, 51, 0.95); /* More opaque brand color */
   padding: 20px 30px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
@@ -520,6 +520,14 @@ const updateStatus = async (type, id, newStatus) => {
     border-color: var(--primary-red);
     background: rgba(255, 255, 255, 0.1);
   }
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.7); /* Light white color for visibility */
+    opacity: 1; /* Ensure full opacity for the color */
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
 }
 
 /* Tables */
@@ -530,8 +538,8 @@ const updateStatus = async (type, id, newStatus) => {
 }
 
 .glass {
-  background: rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
+  background: rgba(114, 50, 51, 0.4); /* Opaque brand color instead of black */
+  backdrop-filter: blur(20px);
 }
 
 .admin-table {
@@ -539,7 +547,7 @@ const updateStatus = async (type, id, newStatus) => {
   border-collapse: collapse;
   
   th {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(114, 50, 51, 0.9); /* Opaque brand header */
     padding: 20px;
     text-align: left;
     font-family: var(--font-heading);

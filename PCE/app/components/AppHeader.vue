@@ -31,7 +31,7 @@ const userInitials = computed(() => {
       <NuxtLink to="/programa">PROGRAMA</NuxtLink>
       <NuxtLink to="/votaciones">VOTACIONES</NuxtLink>
       <NuxtLink to="/contacto">CONTACTO</NuxtLink>
-      <NuxtLink to="/#transparencia">TRANSPARENCIA</NuxtLink>
+      <NuxtLink to="/transparencia">TRANSPARENCIA</NuxtLink>
     </nav>
 
     <div class="header-actions">
