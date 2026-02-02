@@ -49,6 +49,7 @@ const isOpen = useCookieControl()
       </div>
 
       <div class="footer-links">
+        <NuxtLink to="/transparencia">TRANSPARENCIA</NuxtLink>
         <NuxtLink to="/politica-privacidad">POLÍTICA DE PRIVACIDAD</NuxtLink>
         <NuxtLink to="/condiciones-uso">CONDICIONES DE USO</NuxtLink>
         <a href="#" @click.prevent="isOpen = true">POLÍTICA DE COOKIES</a>
