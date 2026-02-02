@@ -36,6 +36,16 @@ export const useAuth = () => {
         return false;
     };
 
+    const validate = async (email: string, password: string) => {
+        const { data, error } = await useFetch<any>('/api/auth/validate', {
+            method: 'POST',
+            body: { email, password }
+        });
+
+        if (error.value) throw error.value;
+        return data.value;
+    };
+
     const login = async (email: string, password: string) => {
         const { data, error } = await useFetch<any>('/api/auth/login', {
             method: 'POST',
@@ -70,6 +80,7 @@ export const useAuth = () => {
     return {
         user,
         checkAuth,
+        validate,
         login,
         register,
         logout

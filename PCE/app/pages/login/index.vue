@@ -25,10 +25,6 @@ const handleStep1 = async () => {
   
   if (password.value.length < 8) {
      errors.value.password = "La contraseña debe tener al menos 8 caracteres"
-     // If you want strict enforcement:
-     // if (!isStrongPassword(password.value)) {
-     //    errors.value.password = "La contraseña debe tener minúsculas, mayúsculas y números"
-     // }
   }
 
   if (!isLogin.value) {
@@ -40,16 +36,16 @@ const handleStep1 = async () => {
   if (Object.keys(errors.value).length > 0) return
 
   try {
+    const { validate, register } = useAuth()
+
     if (isLogin.value) {
-      // Real Login Flow
-      const { login } = useAuth()
-      await login(email.value, password.value)
+      // Step 1: Validate credentials WITHOUT logging in (no cookie set yet)
+      await validate(email.value, password.value)
       
       // If successful, proceed to biometrics
       currentStep.value = 2
     } else {
       // Register flow
-      const { register, login } = useAuth()
       await register({
         email: email.value,
         password: password.value,
@@ -57,8 +53,7 @@ const handleStep1 = async () => {
         dni: dni.value
       })
       
-      // Auto-login after registration
-      await login(email.value, password.value)
+      // Do NOT login yet. Wait for verification.
       
       alert("¡Registro completado! Ahora verifique su identidad.")
        currentStep.value = 2
@@ -73,9 +68,18 @@ const handleStep1 = async () => {
   }
 }
 
-const handleFinalSuccess = () => {
-  alert("¡Verificación completada! Bienvenido al sistema PCE.")
-  window.location.href = '/'
+const handleFinalSuccess = async () => {
+  try {
+    // Final Step: Perform actual login to set session/cookie
+    const { login } = useAuth()
+    await login(email.value, password.value)
+
+    alert("¡Verificación completada! Bienvenido al sistema PCE.")
+    window.location.href = '/'
+  } catch (err) {
+    console.error("Error final login:", err)
+    alert("Error al finalizar autenticación. Inténtelo de nuevo.")
+  }
 }
 
 useHead({

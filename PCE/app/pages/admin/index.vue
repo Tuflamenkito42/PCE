@@ -55,10 +55,9 @@
           </div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-icon affiliates">🗞️</div>
-          <div>
-            <h3>Suscriptores</h3>
-            <p class="value">{{ data.stats.total_subscribers }}</p>
+          <div class="kpi-content-simple">
+            <span class="kpi-label-simple">SUSCRIPTORES:</span>
+            <span class="kpi-value-simple">{{ data.stats.total_subscribers }}</span>
           </div>
         </div>
         <div class="kpi-card">
@@ -358,6 +357,24 @@ const filteredUsers = computed(() => {
     u.email.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
+// Scrutiny Logic
+const groupedVotes = computed(() => {
+  if (!data.value?.votes) return {}
+  return data.value.votes.reduce((acc, vote) => {
+    if (!acc[vote.poll_title]) acc[vote.poll_title] = []
+    acc[vote.poll_title].push(vote)
+    return acc
+  }, {})
+})
+
+const calculatePercent = (votes, pollTitle) => {
+  if (!data.value?.votes) return 0
+  const totalPollVotes = data.value.votes
+    .filter(v => v.poll_title === pollTitle)
+    .reduce((sum, v) => sum + Number(v.total), 0)
+  
+  return totalPollVotes > 0 ? ((votes / totalPollVotes) * 100).toFixed(1) : 0
+}
 
 const formatMoney = (val) => {
   return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val)
@@ -488,8 +505,8 @@ const sendBulkNewsletter = async () => {
 /* KPI Cards */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(6, 1fr); /* 6 columns to put everything in one line */
+  gap: 15px;
   margin-bottom: 50px;
 }
 
