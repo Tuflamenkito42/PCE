@@ -83,7 +83,7 @@
           </button>
           <button :class="{ active: activeTab === 'users' }" @click="activeTab = 'users'">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            Admins
+            Usuarios
           </button>
         </div>
         <div class="search-box">
@@ -223,10 +223,11 @@
         <table v-if="activeTab === 'users'" class="admin-table">
           <thead>
             <tr>
-              <th>Administrador</th>
+              <th>Usuario</th>
               <th>Email</th>
               <th>Rol</th>
               <th>Registro</th>
+              <th class="text-right">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -235,6 +236,11 @@
               <td class="text-muted">{{ item.email }}</td>
               <td><span :class="['badge-simple', item.role]">{{ item.role }}</span></td>
               <td class="text-muted">{{ formatDate(item.created_at) }}</td>
+              <td class="text-right">
+                <button v-if="item.role !== 'admin'" @click="deleteItem('users', item.id)" class="btn-delete" title="Eliminar Usuario">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>

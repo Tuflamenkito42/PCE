@@ -95,22 +95,22 @@ const documents = [
   { 
     title: 'Estatutos del Partido', 
     description: 'Normas fundamentales que rigen nuestra organización y funcionamiento interno.',
-    link: '#' 
+    link: '/documents/estatutos.pdf' 
   },
   { 
     title: 'Cuentas Anuales 2023', 
     description: 'Desglose detallado de ingresos y gastos auditados del último ejercicio fiscal.',
-    link: '#' 
+    link: '/documents/cuentas-2023.pdf' 
   },
   { 
     title: 'Registro de Donaciones', 
     description: 'Listado transparente de aportaciones recibidas conforme a la ley vigente.',
-    link: '#' 
+    link: '/documents/donaciones.pdf' 
   },
   { 
     title: 'Organigrama Nacional', 
     description: 'Estructura de mando y responsables de las diferentes áreas del PCE.',
-    link: '#' 
+    link: '/documents/organigrama.pdf' 
   }
 ]
 </script>
