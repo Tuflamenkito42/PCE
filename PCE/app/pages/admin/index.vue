@@ -59,6 +59,13 @@
           </div>
         </div>
         <div class="kpi-card">
+          <div class="kpi-icon affiliates">🗞️</div>
+          <div>
+            <h3>Suscriptores</h3>
+            <p class="value">{{ data.stats.total_subscribers }}</p>
+          </div>
+        </div>
+        <div class="kpi-card">
           <div class="kpi-icon votes">🗳️</div>
           <div>
             <h3>Votos</h3>
@@ -73,10 +80,14 @@
           <button :class="{ active: activeTab === 'affiliates' }" @click="activeTab = 'affiliates'">Afiliados</button>
           <button :class="{ active: activeTab === 'donations' }" @click="activeTab = 'donations'">Donaciones</button>
           <button :class="{ active: activeTab === 'messages' }" @click="activeTab = 'messages'">Mensajes</button>
+          <button :class="{ active: activeTab === 'newsletter' }" @click="activeTab = 'newsletter'">Newsletter</button>
           <button :class="{ active: activeTab === 'votes' }" @click="activeTab = 'votes'">Escrutinio</button>
           <button :class="{ active: activeTab === 'users' }" @click="activeTab = 'users'">Admins</button>
         </div>
         <div class="search-box">
+          <button v-if="activeTab === 'newsletter'" @click="showNewsletterModal = true" class="btn-action primary" style="margin-right: 15px;">
+            ENVIAR COMUNICADO
+          </button>
           <input v-model="searchQuery" type="text" placeholder="Buscar registros..." class="search-input" />
         </div>
       </div>
@@ -186,6 +197,34 @@
           </tbody>
         </table>
 
+        <!-- Newsletter Table -->
+        <table v-if="activeTab === 'newsletter'" class="admin-table">
+          <thead>
+            <tr>
+              <th>Email Suscriptor</th>
+              <th>Fecha Suscripción</th>
+              <th>Estado</th>
+              <th class="text-right">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in filteredSubscribers" :key="item.id" class="table-row">
+              <td class="font-bold">{{ item.email }}</td>
+              <td class="text-muted">{{ formatDate(item.subscribed_at) }}</td>
+              <td>
+                <span :class="['status-badge', item.active ? 'active' : 'inactive']">
+                  {{ item.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="text-right">
+                <button @click="deleteItem('newsletter', item.id)" class="btn-delete" title="Eliminar">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
         <!-- Votes Results (Escrutinio) -->
         <div v-if="activeTab === 'votes'" class="votes-results">
             <table class="admin-table">
@@ -230,6 +269,35 @@
         </table>
       </div>
     </div>
+
+    <!-- Newsletter Modal -->
+    <div v-if="showNewsletterModal" class="modal-overlay" @click.self="showNewsletterModal = false">
+      <div class="modal-content glass animate-in">
+        <div class="modal-header">
+          <h2 class="form-subtitle">ENVIAR COMUNICADO MASIVO</h2>
+          <button @click="showNewsletterModal = false" class="btn-close">&times;</button>
+        </div>
+        <p class="modal-description">Este mensaje se enviará a todos los suscriptores activos del newsletter.</p>
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label>ASUNTO DEL CORREO</label>
+            <input v-model="newsletterForm.subject" type="text" placeholder="Ej: Novedades del mes de Febrero" class="modal-input" />
+          </div>
+          <div class="form-group">
+            <label>CONTENIDO DEL MENSAJE</label>
+            <textarea v-model="newsletterForm.message" placeholder="Escribe aquí el comunicado oficial..." class="modal-textarea"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button @click="showNewsletterModal = false" class="btn-action secondary">CANCELAR</button>
+          <button @click="sendBulkNewsletter" :disabled="sendingNewsletter || !newsletterForm.subject || !newsletterForm.message" class="btn-action primary">
+            {{ sendingNewsletter ? 'ENVIANDO...' : 'ENVIAR AHORA' }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -247,6 +315,13 @@ definePageMeta({
 
 const activeTab = ref('affiliates')
 const searchQuery = ref('')
+const showNewsletterModal = ref(false)
+const sendingNewsletter = ref(false)
+const newsletterForm = reactive({
+  subject: '',
+  message: ''
+})
+
 const { data, pending, error, refresh } = await useFetch('/api/admin/data')
 
 // Filtering logic
@@ -284,6 +359,13 @@ const filteredUsers = computed(() => {
   )
 })
 
+const filteredSubscribers = computed(() => {
+  if (!data.value?.subscribers) return []
+  return data.value.subscribers.filter(s => 
+    s.email.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
+})
+
 const formatMoney = (val) => {
   return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(val)
 }
@@ -315,6 +397,26 @@ const updateStatus = async (type, id, newStatus) => {
   } catch (e) {
     alert('Error al actualizar estado: ' + (e.data?.message || e.message))
     await refresh() // Reverta change locally
+  }
+}
+
+const sendBulkNewsletter = async () => {
+  if (!confirm(`¿Estás seguro de enviar este comunicado a ${data.value.stats.total_subscribers} suscriptores?`)) return
+
+  sendingNewsletter.value = true
+  try {
+    const res = await $fetch('/api/admin/newsletter/send', {
+      method: 'POST',
+      body: newsletterForm
+    })
+    alert(res.message)
+    showNewsletterModal.value = false
+    newsletterForm.subject = ''
+    newsletterForm.message = ''
+  } catch (e) {
+    alert('Error al enviar: ' + (e.data?.message || e.message))
+  } finally {
+    sendingNewsletter.value = false
   }
 }
 </script>
@@ -627,6 +729,115 @@ const updateStatus = async (type, id, newStatus) => {
 
 .animate-in {
   animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 600px;
+  background: #5E2C2C;
+  border-radius: 24px;
+  padding: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  opacity: 0.5;
+  &:hover { opacity: 1; }
+}
+
+.modal-description {
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 30px;
+}
+
+.modal-input, .modal-textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 15px;
+  color: #fff;
+  font-family: inherit;
+  margin-top: 10px;
+  
+  &:focus {
+    outline: none;
+    border-color: #fbbf24;
+  }
+}
+
+.modal-textarea {
+  min-height: 200px;
+  resize: vertical;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 40px;
+}
+
+.btn-action {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-family: 'Cinzel', serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  
+  &.primary {
+    background: #fbbf24;
+    color: #000;
+    &:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(251, 191, 36, 0.4); }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+  
+  &.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    &:hover { background: rgba(255, 255, 255, 0.2); }
+  }
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  &.active { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.3); }
+  &.inactive { background: rgba(248, 113, 113, 0.2); color: #f87171; border: 1px solid rgba(248, 113, 113, 0.3); }
 }
 
 @keyframes fadeInUp {
