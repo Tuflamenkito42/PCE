@@ -1,6 +1,4 @@
 import bcrypt from 'bcryptjs';
-import { usePrisma } from '../../utils/prisma';
-import { defineEventHandler, readBody, createError } from 'h3';
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
@@ -10,15 +8,15 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 400, message: 'Email y contraseña requeridos' });
     }
 
-    const prisma = usePrisma();
-    const user = await prisma.user.findUnique({
-        where: { email }
-    });
+    const db = useDb();
+    const [rows] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+    const users = rows as any[];
 
-    if (!user) {
+    if (users.length === 0) {
         throw createError({ statusCode: 401, message: 'Credenciales inválidas' });
     }
 
+    const user = users[0];
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
@@ -32,7 +30,7 @@ export default defineEventHandler(async (event) => {
         user: {
             id: user.id,
             email: user.email,
-            full_name: user.fullName,
+            full_name: user.full_name,
             role: user.role
         }
     };

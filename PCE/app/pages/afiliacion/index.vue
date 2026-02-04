@@ -52,9 +52,7 @@
                 
                 <!-- DNI SCANNER -->
                 <div class="dni-scanner-section">
-                  <ClientOnly>
-                    <DniScanner @dataExtracted="handleDniData" />
-                  </ClientOnly>
+                  <DniScanner @dataExtracted="handleDniData" />
                 </div>
 
                 <div class="form-divider">

@@ -1,50 +1,102 @@
 import { validateAdmin } from '../../utils/admin';
-import { useDb } from '../../utils/db';
+import { usePrisma } from '../../utils/prisma';
 
 export default defineEventHandler(async (event) => {
-    validateAdmin(event);
+    console.log('[AdminData] Request received');
+    try {
+        validateAdmin(event);
+        console.log('[AdminData] Admin validated');
+    } catch (e) {
+        console.error('[AdminData] Admin validation failed:', e);
+        throw e;
+    }
 
-    const db = useDb();
+    const prisma = usePrisma();
+    console.log('[AdminData] Prisma initialized');
 
-    // Fetch stats
-    const [affiliates] = await db.query('SELECT * FROM affiliations ORDER BY created_at DESC');
-    const [donations] = await db.query('SELECT * FROM donations ORDER BY created_at DESC');
-    const [users] = await db.query('SELECT id, full_name, email, role, created_at FROM users ORDER BY created_at DESC');
-    const [messages] = await db.query('SELECT * FROM contact_messages ORDER BY created_at DESC');
-    const [subscribers] = await db.query('SELECT * FROM newsletter_subscribers ORDER BY subscribed_at DESC');
-    const [votes] = await db.query(`
-        SELECT poll_title, option_selected, COUNT(*) as total 
-        FROM votes 
-        GROUP BY poll_title, option_selected
-        ORDER BY poll_title, total DESC
-    `);
+    try {
+        // Fetch stats using Prisma
+        console.log('[AdminData] Fetching statistical data...');
+        const [affiliates, donations, users, messages, subscribers] = await Promise.all([
+            prisma.affiliation.findMany({ orderBy: { createdAt: 'desc' } }),
+            prisma.donation.findMany({ orderBy: { createdAt: 'desc' } }),
+            prisma.user.findMany({
+                select: { id: true, fullName: true, email: true, role: true, createdAt: true },
+                orderBy: { createdAt: 'desc' }
+            }),
+            prisma.contactMessage.findMany({ orderBy: { createdAt: 'desc' } }),
+            prisma.newsletterSubscriber.findMany({ orderBy: { subscribedAt: 'desc' } })
+        ]);
+        console.log('[AdminData] Core data fetched successfully');
 
-    // Calculate totals
-    const totalDonations = (donations as any[]).reduce((sum, d) => sum + Number(d.amount), 0);
-    const totalAffiliates = (affiliates as any[]).length;
-    const totalMessages = (messages as any[]).length;
-    const totalSubscribers = (subscribers as any[]).length;
-    const totalVotes = (votes as any[]).reduce((sum, v) => sum + Number(v.total), 0);
+        // Handle votes separately since it might not be in schema
+        let votes: any[] = [];
+        try {
+            console.log('[AdminData] Fetching votes...');
+            votes = await prisma.$queryRawUnsafe(`
+                SELECT poll_title, option_selected, COUNT(*) as total 
+                FROM votes 
+                GROUP BY poll_title, option_selected
+                ORDER BY poll_title, total DESC
+            `);
+            console.log('[AdminData] Votes fetched successfully');
+        } catch (e: any) {
+            console.warn('[AdminData] Votes table not found or error fetching votes:', e.message);
+        }
 
-    const monthlyIncome = (affiliates as any[]).reduce((sum, a) => {
-        const val = Number(a.quota);
-        return isNaN(val) ? sum : sum + val;
-    }, 0);
+        // Calculate totals
+        console.log('[AdminData] Calculating totals...');
+        const totalDonations = donations.reduce((sum, d) => sum + Number(d.amount), 0);
+        const totalAffiliates = affiliates.length;
+        const totalMessages = messages.length;
+        const totalSubscribers = subscribers.length;
+        const totalVotes = votes.reduce((sum, v) => sum + Number(v.total), 0);
 
-    return {
-        stats: {
-            total_affiliates: totalAffiliates,
-            total_donations: totalDonations,
-            total_messages: totalMessages,
-            total_subscribers: totalSubscribers,
-            total_votes: totalVotes,
-            monthly_income: monthlyIncome
-        },
-        affiliates,
-        donations,
-        users,
-        messages,
-        subscribers,
-        votes
-    };
+        const monthlyIncome = affiliates.reduce((sum, a) => {
+            const val = Number(a.quota);
+            return isNaN(val) ? sum : sum + val;
+        }, 0);
+
+        // Return data with mapped field names for frontend compatibility (snake_case)
+        return {
+            stats: {
+                total_affiliates: totalAffiliates,
+                total_donations: totalDonations,
+                total_messages: totalMessages,
+                total_subscribers: totalSubscribers,
+                total_votes: totalVotes,
+                monthly_income: monthlyIncome
+            },
+            affiliates: affiliates.map(a => ({
+                ...a,
+                created_at: a.createdAt
+            })),
+            donations: donations.map(d => ({
+                ...d,
+                created_at: d.createdAt
+            })),
+            users: users.map(u => ({
+                id: u.id,
+                email: u.email,
+                role: u.role,
+                full_name: u.fullName,
+                created_at: u.createdAt
+            })),
+            messages: messages.map(m => ({
+                ...m,
+                created_at: m.createdAt
+            })),
+            subscribers: subscribers.map(s => ({
+                ...s,
+                subscribed_at: s.subscribedAt
+            })),
+            votes
+        };
+    } catch (error: any) {
+        console.error('[AdminData] Error during data fetch:', error);
+        throw createError({
+            statusCode: 500,
+            message: 'Error al obtener datos: ' + error.message
+        });
+    }
 });

@@ -2,12 +2,9 @@ export default defineEventHandler(async (event) => {
     validateAdmin(event);
     const id = getRouterParam(event, 'id');
     const body = await readBody(event);
-    const prisma = usePrisma();
+    const db = useDb();
 
-    await prisma.affiliation.update({
-        where: { id: Number(id) },
-        data: { status: body.status }
-    });
+    await db.query('UPDATE affiliations SET status = ? WHERE id = ?', [body.status, id]);
 
     return { success: true, message: 'Estado de afiliación actualizado' };
 });

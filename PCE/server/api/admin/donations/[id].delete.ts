@@ -1,11 +1,9 @@
 export default defineEventHandler(async (event) => {
     validateAdmin(event);
     const id = getRouterParam(event, 'id');
-    const prisma = usePrisma();
+    const db = useDb();
 
-    await prisma.donation.delete({
-        where: { id: Number(id) }
-    });
+    await db.query('DELETE FROM donations WHERE id = ?', [id]);
 
     return { success: true, message: 'Donación eliminada correctamente' };
 });
