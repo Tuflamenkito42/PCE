@@ -42,18 +42,9 @@ export default defineEventHandler(async (event) => {
         }
     } catch (error: any) {
         console.error('Payment intent error:', error)
-
-        let message = error.message || 'Error creating payment intent'
-
-        // Check for specific Stripe errors regarding API keys
-        if (error.type === 'StripeAuthenticationError' || (error.message && error.message.includes('Invalid API Key'))) {
-            message = 'Error de configuración: La clave API de Stripe es inválida. Verifica tu archivo .env'
-            console.error('>>> CRITICAL: Verify STRIPE_SECRET_KEY in .env file. It appears to be invalid or a placeholder.')
-        }
-
         throw createError({
             statusCode: 500,
-            message
+            message: error.message || 'Error creating payment intent'
         })
     }
 })

@@ -57,7 +57,8 @@ onMounted(async () => {
           iconColor: '#e53e3e'
         }
       },
-      hidePostalCode: true
+      hidePostalCode: true,
+      showIcon: true // Usa los logos oficiales y "normales" de Stripe
     })
     
     card.value.mount(cardElement.value)
