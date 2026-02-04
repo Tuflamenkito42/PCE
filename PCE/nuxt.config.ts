@@ -1,7 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
-  srcDir: 'app/',
+  srcDir: 'app',
   devtools: { enabled: true },
   css: ['~/assets/css/global.css'],
   app: {
@@ -28,9 +28,12 @@ export default defineNuxtConfig({
 
     // Database Configuration
     dbHost: process.env.DB_HOST || 'localhost',
+    dbPort: process.env.DB_PORT || '3306',
     dbUser: process.env.DB_USER || 'pce_user',
     dbPassword: process.env.DB_PASSWORD || 'pce_password',
     dbName: process.env.DB_NAME || 'pce_db',
+    geminiApiKey: process.env.GEMINI_API_KEY || '',
+
 
     // Public keys (exposed to client)
     public: {

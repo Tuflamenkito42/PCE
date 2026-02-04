@@ -6,7 +6,7 @@ services:
       - "3000:3000"
     environment:
       - DB_HOST=db
-      - DB_USER=pce_user
+      - DB_USER=pce_web
       - DB_PASSWORD=pce_password
       - DB_NAME=pce_db
       - NODE_ENV=development
@@ -24,12 +24,13 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: pce_db
-      MYSQL_USER: pce_user
+      MYSQL_USER: pce_web
       MYSQL_PASSWORD: pce_password
     ports:
       - "3306:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - db_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - pce_network
 
@@ -48,8 +49,7 @@ services:
       - pce_network
 
 volumes:
-  mysql_data:
-
+  db_data:
 
 networks:
   pce_network:

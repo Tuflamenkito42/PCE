@@ -1,5 +1,12 @@
 <template>
   <div class="dni-scanner">
+    <!-- AI Loading Overlay -->
+    <AILoadingOverlay 
+      :show="isLoadingModels" 
+      :message="processingMessage"
+      :progress="loadingProgress"
+    />
+    
     <div class="scanner-header">
       <h2>Escanear DNI/NIE</h2>
       <p>Sube una foto de tu DNI para extraer los datos automáticamente</p>
@@ -92,8 +99,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import * as faceapi from 'face-api.js'
-import Tesseract from 'tesseract.js'
+import AILoadingOverlay from './AILoadingOverlay.vue'
+
+
+// Removed static import to avoid SSR issues
+let faceapi = null
 
 // Props & Emits
 const emit = defineEmits(['dataExtracted'])
@@ -108,38 +118,63 @@ const processingMessage = ref('')
 const faceDetected = ref(false)
 const dniData = ref(null)
 const errorMessage = ref('')
+const isLoadingModels = ref(false)
+const loadingProgress = ref(0)
 
 // Face API Models loaded flag
 const modelsLoaded = ref(false)
-
-// DNI/NIE Validation Regex
-const DNI_REGEX = /^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$/
-const NIE_REGEX = /^[XYZ][0-9]{7}[TRWAGMYFPDXBNJZSQVHLCKE]$/
 
 /**
  * Load Face-API models on component mount
  */
 onMounted(async () => {
+  if (import.meta.server) return
+  
   try {
-    processingMessage.value = 'Cargando modelos de detección facial...'
-    isProcessing.value = true
+    isLoadingModels.value = true
+    processingMessage.value = 'Cargando inteligencia artificial...'
     
-    const MODEL_URL = '/models' // Models should be in public/models folder
+    // Load @vladmandic/face-api dynamically
+    if (!faceapi) {
+      console.log('Importing @vladmandic/face-api...')
+      const mod = await import('@vladmandic/face-api')
+      faceapi = mod.default || mod
+    }
+
+    const MODEL_URL = '/models'
     
-    await Promise.all([
-      faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-      faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-      faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
-    ])
+    // Check if faceapi and nets are available
+    if (!faceapi || !faceapi.nets) {
+      throw new Error('La librería Face-api no se cargó correctamente.')
+    }
+
+    console.log('Loading models from:', MODEL_URL)
     
+    try {
+      processingMessage.value = 'Iniciando detector facial...'
+      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL)
+      
+      processingMessage.value = 'Cargando puntos de referencia...'
+      await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL)
+      
+      processingMessage.value = 'Cargando reconocimiento...'
+      await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+    } catch (loadErr) {
+      console.error('Detailed Load Error:', loadErr)
+      throw new Error(`No se pudieron encontrar los archivos en ${MODEL_URL}. Verifica la carpeta public/models.`)
+    }
+    
+    console.log('✅ Todos los modelos de Face-API cargados con éxito')
     modelsLoaded.value = true
-    isProcessing.value = false
+    isLoadingModels.value = false
   } catch (error) {
-    console.error('❌ Error loading Face-API models:', error)
-    errorMessage.value = 'Error al cargar los modelos de detección facial. Asegúrate de que los modelos estén en /public/models/'
-    isProcessing.value = false
+    console.error('❌ Error fatal cargando Face-API:', error)
+    errorMessage.value = `Error de IA: ${error.message}`
+    isLoadingModels.value = false
   }
 })
+
+
 
 /**
  * Handle DNI image upload
@@ -164,38 +199,40 @@ const uploadDNI = async (event) => {
     // Load image
     const img = await loadImage(file)
     
-    // Draw on canvas IMMEDIATELY so the user sees the photo
-    drawDetection(img, null)
-    
     // Detect face
     processingMessage.value = 'Detectando rostro...'
     const detection = await detectFace(img)
     
-    if (!detection) {
+    if (detection) {
+      faceDetected.value = true
+      // Draw with detection box
+      drawDetection(img, detection)
+    } else {
       faceDetected.value = false
-      errorMessage.value = 'No se detectó ningún rostro en la imagen. Asegúrate de que la foto del DNI sea clara.'
-      isProcessing.value = false
-      return
+      // Draw without detection box
+      drawDetection(img, null)
+    }
+
+    // Extract and structure data with Gemini AI
+    const structuredData = await performOCR(img)
+
+    console.log('Structured DNI data:', structuredData);
+    
+    // Validate and set data
+    dniData.value = {
+      cara_detectada: faceDetected.value,
+      dni: structuredData.dni,
+      nombre: structuredData.nombre,
+      apellidos: structuredData.apellidos,
+      fecha_nacimiento: structuredData.fecha_nacimiento,
+      fecha_caducidad: structuredData.fecha_caducidad,
+      valido: !!structuredData.dni // Valid if DNI was detected
     }
     
-    faceDetected.value = true
-    
-    // Re-draw with detection box
-    drawDetection(img, detection)
-    
-    // Extract text with OCR
-    processingMessage.value = 'Extrayendo texto del DNI...'
-    const extractedText = await performOCR(img)
-    
-    // Parse DNI data
-    processingMessage.value = 'Procesando datos...'
-    const parsedData = parseDniData(extractedText)
-    
-    dniData.value = parsedData
     isProcessing.value = false
     
     // Emit data to parent
-    emit('dataExtracted', parsedData)
+    emit('dataExtracted', dniData.value)
     
   } catch (error) {
     console.error('Error processing DNI:', error)
@@ -203,6 +240,7 @@ const uploadDNI = async (event) => {
     isProcessing.value = false
   }
 }
+
 
 /**
  * Load image from file
@@ -225,15 +263,25 @@ const loadImage = (file) => {
 }
 
 /**
- * Detect face in image using face-api.js
+ * Detect face in image using @vladmandic/face-api
  */
 const detectFace = async (img) => {
-  const detection = await faceapi
-    .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
-    .withFaceLandmarks()
+  if (!faceapi) return null;
   
-  return detection
+  try {
+    // @vladmandic/face-api handles backend initialization better 
+    // but we can still ensure it's ready if needed.
+    const detection = await faceapi
+      .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
+      .withFaceLandmarks()
+    
+    return detection
+  } catch (err) {
+    console.error('Error during face detection execution:', err)
+    return null
+  }
 }
+
 
 /**
  * Draw detection on canvas
@@ -267,194 +315,88 @@ const drawDetection = (img, detection) => {
 }
 
 /**
- * Perform OCR on the image
+ * Scan DNI using Gemini AI (Server-side)
  */
 const performOCR = async (img) => {
-  const { data: { text } } = await Tesseract.recognize(
-    img,
-    'spa', // Spanish language
-    {
-      logger: (m) => {
-        if (m.status === 'recognizing text') {
-          processingMessage.value = `Reconociendo texto: ${Math.round(m.progress * 100)}%`
-        }
-      }
+  try {
+    isLoadingModels.value = true
+    loadingProgress.value = 10
+    processingMessage.value = 'Enviando imagen a Gemini AI...'
+    
+    // Convert image to base64 (without prefix)
+    const base64Data = img.src.split(',')[1];
+    const mimeType = img.src.split(',')[0].split(':')[1].split(';')[0];
+    
+    loadingProgress.value = 30
+    processingMessage.value = 'Gemini está analizando tu DNI...'
+
+    const response = await fetch('/api/scan-dni', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        image: base64Data,
+        mimeType: mimeType
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.statusMessage || 'Error al procesar el DNI');
     }
-  )
-  
-  return text
+
+    loadingProgress.value = 80
+    processingMessage.value = 'Estructurando datos...'
+    
+    const structuredData = await response.json();
+    
+    console.log('Gemini Structured Data:', structuredData);
+    
+    loadingProgress.value = 100
+    isLoadingModels.value = false
+    
+    return structuredData;
+  } catch (error) {
+    console.error('Error in Gemini OCR:', error);
+    isLoadingModels.value = false
+    loadingProgress.value = 0
+    throw error;
+  }
 }
 
-/**
- * Parse DNI data from OCR text
- */
-const parseDniData = (text) => {
-  const data = {
-    cara_detectada: faceDetected.value,
-    dni: null,
-    nombre: null,
-    apellidos: null,
-    fecha_nacimiento: null,
-    fecha_caducidad: null,
-    valido: false
-  }
 
-  const rawLines = text.toUpperCase().split('\n').map(l => l.trim()).filter(l => l.length > 0);
-  
-  // 1. EXTRACT DATES FIRST
-  const months = {
-    'ENE': '01', 'FEB': '02', 'MAR': '03', 'ABR': '04', 'MAY': '05', 'JUN': '06',
-    'JUL': '07', 'AGO': '08', 'SEP': '09', 'OCT': '10', 'NOV': '11', 'DIC': '12'
-  };
-
-  const monthNames = Object.keys(months).join('|');
-  const datePatterns = [
-    { regex: new RegExp(`(\\d{2})\\s+(${monthNames})\\s+(\\d{4})`, 'i'), type: 'alpha' },
-    { regex: /(\d{2})[\/\.](\d{2})[\/\.](\d{4})/, type: 'numeric' },
-    { regex: /(\d{2})\s+(\d{2})\s+(\d{4})/, type: 'numeric_space' }
-  ];
-
-  for (let i = 0; i < rawLines.length; i++) {
-    const line = rawLines[i];
-    for (const pattern of datePatterns) {
-      const match = line.match(pattern.regex);
-      if (match) {
-        let finalDate = '';
-        if (pattern.type === 'alpha') {
-          finalDate = `${match[1]}/${months[match[2].toUpperCase()]}/${match[3]}`;
-        } else {
-          finalDate = `${match[1]}/${match[2]}/${match[3]}`;
-        }
-
-        if (line.includes('NACIMIENTO') || (i > 0 && rawLines[i-1].includes('NACIMIENTO'))) {
-          data.fecha_nacimiento = finalDate;
-        } else if (line.includes('VALIDEZ') || line.includes('HASTA') || line.includes('CADUC')) {
-          data.fecha_caducidad = finalDate;
-        } else if (!data.fecha_nacimiento) {
-          data.fecha_nacimiento = finalDate;
-        } else if (!data.fecha_caducidad && finalDate !== data.fecha_nacimiento) {
-          data.fecha_caducidad = finalDate;
-        }
-      }
-    }
-  }
-
-  // 2. EXTRACT DNI/NIE (Robust Mode)
-  for (const line of rawLines) {
-    if (line.match(/\d{2}\s+\d{2}\s+\d{4}/)) continue; // Skip dates
-
-    // Normalize line to remove spaces/symbols for easier regex matching
-    // formatting: 12345678A
-    const normalizedLine = line.replace(/[^0-9A-Z]/g, ''); 
-    
-    // Look for 8 digits (or NIE format) followed by a letter
-    const dniPattern = /([XYZ]?\d{7,8})([A-Z])/;
-    const match = normalizedLine.match(dniPattern);
-    
-    if (match) {
-      const number = match[1];
-      const letter = match[2];
-      const potentialDni = number + letter;
-      
-      // Avoid confusion with birthdate digits (e.g. 12051990J)
-      if (data.fecha_nacimiento) {
-        const birthDigits = data.fecha_nacimiento.replace(/\D/g, '');
-        if (potentialDni.includes(birthDigits) || birthDigits.includes(potentialDni.substring(0, 8))) {
-          continue;
-        }
-      }
-
-      data.dni = potentialDni;
-      // We force valid = true if it matches the format, accepting test cards
-      data.valido = true; 
-      
-      // Optional: Log mathematical validity for debug, but don't block user
-      const isMathematicallyValid = validateDniLetter(potentialDni) || validateNieLetter(potentialDni);
-      if (!isMathematicallyValid) {
-        console.warn('DNI detectado pero matemáticamente inválido (aceptado por ser entorno de prueba):', potentialDni);
-      }
-      
-      break; 
-    }
-  }
-
-  // Fallback if still nothing (try very aggressive search in full text)
-  if (!data.dni) {
-     const cleanFullText = text.replace(/[^0-9A-Z]/g, '');
-     const match = cleanFullText.match(/([XYZ]?\d{7,8})([A-Z])/);
-     if (match) {
-        data.dni = match[1] + match[2];
-        data.valido = true;
-     }
-  }
-
-  // 3. EXTRACT NAMES & SURNAMES
-  const cleanText = (str) => {
-    return str
-      .replace(/ESPAÑA/g, '')
-      .replace(/[^A-ZÁÉÍÓÚÑ\s]/g, '')
-      .replace(/L[OÓ]REZ/g, 'LÓPEZ') // Fix common OCR error
-      .trim();
-  };
-
-  for (let i = 0; i < rawLines.length; i++) {
-    const line = rawLines[i];
-    
-    // APELLIDOS
-    if (line.includes('APELLIDO') && i + 1 < rawLines.length) {
-      let nextLine = rawLines[i+1];
-      if (nextLine.length < 3 || nextLine.includes('NOMBRE')) nextLine = rawLines[i+2] || '';
-      
-      if (nextLine) {
-        data.apellidos = cleanText(nextLine);
-      }
-    }
-    
-    // NOMBRE
-    if (line.includes('NOMBRE') && !line.includes('DOC') && i + 1 < rawLines.length) {
-      let nextLine = rawLines[i+1];
-      if (nextLine.length < 3) nextLine = rawLines[i+2] || '';
-      
-      if (nextLine) {
-        data.nombre = cleanText(nextLine);
-      }
-    }
-  }
-  
-  return data;
-}
-
-const getDniLetter = (numberStr) => {
-  const letters = 'TRWAGMYFPDXBNJZSQVHLCKE'
-  const number = parseInt(numberStr.replace(/[^0-9]/g, ''), 10)
-  if (isNaN(number)) return null
-  return letters.charAt(number % 23)
-}
 
 /**
  * Validate DNI letter
  */
 const validateDniLetter = (dni) => {
-  const letter = dni.charAt(dni.length - 1)
-  const numPart = dni.substring(0, dni.length - 1)
-  return getDniLetter(numPart) === letter
+  if (!dni) return false;
+  const letter = dni.charAt(dni.length - 1).toUpperCase();
+  const numPart = dni.substring(0, dni.length - 1);
+  const letters = 'TRWAGMYFPDXBNJZSQVHLCKE';
+  const number = parseInt(numPart.replace(/[^0-9]/g, ''), 10);
+  if (isNaN(number)) return false;
+  return letters.charAt(number % 23) === letter;
 }
 
 /**
  * Validate NIE letter
  */
 const validateNieLetter = (nie) => {
-  const letters = 'TRWAGMYFPDXBNJZSQVHLCKE'
-  const niePrefix = { X: 0, Y: 1, Z: 2 }
-  const prefix = nie.charAt(0)
-  const number = parseInt(niePrefix[prefix] + nie.substring(1, 8), 10)
-  const letter = nie.charAt(8)
-  return letters.charAt(number % 23) === letter
+  if (!nie) return false;
+  const letters = 'TRWAGMYFPDXBNJZSQVHLCKE';
+  const niePrefix = { X: 0, Y: 1, Z: 2 };
+  const prefix = nie.charAt(0).toUpperCase();
+  const number = parseInt(niePrefix[prefix] + nie.substring(1, 8), 10);
+  const letter = nie.charAt(8).toUpperCase();
+  return letters.charAt(number % 23) === letter;
 }
 
 /**
  * Use extracted DNI data
  */
+
 const useDniData = () => {
   if (dniData.value) {
     emit('dataExtracted', dniData.value)
