@@ -446,9 +446,9 @@ const handleDniData = (data) => {
   }
 
   if (data.valido) {
-    alert('✅ DNI válido detectado. Formulario auto-rellenado.')
+    console.log('✅ DNI válido detectado. Formulario auto-rellenado.')
   } else {
-    alert('⚠️ Algunos datos detectados. Por favor, completa o verifica manualmente los campos.')
+    console.log('⚠️ Algunos datos detectados. Por favor, completa o verifica manualmente los campos.')
   }
 }
 

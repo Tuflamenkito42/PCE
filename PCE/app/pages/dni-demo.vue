@@ -91,9 +91,9 @@ const handleDniData = (data) => {
   
   // Show notification
   if (data.valido) {
-    alert('✅ DNI válido detectado. Formulario auto-rellenado.')
+    console.log('✅ DNI válido detectado. Formulario auto-rellenado.')
   } else {
-    alert('⚠️ DNI detectado pero no es válido. Verifica los datos.')
+    console.log('⚠️ DNI detectado pero no es válido. Verifica los datos.')
   }
 }
 
@@ -102,7 +102,6 @@ const handleDniData = (data) => {
  */
 const submitForm = () => {
   console.log('📤 Submitting form:', formData.value)
-  alert('Formulario enviado correctamente!')
 }
 
 useHead({

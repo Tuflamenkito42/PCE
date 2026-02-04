@@ -54,8 +54,6 @@ const handleStep1 = async () => {
       })
       
       // Do NOT login yet. Wait for verification.
-      
-      alert("¡Registro completado! Ahora verifique su identidad.")
        currentStep.value = 2
     }
   } catch (err) {
@@ -74,7 +72,6 @@ const handleFinalSuccess = async () => {
     const { login } = useAuth()
     await login(email.value, password.value)
 
-    alert("¡Verificación completada! Bienvenido al sistema PCE.")
     window.location.href = '/'
   } catch (err) {
     console.error("Error final login:", err)

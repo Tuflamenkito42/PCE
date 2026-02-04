@@ -15,8 +15,19 @@
     <!-- File Upload -->
     <div class="upload-section">
       <label for="dni-upload" class="upload-label">
-        <div class="upload-icon">📷</div>
-        <span>{{ uploadedFile ? uploadedFile.name : 'Seleccionar imagen del DNI' }}</span>
+        <div class="upload-icon">
+          <svg viewBox="0 0 512 512" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Camera Body -->
+            <path d="M464 128H398.2L356.5 64H155.5L113.8 128H48C21.5 128 0 149.5 0 176V416C0 442.5 21.5 464 48 464H464C490.5 464 512 442.5 512 416V176C512 149.5 490.5 128 464 128Z" fill="#B9AFB0"/>
+            <!-- Lens Outer Ring (Cutout effect) -->
+            <circle cx="256" cy="280" r="100" fill="#5E2C2C"/> 
+            <!-- Lens Inner -->
+            <circle cx="256" cy="280" r="80" fill="#B9AFB0"/>
+            <!-- Flash -->
+            <circle cx="432" cy="184" r="24" fill="#5E2C2C"/>
+          </svg>
+        </div>
+        <span class="upload-text">{{ uploadedFile ? uploadedFile.name : 'SELECCIONAR IMAGEN DEL DNI' }}</span>
         <input 
           id="dni-upload" 
           ref="fileInput"
@@ -320,11 +331,6 @@ const validateNieLetter = (nie) => {
 const useDniData = () => {
   if (dniData.value) {
     emit('dataExtracted', dniData.value)
-    if (dniData.value.valido) {
-      alert('Datos del DNI aplicados correctamente')
-    } else {
-      alert('Datos detectados aplicados. Por favor, verifica que sean correctos.')
-    }
   }
 }
 
@@ -381,23 +387,44 @@ const resetScanner = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
-  padding: 40px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px dashed rgba(255, 255, 255, 0.3);
-  border-radius: 15px;
+  gap: 20px;
+  padding: 50px 40px;
+  background: rgba(185, 175, 176, 0.05);
+  border: 2px dashed rgba(185, 175, 176, 0.3);
+  border-radius: 20px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .upload-label:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: translateY(-2px);
+  background: rgba(185, 175, 176, 0.1);
+  border-color: #B9AFB0;
+  transform: translateY(-4px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
 .upload-icon {
-  font-size: 3rem;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.camera-img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 10px rgba(185, 175, 176, 0.3));
+  object-fit: contain;
+}
+
+.upload-text {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #B9AFB0;
+  font-size: 1.1rem;
+  text-align: center;
 }
 
 .file-input {
