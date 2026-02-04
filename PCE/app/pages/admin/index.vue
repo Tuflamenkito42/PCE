@@ -180,10 +180,7 @@
                 </div>
               </td>
               <td class="font-bold">{{ item.subject }}</td>
-              <td class="msg-cell clickable" @click="openMessageModal(item)" :title="item.message">
-                {{ item.message.substring(0, 50) }}{{ item.message.length > 50 ? '...' : '' }}
-                <span class="read-more-hint">(ver más)</span>
-              </td>
+              <td class="msg-cell" :title="item.message">{{ item.message.substring(0, 50) }}{{ item.message.length > 50 ? '...' : '' }}</td>
               <td class="text-muted">{{ formatDate(item.created_at) }}</td>
               <td class="text-right">
                 <button @click="deleteItem('contact_messages', item.id)" class="btn-delete" title="Eliminar">
@@ -301,40 +298,6 @@
         </div>
       </div>
     </div>
-        <!-- View Message Modal -->
-    <div v-if="showViewMessageModal && selectedMessage" class="modal-overlay" @click.self="showViewMessageModal = false">
-      <div class="modal-content glass animate-in">
-        <div class="modal-header">
-          <h2 class="form-subtitle">DETALLE DEL MENSAJE</h2>
-          <button @click="showViewMessageModal = false" class="btn-close">&times;</button>
-        </div>
-        
-        <div class="modal-body message-detail">
-          <div class="detail-row">
-            <span class="detail-label">REMITENTE:</span>
-            <span class="detail-value">{{ selectedMessage.name }} &lt;{{ selectedMessage.email }}&gt;</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">FECHA:</span>
-            <span class="detail-value">{{ formatDate(selectedMessage.created_at) }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">ASUNTO:</span>
-            <span class="detail-value font-bold">{{ selectedMessage.subject }}</span>
-          </div>
-          
-          <div class="detail-divider"></div>
-          
-          <div class="message-content-full">
-            {{ selectedMessage.message }}
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button @click="showViewMessageModal = false" class="btn-action primary">CERRAR</button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -428,14 +391,6 @@ const formatMoney = (val) => {
 const formatDate = (dateString) => {
   if (!dateString) return '-'
   return new Date(dateString).toLocaleDateString('es-ES')
-}
-
-const showViewMessageModal = ref(false)
-const selectedMessage = ref(null)
-
-const openMessageModal = (message) => {
-  selectedMessage.value = message
-  showViewMessageModal.value = true
 }
 
 // Actions
@@ -683,7 +638,7 @@ const sendBulkNewsletter = async () => {
   border-collapse: collapse;
   
   th {
-    background: var(--primary-red); /* Solid brand header */
+    background: rgba(114, 50, 51, 0.9); /* Opaque brand header */
     padding: 20px;
     text-align: left;
     font-family: var(--font-heading);
@@ -912,145 +867,55 @@ const sendBulkNewsletter = async () => {
   margin-bottom: 30px;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-
-    label {
-        font-family: var(--font-heading);
-        font-size: 0.85rem;
-        color: rgba(255, 255, 255, 0.7);
-        letter-spacing: 1px;
-    }
-}
-
-.modal-input,
-.modal-textarea {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 12px 15px;
-    color: #fff;
-    font-size: 1rem;
-    font-family: 'Inter', sans-serif;
-    width: 100%;
-
-    &:focus {
-        outline: none;
-        border-color: var(--primary-red);
-        background: rgba(0, 0, 0, 0.5);
-    }
+.modal-input, .modal-textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 15px;
+  color: #fff;
+  font-family: inherit;
+  margin-top: 10px;
+  
+  &:focus {
+    outline: none;
+    border-color: #fbbf24;
+  }
 }
 
 .modal-textarea {
-    min-height: 150px;
-    resize: vertical;
+  min-height: 200px;
+  resize: vertical;
 }
 
 .modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 30px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 40px;
 }
 
 .btn-action {
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-family: var(--font-heading);
-    font-weight: bold;
-    font-size: 0.9rem;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s ease;
-
-    &.primary {
-        background: var(--primary-red);
-        color: #fff;
-        
-        &:hover:not(:disabled) {
-            background: #8B3A3A;
-        }
-
-        &:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-    }
-
-    &.secondary {
-        background: transparent;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: #fff;
-
-        &:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-    }
-}
-
-/* Message Detail Modal Styles */
-.msg-cell.clickable {
-    cursor: pointer;
-    position: relative;
-    transition: color 0.2s ease;
-    
-    &:hover {
-        color: #fff;
-        background: rgba(255, 255, 255, 0.05);
-    }
-}
-
-.read-more-hint {
-    font-size: 0.7rem;
-    color: var(--acc-red);
-    margin-left: 5px;
-    font-weight: bold;
-    opacity: 0.8;
-}
-
-.message-detail {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.detail-row {
-    display: flex;
-    gap: 15px;
-    align-items: baseline;
-}
-
-.detail-label {
-    font-family: var(--font-heading);
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 0.85rem;
-    min-width: 100px;
-}
-
-.detail-value {
-    color: #fff;
-    font-size: 1rem;
-}
-
-.detail-divider {
-    height: 1px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-family: 'Cinzel', serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  
+  &.primary {
+    background: #fbbf24;
+    color: #000;
+    &:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(251, 191, 36, 0.4); }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+  }
+  
+  &.secondary {
     background: rgba(255, 255, 255, 0.1);
-    margin: 10px 0;
-}
-
-.message-content-full {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    border-radius: 10px;
-    white-space: pre-wrap;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.9);
-    max-height: 40vh;
-    overflow-y: auto;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: #fff;
+    &:hover { background: rgba(255, 255, 255, 0.2); }
+  }
 }
 
 .status-badge {
