@@ -1,0 +1,22 @@
+{
+    "partyName": "Protección Civil Española",
+    "slogan": "Protegiendo lo que importa",
+    "colors": {
+        "primary": "#723233",
+        "secondary": "#B9AFB0",
+        "text": "#FFFFFF"
+    },
+    "logoPath": "logo.png",
+    "programPoints": [
+        "Control de Fronteras: Protocolo de expulsión inmediata y seguridad nacional.",
+        "Justicia Proporcional: Penas íntegras y prisión permanente revisable.",
+        "Igualdad ante la Ley: Reconocimiento equitativo de todas las víctimas.",
+        "Reducción de Impuestos: Menos IRPF y eliminación del impuesto de sucesiones.",
+        "Seguridad Pública: Prohibición del burka y niqab en espacios públicos.",
+        "Igualdad de Género Real: Mérito y capacidad frente a cuotas.",
+        "Protección del Ciudadano: Defensor del Pueblo reforzado e independiente.",
+        "Ayudas a Familias: Prioridad en vivienda pública y bonificaciones.",
+        "Apoyo a Autónomos: Reducción de cotizaciones y burocracia cero."
+    ],
+    "cta": "Infórmate en nuestra web"
+}
