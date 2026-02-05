@@ -15,7 +15,7 @@ model User {
   email     String   @unique
   password  String
   fullName  String?  @map("full_name")
-  dni       String?
+  dni       String?  @unique
   role      String?  @default("public")
   createdAt DateTime @default(now()) @map("created_at")
 
@@ -26,7 +26,7 @@ model Affiliation {
   id               Int      @id @default(autoincrement())
   name             String
   lastname         String
-  dni              String
+  dni              String   @unique
   birthdate        DateTime?
   email            String
   phone            String?
@@ -71,4 +71,14 @@ model ContactMessage {
   createdAt DateTime @default(now()) @map("created_at")
 
   @@map("contact_messages")
+}
+
+model Vote {
+  id              Int      @id @default(autoincrement())
+  pollTitle       String   @map("poll_title")
+  optionSelected  String   @map("option_selected")
+  userId          Int?     @map("user_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@map("votes")
 }

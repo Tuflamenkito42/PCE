@@ -9,6 +9,7 @@ const email = ref('')
 const password = ref('')
 const fullName = ref('')
 const dni = ref('')
+const registeredDni = ref('')
 const errors = ref({})
 
 const toggleAuthMode = () => {
@@ -40,9 +41,19 @@ const handleStep1 = async () => {
 
     if (isLogin.value) {
       // Step 1: Validate credentials WITHOUT logging in (no cookie set yet)
-      await validate(email.value, password.value)
+      const data = await validate(email.value, password.value)
       
-      // If successful, proceed to biometrics
+      // Store the official DNI from DB to verify it in Step 2
+      if (data && data.user) {
+        if (!data.user.dni) {
+          errors.value.general = "Tu cuenta no tiene un DNI registrado. Contacta con soporte."
+          return
+        }
+        registeredDni.value = data.user.dni
+        console.log('Login: Registered DNI captured:', registeredDni.value)
+      }
+      
+      // If successful and has DNI, proceed to biometrics
       currentStep.value = 2
     } else {
       // Register flow
@@ -52,6 +63,9 @@ const handleStep1 = async () => {
         fullName: fullName.value,
         dni: dni.value
       })
+      
+      // Store DNI for Step 2 verification
+      registeredDni.value = dni.value
       
       // Do NOT login yet. Wait for verification.
        currentStep.value = 2
@@ -140,6 +154,7 @@ useHead({
         <!-- Step 2: Biometry IdentityVerification Component -->
         <IdentityVerification 
           :is-locked="currentStep === 1" 
+          :required-dni="registeredDni"
           class="auth-card"
           @verified="handleFinalSuccess"
         />

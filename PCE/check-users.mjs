@@ -10,7 +10,7 @@ async function checkUsers() {
         database: process.env.DB_NAME || 'pce_db',
     });
 
-    const [rows] = await connection.execute('SELECT id, full_name, email, role FROM users');
+    const [rows] = await connection.execute('SELECT id, full_name, email, dni, role FROM users');
     console.log(JSON.stringify(rows, null, 2));
     await connection.end();
 }

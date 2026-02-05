@@ -2,6 +2,15 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     const db = useDb();
 
+    // Check if DNI already affiliated
+    const [existingAff] = await db.query('SELECT id FROM affiliations WHERE dni = ?', [body.dni]);
+    if ((existingAff as any).length > 0) {
+        throw createError({
+            statusCode: 409,
+            message: 'Ya existe una solicitud de afiliación con este DNI/NIE'
+        });
+    }
+
     try {
         const [result]: any = await db.query(
             `INSERT INTO affiliations (name, lastname, dni, birthdate, email, phone, quota, message, payment_intent_id, status) 

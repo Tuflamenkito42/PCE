@@ -37,37 +37,29 @@ export const useAuth = () => {
     };
 
     const validate = async (email: string, password: string) => {
-        const { data, error } = await useFetch<any>('/api/auth/validate', {
+        return await $fetch<any>('/api/auth/validate', {
             method: 'POST',
             body: { email, password }
         });
-
-        if (error.value) throw error.value;
-        return data.value;
     };
 
     const login = async (email: string, password: string) => {
-        const { data, error } = await useFetch<any>('/api/auth/login', {
+        const data = await $fetch<any>('/api/auth/login', {
             method: 'POST',
             body: { email, password }
         });
 
-        if (error.value) throw error.value;
-
-        if (data.value) {
-            user.value = data.value.user;
-            return data.value;
+        if (data) {
+            user.value = data.user;
+            return data;
         }
     };
 
     const register = async (userData: any) => {
-        const { data, error } = await useFetch<any>('/api/auth/register', {
+        return await $fetch<any>('/api/auth/register', {
             method: 'POST',
             body: userData
         });
-
-        if (error.value) throw error.value;
-        return data.value;
     };
 
     const logout = async () => {

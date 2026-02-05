@@ -21,7 +21,8 @@
     </div>
     <div class="form-group" style="margin-top: 1rem;">
       <label>DNI / NIE Confirmación</label>
-      <input v-model="dniInput" type="text" placeholder="12345678A" class="form-input" />
+      <input v-model="dniInput" type="text" placeholder="12345678A" class="form-input" :class="{ 'error': dniError }" />
+      <span v-if="dniError" class="error-msg">{{ dniError }}</span>
     </div>
     <div class="captured-previews">
       <div class="preview-box">
@@ -46,7 +47,8 @@
 
 <script setup>
 const props = defineProps({
-  isLocked: Boolean
+  isLocked: Boolean,
+  requiredDni: String
 })
 
 const emit = defineEmits(['verified'])
@@ -55,6 +57,7 @@ const dniInput = ref('')
 const dniImage = ref(null)
 const faceImage = ref(null)
 const isVerifying = ref(false)
+const dniError = ref('')
 
 const videoRef = ref(null)
 const canvasRef = ref(null)
@@ -87,6 +90,29 @@ const capture = (type) => {
 }
 
 const handleFinalLogin = () => {
+  dniError.value = ''
+  
+  // Clean DNI format (uppercase and no spaces/hyphens)
+  const cleanInput = dniInput.value.trim().toUpperCase().replace(/[-\s]/g, '')
+  const cleanRequired = (props.requiredDni || '').trim().toUpperCase().replace(/[-\s]/g, '')
+
+  console.log('DEBUG DNI Check:', {
+    inputId: dniInput.value,
+    cleanInput,
+    requiredDni: props.requiredDni,
+    cleanRequired
+  })
+
+  if (cleanInput !== cleanRequired) {
+    if (!cleanRequired) {
+      console.error('System Error: requiredDni is empty')
+      dniError.value = 'Error interno: No se ha podido verificar tu identidad. Reinicia el proceso.'
+    } else {
+      dniError.value = 'El DNI no coincide con el usuario registrado.'
+    }
+    return
+  }
+
   isVerifying.value = true
   setTimeout(() => {
     emit('verified')
@@ -211,5 +237,18 @@ watch(() => props.isLocked, (locked) => {
       object-fit: cover;
     }
   }
+}
+
+.error-msg {
+  color: #ff9999;
+  font-size: 0.8rem;
+  margin-top: 8px;
+  font-weight: 700;
+  display: block;
+}
+
+input.error {
+  border: 2px solid #ff6b6b !important;
+  background-color: rgba(255, 107, 107, 0.1) !important;
 }
 </style>

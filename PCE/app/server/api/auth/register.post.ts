@@ -11,10 +11,15 @@ export default defineEventHandler(async (event) => {
 
     const db = useDb();
 
-    // Check if user exists
-    const [existing] = await db.query('SELECT id FROM users WHERE email = ?', [email]);
-    if ((existing as any).length > 0) {
-        throw createError({ statusCode: 409, message: 'El usuario ya existe' });
+    // Check if user exists (email or DNI)
+    const [existingEmail] = await db.query('SELECT id FROM users WHERE email = ?', [email]);
+    if ((existingEmail as any).length > 0) {
+        throw createError({ statusCode: 409, message: 'El correo electrónico ya está registrado' });
+    }
+
+    const [existingDni] = await db.query('SELECT id FROM users WHERE dni = ?', [dni]);
+    if ((existingDni as any).length > 0) {
+        throw createError({ statusCode: 409, message: 'El DNI/NIE ya está registrado' });
     }
 
     // Hash password

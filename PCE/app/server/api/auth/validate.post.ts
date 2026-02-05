@@ -33,7 +33,8 @@ export default defineEventHandler(async (event) => {
             id: user.id,
             email: user.email,
             full_name: user.fullName,
-            role: user.role
+            role: user.role,
+            dni: user.dni
         }
     };
 });
