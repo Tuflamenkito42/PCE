@@ -1,4 +1,5 @@
 import Stripe from 'stripe'
+import { sendEmail } from '../utils/email';
 
 export default defineEventHandler(async (event) => {
     try {

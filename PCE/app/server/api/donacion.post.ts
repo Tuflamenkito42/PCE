@@ -1,3 +1,6 @@
+import { useDb } from '../utils/db';
+import { sendEmail } from '../utils/email';
+
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     const db = useDb();

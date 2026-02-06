@@ -1,3 +1,6 @@
+import { validateAdmin } from '../../../utils/admin';
+import { usePrisma } from '../../../utils/prisma';
+
 export default defineEventHandler(async (event) => {
     validateAdmin(event);
     const id = getRouterParam(event, 'id');

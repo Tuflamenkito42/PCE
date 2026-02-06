@@ -1,3 +1,6 @@
+import { validateAdmin } from '../../../utils/admin';
+import { useDb } from '../../../utils/db';
+
 export default defineEventHandler(async (event) => {
     validateAdmin(event);
     const db = useDb();
