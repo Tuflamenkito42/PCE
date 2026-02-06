@@ -46,8 +46,19 @@
           />
         </div>
         <div class="social-box">
-          <h3>SÍGUENOS EN REDES</h3>
-          <p>Mantente al día en X, Facebook e Instagram</p>
+          <div class="x-profile-card">
+            <h3>SÍGUENOS EN X</h3>
+            <div class="x-profile-info">
+              <div class="x-handle">@tuflamenkito42</div>
+              <p>Mantente al día con nuestras últimas noticias y actualizaciones</p>
+            </div>
+            <a href="https://x.com/tuflamenkito42" target="_blank" rel="noopener noreferrer" class="x-follow-btn">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+              Seguir en X
+            </a>
+          </div>
         </div>
       </div>
       <div class="news-more">
@@ -85,6 +96,8 @@ useHead({
     { name: 'description', content: 'Protección Civil Española (PCE) es un partido comprometido con la seguridad, el bienestar y la protección de la ciudadanía.' }
   ]
 })
+
+
 </script>
 
 <style scoped>
@@ -169,17 +182,81 @@ useHead({
   }
 
   .social-box {
-    background-color: var(--card-bg);
+    background: linear-gradient(135deg, rgba(94, 44, 44, 0.95) 0%, rgba(114, 50, 51, 0.95) 100%);
     height: 100%;
-    min-height: 300px;
+    min-height: 400px; 
+    padding: 40px;
+    overflow: hidden; 
+    border-radius: 12px;
+    border: 2px solid rgba(185, 175, 176, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-transform: uppercase;
+  }
+
+  .x-profile-card {
+    width: 100%;
     text-align: center;
-    padding: 20px;
+  }
+
+  .x-profile-card h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #B9AFB0;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .x-profile-info {
+    margin-bottom: 35px;
+  }
+
+  .x-handle {
+    font-family: 'Cinzel', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+  }
+
+  .x-profile-info p {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .x-follow-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #000;
+    color: #fff;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    letter-spacing: 1px;
+  }
+
+  .x-follow-btn:hover {
+    background: #1a1a1a;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  }
+
+  .x-follow-btn svg {
+    flex-shrink: 0;
   }
 
   .news-more {
