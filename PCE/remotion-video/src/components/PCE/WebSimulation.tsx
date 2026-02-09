@@ -68,7 +68,7 @@ export const WebSimulation = () => {
                 {/* Hero Section */}
                 <div className="relative flex-1 bg-pce-primary overflow-hidden flex items-center">
                     {/* Background Pattern/Overlay */}
-                    <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                    <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px)' }}></div>
 
                     <div className="relative z-10 px-24 w-full flex items-center justify-between">
                         <div className="max-w-2xl">

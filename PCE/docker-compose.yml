@@ -9,12 +9,15 @@ services:
       - DB_USER=pce_user
       - DB_PASSWORD=pce_password
       - DB_NAME=pce_db
+      - DATABASE_URL=mysql://pce_user:pce_password@db:3306/pce_db
       - NODE_ENV=development
     depends_on:
       - db
     volumes:
       - .:/app
       - /app/node_modules
+      - /app/.nuxt
+      - /app/.output
     networks:
       - pce_network
 

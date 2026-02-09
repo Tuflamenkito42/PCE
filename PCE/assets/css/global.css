@@ -1,0 +1,316 @@
+:root {
+    --primary-red: #5e2c2c;
+    --primary-red-dark: #4a2222;
+    --acc-red: #8B3A3A;
+    --accent-gold: #b2a3a4;
+    --text-white: #B9AFB0;
+    --text-grey: #cccccc;
+    --btn-grey: #a0a0a0;
+    --btn-hover: #b0b0b0;
+    --card-bg: #6E3636;
+    --nav-height: 80px;
+    --font-heading: 'Cinzel', serif;
+    --font-body: 'Cinzel', serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-family: 'Cinzel', serif;
+}
+
+body {
+    font-family: var(--font-heading);
+    color: var(--text-white);
+    line-height: 1.6;
+    overflow-x: hidden;
+    background: linear-gradient(to bottom, #B9AFB0, #723233);
+    background-attachment: fixed;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("/images/logo.png");
+    background-repeat: space;
+    background-size: 180px;
+    opacity: 0.15;
+    z-index: -1;
+    pointer-events: none;
+}
+
+h1,
+.page-title,
+h2.section-subtitle,
+.section-title {
+    color: #ffffff !important;
+}
+
+.btn {
+    text-decoration: none;
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+
+    &.btn-donate,
+    &.btn-donate-sm {
+        background-color: #8E4040;
+        color: #B9AFB0;
+        font-size: 0.8rem;
+    }
+
+    &.btn-donate-sm {
+        background-color: #B9AFB0 !important;
+        color: #723233 !important;
+        padding: 8px 25px;
+        font-size: 0.9rem;
+        border-radius: 4px;
+
+        &:hover {
+            background-color: #d1c8c9 !important;
+            transform: scale(1.05);
+        }
+    }
+
+    &.btn-join,
+    &.btn-join-sm {
+        background-color: #000000;
+        color: #B9AFB0;
+        font-size: 0.8rem;
+    }
+
+    &.btn-join-sm {
+        background-color: #000000 !important;
+        color: #B9AFB0 !important;
+        padding: 8px 25px;
+        font-size: 0.9rem;
+        border-radius: 4px;
+
+        &:hover {
+            background-color: #333333 !important;
+            transform: scale(1.05);
+        }
+    }
+
+    &.btn-join-inverse {
+        background-color: var(--accent-gold);
+        color: #4a2222;
+    }
+
+    &.btn-next,
+    &.btn-verify-submit {
+        background-color: var(--primary-red);
+        color: white;
+
+        &.active {
+            background-color: var(--acc-red);
+            box-shadow: 0 0 15px rgba(139, 58, 58, 0.4);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    &.btn-camera {
+        background: #333;
+        color: white;
+        font-size: 0.7rem;
+        padding: 8px 15px;
+
+        &:hover {
+            background: #444;
+        }
+    }
+
+    /* Finish/Success Button */
+    &.btn-finish {
+        padding: 18px 60px;
+        background-color: #000000 !important;
+        color: #ffffff !important;
+        font-size: 1.1rem;
+        text-decoration: none;
+        display: inline-block;
+        border-radius: 50px;
+        font-family: 'Cinzel', serif;
+        font-weight: 800;
+        letter-spacing: 2px;
+        transition: all 0.3s ease;
+        border: 2px solid #ffffff;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        margin-top: 20px;
+
+        &:hover {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+    }
+}
+
+.success-actions {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Payment Alert System */
+.payment-alert {
+    margin-top: 25px;
+    padding: 20px 25px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    backdrop-filter: blur(10px);
+    animation: slideIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.payment-alert.error {
+    background: rgba(255, 82, 82, 0.15);
+    border-color: rgba(255, 82, 82, 0.4);
+    color: #ff8a8a;
+}
+
+.payment-alert.success {
+    background: rgba(0, 230, 118, 0.15);
+    border-color: rgba(0, 230, 118, 0.4);
+    color: #69f0ae;
+}
+
+.payment-alert.processing {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+.alert-icon {
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+}
+
+.payment-alert.processing .alert-icon {
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-content strong {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.alert-content p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin: 0;
+    font-weight: 500;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+        transform: translateX(-5px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+.shake-enter-active {
+    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+/* Common Layout Utilities */
+.card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.lock-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+}
