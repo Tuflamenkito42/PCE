@@ -16,7 +16,7 @@
     </section>
 
     <section class="cta container">
-      <NuxtLink to="/afiliacion" class="btn btn-big-cta">AFILIATE</NuxtLink>
+      <NuxtLink to="/afiliacion" class="btn btn-big-cta">Afíliate</NuxtLink>
     </section>
 
     <section class="news container">
@@ -62,7 +62,7 @@
         </div>
       </div>
       <div class="news-more">
-        <NuxtLink to="/noticias" class="btn btn-load-more">MÁS NOTICIAS</NuxtLink>
+        <NuxtLink to="/noticias" class="btn btn-load-more">Más noticias</NuxtLink>
       </div>
     </section>
 

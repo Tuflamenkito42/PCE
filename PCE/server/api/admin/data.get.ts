@@ -58,21 +58,24 @@ export default defineEventHandler(async (event) => {
         }, 0);
 
         // Return data with mapped field names for frontend compatibility (snake_case)
+        // Return data with mapped field names explicitly converted to Numbers
         return {
             stats: {
-                total_affiliates: totalAffiliates,
-                total_donations: totalDonations,
-                total_messages: totalMessages,
-                total_subscribers: totalSubscribers,
-                total_votes: totalVotes,
-                monthly_income: monthlyIncome
+                total_affiliates: Number(totalAffiliates),
+                total_donations: Number(totalDonations),
+                total_messages: Number(totalMessages),
+                total_subscribers: Number(totalSubscribers),
+                total_votes: Number(totalVotes),
+                monthly_income: Number(monthlyIncome)
             },
             affiliates: affiliates.map(a => ({
                 ...a,
+                quota: Number(a.quota),
                 created_at: a.createdAt
             })),
             donations: donations.map(d => ({
                 ...d,
+                amount: Number(d.amount),
                 created_at: d.createdAt
             })),
             users: users.map(u => ({
@@ -90,7 +93,11 @@ export default defineEventHandler(async (event) => {
                 ...s,
                 subscribed_at: s.subscribedAt
             })),
-            votes
+            votes: votes.map(v => ({
+                poll_title: v.poll_title,
+                option_selected: v.option_selected,
+                total: Number(v.total)
+            }))
         };
     } catch (error: any) {
         console.error('[AdminData] Error during data fetch:', error);

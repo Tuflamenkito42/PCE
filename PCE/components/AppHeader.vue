@@ -129,7 +129,6 @@ const userInitials = computed(() => {
       text-decoration: none;
       font-family: var(--font-heading);
       font-size: 0.8rem;
-      text-transform: uppercase;
       font-weight: 700;
       letter-spacing: 0.5px;
       transition: color 0.3s;

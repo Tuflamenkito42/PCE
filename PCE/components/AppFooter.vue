@@ -117,7 +117,6 @@ const isOpen = useCookieControl()
         color: #B9AFB0;
         text-decoration: none;
         font-size: 0.7rem;
-        text-transform: uppercase;
 
         &:hover {
           color: #ccc;

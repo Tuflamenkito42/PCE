@@ -2,14 +2,14 @@
   <div class="admin-dashboard container">
     <div class="header">
       <div>
-        <h1 class="page-title">PANEL DE ADMINISTRACIÓN</h1>
+        <h1 class="page-title">Panel de Administración</h1>
         <p class="subtitle">Gestión centralizada de socios y aportaciones</p>
       </div>
       <button @click="refresh" class="btn-refresh" :disabled="pending">
         <svg :class="{ spinning: pending }" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
         </svg>
-        {{ pending ? 'CARGANDO...' : 'ACTUALIZAR' }}
+        {{ pending ? 'Cargando...' : 'Actualizar' }}
       </button>
     </div>
 
@@ -23,7 +23,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
         <h3>Error de Acceso</h3>
         <p>{{ error.message }}. Asegúrate de haber iniciado sesión como Administrador.</p>
-        <NuxtLink to="/login" class="btn-action primary" style="margin-top: 20px;">VOLVER AL LOGIN</NuxtLink>
+        <NuxtLink to="/login" class="btn-action primary" style="margin-top: 20px;">Volver al login</NuxtLink>
       </div>
     </div>
 
@@ -32,37 +32,37 @@
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-content-simple">
-            <span class="kpi-label-simple">AFILIADOS:</span>
+            <span class="kpi-label-simple">Afiliados:</span>
             <span class="kpi-value-simple">{{ data.stats.total_affiliates }}</span>
           </div>
         </div>
         <div class="kpi-card">
           <div class="kpi-content-simple">
-            <span class="kpi-label-simple">INGRESOS:</span>
+            <span class="kpi-label-simple">Ingresos:</span>
             <span class="kpi-value-simple">{{ formatMoney(data.stats.monthly_income) }}</span>
           </div>
         </div>
         <div class="kpi-card">
           <div class="kpi-content-simple">
-            <span class="kpi-label-simple">DONACIONES:</span>
+            <span class="kpi-label-simple">Donaciones:</span>
             <span class="kpi-value-simple">{{ formatMoney(data.stats.total_donations) }}</span>
           </div>
         </div>
         <div class="kpi-card">
           <div class="kpi-content-simple">
-            <span class="kpi-label-simple">MENSAJES:</span>
+            <span class="kpi-label-simple">Mensajes:</span>
             <span class="kpi-value-simple">{{ data.stats.total_messages }}</span>
           </div>
         </div>
         <div class="kpi-card">
           <div class="kpi-content-simple">
-            <span class="kpi-label-simple">SUSCRIPTORES:</span>
+            <span class="kpi-label-simple">Suscriptores:</span>
             <span class="kpi-value-simple">{{ data.stats.total_subscribers }}</span>
           </div>
         </div>
         <div class="kpi-card">
           <div class="kpi-content-simple">
-            <span class="kpi-label-simple">VOTOS:</span>
+            <span class="kpi-label-simple">Votos:</span>
             <span class="kpi-value-simple">{{ data.stats.total_votes }}</span>
           </div>
         </div>
@@ -80,7 +80,7 @@
         </div>
         <div class="search-box">
           <button v-if="activeTab === 'newsletter'" @click="showNewsletterModal = true" class="btn-action primary" style="margin-right: 15px;">
-            ENVIAR COMUNICADO
+            Enviar comunicado
           </button>
           <input v-model="searchQuery" type="text" placeholder="Buscar registros..." class="search-input" />
         </div>
@@ -277,26 +277,26 @@
     <div v-if="showNewsletterModal" class="modal-overlay" @click.self="showNewsletterModal = false">
       <div class="modal-content glass animate-in">
         <div class="modal-header">
-          <h2 class="form-subtitle">ENVIAR COMUNICADO MASIVO</h2>
+          <h2 class="form-subtitle">Enviar comunicado masivo</h2>
           <button @click="showNewsletterModal = false" class="btn-close">&times;</button>
         </div>
         <p class="modal-description">Este mensaje se enviará a todos los suscriptores activos del newsletter.</p>
         
         <div class="modal-body">
           <div class="form-group">
-            <label>ASUNTO DEL CORREO</label>
+            <label>Asunto del correo</label>
             <input v-model="newsletterForm.subject" type="text" placeholder="Ej: Novedades del mes de Febrero" class="modal-input" />
           </div>
           <div class="form-group">
-            <label>CONTENIDO DEL MENSAJE</label>
+            <label>Contenido del mensaje</label>
             <textarea v-model="newsletterForm.message" placeholder="Escribe aquí el comunicado oficial..." class="modal-textarea"></textarea>
           </div>
         </div>
 
         <div class="modal-footer">
-          <button @click="showNewsletterModal = false" class="btn-action secondary">CANCELAR</button>
+          <button @click="showNewsletterModal = false" class="btn-action secondary">Cancelar</button>
           <button @click="sendBulkNewsletter" :disabled="sendingNewsletter || !newsletterForm.subject || !newsletterForm.message" class="btn-action primary">
-            {{ sendingNewsletter ? 'ENVIANDO...' : 'ENVIAR AHORA' }}
+            {{ sendingNewsletter ? 'Enviando...' : 'Enviar ahora' }}
           </button>
         </div>
       </div>
@@ -305,21 +305,21 @@
     <div v-if="showViewMessageModal && selectedMessage" class="modal-overlay" @click.self="showViewMessageModal = false">
       <div class="modal-content glass animate-in">
         <div class="modal-header">
-          <h2 class="form-subtitle">DETALLE DEL MENSAJE</h2>
+          <h2 class="form-subtitle">Detalle del mensaje</h2>
           <button @click="showViewMessageModal = false" class="btn-close">&times;</button>
         </div>
         
         <div class="modal-body message-detail">
           <div class="detail-row">
-            <span class="detail-label">REMITENTE:</span>
+            <span class="detail-label">Remitente:</span>
             <span class="detail-value">{{ selectedMessage.name }} &lt;{{ selectedMessage.email }}&gt;</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">FECHA:</span>
+            <span class="detail-label">Fecha:</span>
             <span class="detail-value">{{ formatDate(selectedMessage.created_at) }}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">ASUNTO:</span>
+            <span class="detail-label">Asunto:</span>
             <span class="detail-value font-bold">{{ selectedMessage.subject }}</span>
           </div>
           
@@ -331,7 +331,7 @@
         </div>
 
         <div class="modal-footer">
-          <button @click="showViewMessageModal = false" class="btn-action primary">CERRAR</button>
+          <button @click="showViewMessageModal = false" class="btn-action primary">Cerrar</button>
         </div>
       </div>
     </div>
@@ -497,7 +497,7 @@ const sendBulkNewsletter = async () => {
 
 .page-title {
   font-family: var(--font-heading);
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   margin: 0;
   letter-spacing: 4px;
   color: #fff;
@@ -660,7 +660,6 @@ const sendBulkNewsletter = async () => {
   &::placeholder {
     color: rgba(255, 255, 255, 0.7); /* Light white color for visibility */
     opacity: 1; /* Ensure full opacity for the color */
-    text-transform: uppercase;
     font-size: 0.8rem;
     letter-spacing: 1px;
   }
@@ -688,9 +687,8 @@ const sendBulkNewsletter = async () => {
     text-align: left;
     font-family: var(--font-heading);
     font-size: 0.9rem;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     color: #ffffff;
-    text-transform: uppercase;
   }
   
   td {

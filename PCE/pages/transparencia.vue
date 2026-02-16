@@ -7,8 +7,8 @@
           <h1 class="page-title">TRANSPARENCIA</h1>
           <div class="title-divider"></div>
           <p class="hero-subtitle">
-            EN PROTECCIÓN CIVIL ESPAÑOLA (PCE), LA TRANSPARENCIA NO ES SOLO UNA OBLIGACIÓN LEGAL, 
-            SINO UN PILAR FUNDAMENTAL DE NUESTRO COMPROMISO CON LA CIUDADANÍA.
+            En Protección Civil Española (PCE), la transparencia no es solo una obligación legal, 
+            sino un pilar fundamental de nuestro compromiso con la ciudadanía.
           </p>
         </div>
       </div>

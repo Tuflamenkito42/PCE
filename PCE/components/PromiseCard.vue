@@ -69,11 +69,10 @@ defineProps({
     width: 100%;
 
     h3 {
-      font-family: var(--font-heading);
-      font-size: 1.3rem;
+      font-family: var(--font-body);
+      font-size: 1.25rem;
       font-weight: 700;
       color: var(--accent-gold);
-      text-transform: uppercase;
       text-align: center;
       margin-bottom: 15px;
       padding-bottom: 15px;
@@ -90,13 +89,12 @@ defineProps({
 
     :deep(strong) {
       color: var(--accent-gold);
-      font-family: var(--font-heading);
+      font-family: var(--font-body);
       display: block;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       margin-bottom: 15px;
       padding-bottom: 15px;
       border-bottom: 1px solid rgba(178, 163, 164, 0.3);
-      text-transform: uppercase;
       text-align: center;
     }
   }

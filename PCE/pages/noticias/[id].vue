@@ -237,7 +237,6 @@ useHead({
     font-size: 0.9rem;
     color: var(--text-grey);
     margin-bottom: 15px;
-    text-transform: uppercase;
     letter-spacing: 1px;
     
     .separator {
@@ -248,7 +247,7 @@ useHead({
   
   .article-title {
     font-family: var(--font-heading);
-    font-size: 2.8rem;
+    font-size: 2.5rem;
     color: var(--text-white);
     line-height: 1.2;
     margin: 0;
@@ -291,8 +290,8 @@ useHead({
     }
     
     h3 {
-      font-family: var(--font-heading);
-      font-size: 1.6rem;
+      font-family: var(--font-body);
+      font-size: 1.5rem;
       color: var(--text-white);
       margin: 40px 0 20px 0;
     }

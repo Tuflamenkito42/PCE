@@ -175,7 +175,7 @@ watch(() => props.isLocked, (locked) => {
       padding: 10px;
       border-radius: 4px;
       font-size: 0.75rem;
-      font-family: 'Cinzel', serif;
+      font-family: var(--font-body);
       
       &:hover {
         background: #5e2c2c;
@@ -188,11 +188,10 @@ watch(() => props.isLocked, (locked) => {
   label {
     display: block;
     margin-bottom: 10px;
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-body);
     font-weight: 700;
     font-size: 0.8rem;
     color: #fff;
-    text-transform: uppercase;
     letter-spacing: 1px;
   }
 
@@ -204,7 +203,7 @@ watch(() => props.isLocked, (locked) => {
     border-radius: 4px;
     color: #000;
     font-size: 1rem;
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-body);
 
     &:focus {
       outline: none;
@@ -228,7 +227,7 @@ watch(() => props.isLocked, (locked) => {
     overflow: hidden;
     border: 1px solid rgba(255,255,255,0.1);
     color: rgba(255,255,255,0.4);
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-body);
     font-size: 0.8rem;
 
     .preview-img {

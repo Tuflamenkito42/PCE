@@ -10,7 +10,7 @@
     --card-bg: #6E3636;
     --nav-height: 80px;
     --font-heading: 'Cinzel', serif;
-    --font-body: 'Cinzel', serif;
+    --font-body: 'Outfit', sans-serif;
 }
 
 * {
@@ -22,11 +22,11 @@
 
 html {
     scroll-behavior: smooth;
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-body);
 }
 
 body {
-    font-family: var(--font-heading);
+    font-family: var(--font-body);
     color: var(--text-white);
     line-height: 1.6;
     overflow-x: hidden;
@@ -51,8 +51,22 @@ body::before {
 
 h1,
 .page-title,
-h2.section-subtitle,
-.section-title {
+.brand-title {
+    font-family: var(--font-heading) !important;
+    color: #ffffff !important;
+    text-transform: uppercase;
+}
+
+h2,
+h3,
+h4,
+h5,
+h6,
+.section-title,
+.form-subtitle,
+.section-subtitle {
+    font-family: var(--font-body);
+    font-weight: 600;
     color: #ffffff !important;
 }
 
@@ -63,7 +77,6 @@ h2.section-subtitle,
     border-radius: 4px;
     font-family: var(--font-heading);
     font-weight: 700;
-    text-transform: uppercase;
     transition: all 0.3s ease;
     cursor: pointer;
     border: none;
@@ -223,11 +236,10 @@ h2.section-subtitle,
 
 .alert-content strong {
     display: block;
-    font-family: 'Cinzel', serif;
+    font-family: var(--font-body);
     font-size: 0.9rem;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     margin-bottom: 4px;
-    text-transform: uppercase;
 }
 
 .alert-content p {

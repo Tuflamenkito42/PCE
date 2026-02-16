@@ -25,7 +25,7 @@
       <p class="news-excerpt" v-if="excerpt">{{ excerpt }}</p>
       <slot />
       <NuxtLink v-if="url" :to="url" class="read-more-btn">
-        LEER MÁS
+        Leer más
         <span class="arrow-icon">→</span>
       </NuxtLink>
     </div>
@@ -171,8 +171,8 @@ const formattedDate = computed(() => {
     }
 
     h3 {
-      font-family: var(--font-heading);
-      font-size: 1.35rem;
+      font-family: var(--font-body);
+      font-size: 1.25rem;
       margin: 0 0 14px 0;
       color: var(--text-white);
       line-height: 1.4;
@@ -181,7 +181,7 @@ const formattedDate = computed(() => {
       line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .news-excerpt {

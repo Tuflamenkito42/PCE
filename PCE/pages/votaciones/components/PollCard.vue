@@ -42,12 +42,12 @@ defineEmits(['vote'])
     font-weight: 700;
     color: var(--accent-gold);
     margin-bottom: 10px;
-    text-transform: uppercase;
   }
 
   h3 {
     margin-bottom: 15px;
-    font-family: var(--font-heading);
+    font-family: var(--font-body);
+    font-weight: 600;
   }
 
   p {
