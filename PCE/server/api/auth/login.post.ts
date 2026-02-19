@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
 
     setCookie(event, 'auth_token', token, {
         httpOnly: false,
-        maxAge: 60 * 60 * 24 * 7, // 1 week
+        maxAge: 60 * 60 * 24 * 7, // 1 semana exacta 
         path: '/'
     });
 

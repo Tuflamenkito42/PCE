@@ -5,9 +5,9 @@
     </div>
     <h3>PORQUE AFILIARTE?</h3>
     <ul class="benefits-list">
-      <li>1. LOREM IPSUM LOREM IPSUM</li>
-      <li>2. LOREM IPSUM LOREM IPSUM</li>
-      <li>3. LOREM IPSUM LOREM IPSUM</li>
+      <li>1. Seguridad y Bienestar</li>
+      <li>2. Transparencia Total</li>
+      <li>3. Justicia Proporcional</li>
     </ul>
     <button class="btn btn-join-inverse" @click="$emit('join')">AFILIATE</button>
     <p class="small-note">TAMBIÉN PUEDES APOYARNOS MEDIANTE UNA DONACIÓN</p>

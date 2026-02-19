@@ -76,7 +76,7 @@
           <button :class="{ active: activeTab === 'messages' }" @click="activeTab = 'messages'">Mensajes</button>
           <button :class="{ active: activeTab === 'newsletter' }" @click="activeTab = 'newsletter'">Newsletter</button>
           <button :class="{ active: activeTab === 'votes' }" @click="activeTab = 'votes'">Escrutinio</button>
-          <button :class="{ active: activeTab === 'users' }" @click="activeTab = 'users'">Admins</button>
+          <button :class="{ active: activeTab === 'users' }" @click="activeTab = 'users'">Usuarios</button>
         </div>
         <div class="search-box">
           <button v-if="activeTab === 'newsletter'" @click="showNewsletterModal = true" class="btn-action primary" style="margin-right: 15px;">
