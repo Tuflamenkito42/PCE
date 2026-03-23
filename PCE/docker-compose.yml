@@ -11,6 +11,8 @@ services:
       - DB_NAME=pce_db
       - DATABASE_URL=mysql://pce_user:pce_password@db:3306/pce_db
       - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=1000
     depends_on:
       - db
     volumes:

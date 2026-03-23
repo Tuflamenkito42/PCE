@@ -50,7 +50,7 @@ const rejectCookies = () => {
   background: rgba(30, 30, 30, 0.95);
   backdrop-filter: blur(10px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 20px;
+  padding: 15px 20px;
   z-index: 9999;
   box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
 }
@@ -60,7 +60,7 @@ const rejectCookies = () => {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
   align-items: center;
   text-align: center;
 
@@ -68,6 +68,7 @@ const rejectCookies = () => {
     flex-direction: row;
     justify-content: space-between;
     text-align: left;
+    padding: 10px 0;
   }
 }
 
@@ -75,32 +76,44 @@ const rejectCookies = () => {
   h3 {
     font-family: 'Cinzel', serif;
     color: #fff;
-    font-size: 1.1rem;
+    font-size: 1rem;
     margin-bottom: 5px;
     letter-spacing: 1px;
   }
   
   p {
     color: #ccc;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     max-width: 600px;
-    line-height: 1.5;
+    line-height: 1.4;
+    margin: 0;
   }
 }
 
 .cookie-actions {
   display: flex;
-  gap: 15px;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+
+  @media (min-width: 768px) {
+    width: auto;
+  }
 
   .btn {
-    padding: 10px 25px;
+    padding: 10px 20px;
     border-radius: 4px;
     font-family: 'Cinzel', serif;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
+    flex: 1;
+
+    @media (min-width: 768px) {
+      flex: none;
+    }
   }
 
   .btn-accept {
@@ -115,13 +128,12 @@ const rejectCookies = () => {
   }
 
   .btn-reject {
-    background-color: #b2a3a4;
-    color: #4a2222;
+    background-color: transparent;
+    color: #b2a3a4;
     border: 1px solid #b2a3a4;
 
     &:hover {
-      background-color: #9e8e8f;
-      border-color: #9e8e8f;
+      background-color: rgba(255,255,255,0.1);
       transform: translateY(-2px);
     }
   }

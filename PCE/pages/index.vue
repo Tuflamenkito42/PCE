@@ -1,22 +1,49 @@
 <template>
   <div class="page-home">
+    <!-- 1. Hero con Video Limpio -->
     <section class="hero">
       <div class="video-container">
-        <video autoplay muted loop class="hero-video">
+        <video autoplay muted loop playsinline class="hero-video">
           <source src="/images/videopce.mp4" type="video/mp4" />
         </video>
+        <div class="video-overlay"></div>
       </div>
-      <div class="hero-overlay">
-        <div class="container">
-          <p>
-            Protección Civil Española (PCE) es un partido comprometido con la seguridad, el bienestar y la protección de la ciudadanía. Trabajamos por una sociedad más preparada, solidaria y transparente, poniendo en el centro la prevención, la respuesta ante emergencias y el apoyo a quienes más lo necesitan. Descubre quienes somos, nuestras propuestas y cómo puedes formar parte del cambio.
+    </section>
+
+    <!-- 2. Sección de Introducción -->
+    <section class="welcome-section">
+      <div class="container welcome-container">
+        <div class="welcome-box animate-in">
+          <p class="welcome-intro-text">
+            Protección Civil Española (PCE) es un partido comprometido con la seguridad, el bienestar y la protección de la ciudadanía. Trabajamos por una sociedad más preparada, solidaria y transparente, poniendo en el centro la prevención, la respuesta ante emergencias y el apoyo a quienes más lo necesitan. Descubre quiénes somos, nuestras propuestas y cómo puedes formar parte del cambio.
           </p>
         </div>
       </div>
     </section>
 
-    <section class="cta container">
-      <NuxtLink to="/afiliacion" class="btn btn-big-cta">Afíliate</NuxtLink>
+    <!-- 3. Sección del Botón AFILIATE (Ahora rectangular como los demás, con estilo premium) -->
+    <section class="affiliate-cta-section">
+      <div class="container cta-container">
+        <NuxtLink to="/afiliacion" class="btn btn-pce-primary btn-xl">AFILIATE</NuxtLink>
+      </div>
+    </section>
+
+    <section class="bullpatriot-section">
+      <div class="container">
+        <NuxtLink to="/bullpatriot" class="bullpatriot-card" aria-label="Ir al chat BULLPATRIOT">
+          <img
+            :src="bullPatriotImage"
+            alt="BULLPATRIOT"
+            class="bullpatriot-image"
+            @error="onBullPatriotImageError"
+          />
+          <div class="bullpatriot-copy">
+            <h2>BULLPATRIOT</h2>
+            <p>Asistente IA local con Ollama para responder dudas y generar noticias al instante.</p>
+            <span class="bullpatriot-action">ENTRAR AL CHAT</span>
+          </div>
+        </NuxtLink>
+      </div>
     </section>
 
     <section class="news container">
@@ -62,7 +89,7 @@
         </div>
       </div>
       <div class="news-more">
-        <NuxtLink to="/noticias" class="btn btn-load-more">Más noticias</NuxtLink>
+        <NuxtLink to="/noticias" class="btn btn-pce-secondary">MÁS NOTICIAS</NuxtLink>
       </div>
     </section>
 
@@ -80,8 +107,8 @@
         </PromiseCard>
       </div>
       <div class="promises-actions">
-        <NuxtLink to="/programa" class="btn btn-action-large">Más promesas</NuxtLink>
-        <a href="#" class="btn btn-action-large">Descargar PDF electoral</a>
+        <NuxtLink to="/programa" class="btn btn-pce-primary">MÁS PROMESAS</NuxtLink>
+        <a href="#" class="btn btn-pce-primary">DESCARGAR PDF ELECTORAL</a>
       </div>
     </section>
 
@@ -90,14 +117,20 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+
+const bullPatriotImage = ref('/images/bullpatriot.png')
+
+const onBullPatriotImageError = () => {
+  bullPatriotImage.value = '/images/logo.png'
+}
+
 useHead({
   title: 'Protección Civil Española - PCE',
   meta: [
     { name: 'description', content: 'Protección Civil Española (PCE) es un partido comprometido con la seguridad, el bienestar y la protección de la ciudadanía.' }
   ]
 })
-
-
 </script>
 
 <style scoped>
@@ -107,58 +140,235 @@ useHead({
   padding: 0 20px;
 }
 
+/* 1. HERO ESTILO LIMPIO */
 .hero {
   position: relative;
   width: 100%;
-  min-height: 60vh;
+  height: 60vh;
+  min-height: 350px;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
 
   .video-container {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: 590px;
+    height: 100%;
     overflow: hidden;
-    position: relative;
+    z-index: 0;
 
     .hero-video {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-  }
 
-  .hero-overlay {
-    width: 100%;
-    background-color: rgba(94, 44, 44, 0.9);
-    display: flex;
-    justify-content: center;
-    padding: 30px 0;
-
-    p {
-      text-align: center;
-      font-size: 1rem;
-      max-width: 900px;
+    .video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.1);
     }
   }
 }
 
-.cta {
+/* 2. SECCION BIENVENIDA / INTRO TEXT */
+.welcome-section {
+  padding: 0;
+  background-color: #723233;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  position: relative;
+  z-index: 20;
+}
+
+.welcome-box {
+  padding: 60px 20px;
   text-align: center;
-  padding: 30px 0;
+  width: 100%;
+}
 
-  .btn-big-cta {
-    background-color: #7A3535;
-    color: #B9AFB0;
-    font-size: 1.5rem;
-    padding: 15px 50px;
-    border-radius: 4px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+.welcome-intro-text {
+  font-size: 1.3rem;
+  line-height: 1.6;
+  color: #ffffff;
+  text-align: center;
+  max-width: 1000px;
+  font-weight: 600;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
 
-    &:hover {
-      transform: translateY(-2px);
-      background-color: #8f4040;
-    }
+/* 3. SISTEMA DE BOTONES VISTOSOS (FORMATO WEB) */
+.btn-pce-primary {
+  background-color: #5e2c2c; /* Rojo PCE */
+  color: #B9AFB0;
+  padding: 16px 30px;
+  font-family: 'Cinzel', serif; /* Usando Cinzel para consistencia */
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #723233;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    color: #ffffff;
+  }
+}
+
+.btn-pce-secondary {
+  background-color: rgba(94, 44, 44, 0.7);
+  color: #B9AFB0;
+  padding: 16px 50px;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #5e2c2c;
+    color: #ffffff;
+  }
+}
+
+.btn-xl {
+  font-size: 1.5rem;
+  padding: 25px 80px;
+  width: auto;
+  min-width: 300px;
+}
+
+.affiliate-cta-section {
+  padding: 60px 0;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+}
+
+.bullpatriot-section {
+  padding: 20px 0 55px;
+}
+
+.bullpatriot-card {
+  background: linear-gradient(140deg, #1a1a1a 0%, #2d1515 70%, #5e2c2c 100%);
+  border: 2px solid rgba(185, 175, 176, 0.25);
+  border-radius: 18px;
+  text-decoration: none;
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 26px;
+  align-items: center;
+  padding: 22px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.bullpatriot-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.45);
+}
+
+.bullpatriot-image {
+  width: 190px;
+  height: 190px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.16);
+  background: #111;
+}
+
+.bullpatriot-copy h2 {
+  margin: 0 0 10px;
+  font-family: 'Cinzel', serif;
+  font-size: 2.2rem;
+  color: #ffffff;
+  letter-spacing: 2px;
+}
+
+.bullpatriot-copy p {
+  margin: 0 0 16px;
+  color: rgba(255, 255, 255, 0.87);
+  line-height: 1.55;
+  font-size: 1.02rem;
+}
+
+.bullpatriot-action {
+  display: inline-flex;
+  padding: 12px 20px;
+  border-radius: 40px;
+  background: #b9afb0;
+  color: #3e1f1f;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.news-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.promises-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 50px;
+  flex-wrap: wrap;
+
+  .btn-pce-primary {
+    flex: 1;
+    min-width: 250px;
+    padding: 22px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    height: 40vh;
+  }
+  .welcome-intro-text {
+    font-size: 1.1rem;
+  }
+  .btn-xl {
+    font-size: 1.25rem;
+    padding: 20px 40px;
+    min-width: 100%;
+  }
+  .promises-actions .btn-pce-primary {
+    min-width: 100%;
+  }
+
+  .bullpatriot-card {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .bullpatriot-image {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+  }
+
+  .bullpatriot-copy h2 {
+    font-size: 1.7rem;
   }
 }
 
@@ -258,23 +468,6 @@ useHead({
   .x-follow-btn svg {
     flex-shrink: 0;
   }
-
-  .news-more {
-    display: flex;
-    justify-content: center;
-    margin-top: 40px;
-
-    .btn-load-more {
-      background-color: rgba(94, 44, 44, 0.7);
-      color: #B9AFB0;
-      padding: 16px 50px;
-      font-size: 1rem;
-
-      &:hover {
-        background-color: var(--primary-red);
-      }
-    }
-  }
 }
 
 .promises {
@@ -285,34 +478,10 @@ useHead({
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
   }
-
-  .promises-actions {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-    margin-top: 50px;
-    flex-wrap: wrap;
-
-    .btn-action-large {
-      background-color: #5e2c2c;
-      color: #B9AFB0;
-      width: 100%;
-      max-width: 350px;
-      padding: 20px;
-      font-size: 1.1rem;
-      text-align: center;
-      transition: all 0.3s ease;
-
-      &:hover {
-        background-color: #723233;
-        transform: translateY(-3px);
-      }
-    }
-  }
 }
 
 .section-title {
-  font-family: var(--font-heading);
+  font-family: 'Cinzel', serif;
   font-size: 2rem;
   text-transform: uppercase;
   margin-bottom: 30px;

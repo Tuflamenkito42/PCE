@@ -30,8 +30,9 @@ body {
     color: var(--text-white);
     line-height: 1.6;
     overflow-x: hidden;
-    background: linear-gradient(to bottom, #B9AFB0, #723233);
+    background: linear-gradient(180deg, #B9AFB0ED 0%, #723233 100%);
     background-attachment: fixed;
+    min-height: 100vh;
 }
 
 body::before {
