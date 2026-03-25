@@ -42,14 +42,14 @@ const closePdfModal = () => {
 }
 
 const promises = [
+  { title: 'Justicia implacable', desc: 'Pena de muerte para violadores y pederastas: medida extrema pero necesaria contra crímenes irreversibles que destruyen vidas y dignidad humana. Justicia firme para víctimas, infancia y sociedad.' },
   { title: 'Control de Fronteras', desc: 'Estableceremos un protocolo de expulsión inmediata de inmigrantes ilegales en menos de 48 horas, con protección temporal únicamente para ciudadanos de países en conflicto armado reconocido internacionalmente.' },
-  { title: 'Justicia Proporcional', desc: 'Endurecimiento de penas para delitos graves con prisión permanente revisable para violadores reincidentes y pederastas. Las penas se cumplirán íntegramente sin reducciones injustificadas.' },
-  { title: 'Igualdad ante la Ley', desc: 'Reconocimiento equitativo de todas las víctimas de violencia sexual y de género, independientemente de su sexo. Protección legal igual para hombres y mujeres víctimas.' },
+  { title: 'Fomento de la Natalidad', desc: 'Implementación de la misma norma que Rusia en la baja por maternidad y paternidad, extendiéndola hasta los 3 años de duración para fomentar la natalidad y asegurar el bienestar de las familias españolas.' },
+  { title: 'Igualdad ante la Ley', desc: 'Reconocimiento equitativo de todas las víctimas de violencia sexual y de género, independientemente de su sexo, con cadena perpetua para maltratadores y maltratadoras. Protección legal igual para hombres y mujeres víctimas.' },
   { title: 'Reducción de Impuestos', desc: 'Reducción del IRPF del 3-5% para la clase media, IVA del 10% en productos básicos y eliminación completa del impuesto de sucesiones y donaciones para fortalecer la economía familiar.' },
   { title: 'Seguridad Pública', desc: 'Prohibición del burka y niqab en espacios públicos por razones de seguridad e identificación. Respeto total a otros símbolos religiosos que no impidan la identificación facial.' },
   { title: 'Igualdad de Género Real', desc: 'Igualdad salarial efectiva, permisos de paternidad y maternidad iguales, y eliminación de discriminación laboral. Las decisiones se basarán en competencia y méritos, no en género.' },
   { title: 'Protección del Ciudadano', desc: 'Defensor del Pueblo reforzado e independiente, transparencia total en datos públicos y protección contra vigilancia masiva sin orden judicial. Acceso a justicia rápida y gratuita.' },
-  { title: 'Ayudas a Familias Españolas', desc: 'Prioridad en vivienda pública para españoles y residentes legales, cheque vivienda para jóvenes, bonificaciones en suministros básicos y ayudas reforzadas a familias numerosas.' },
   { title: 'Apoyo a Autónomos y PYMES', desc: 'Reducción de cotizaciones a la Seguridad Social del 30% al 20-25%, eliminación de burocracia innecesaria y simplificación administrativa. Digitalización total de trámites en 72 horas.' }
 ]
 

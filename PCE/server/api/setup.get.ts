@@ -1,6 +1,19 @@
 import bcrypt from 'bcryptjs';
 
 export default defineEventHandler(async (event) => {
+    // ✅ SECURITY: PROTECT SETUP ENDPOINT - Only allow during development/deployment
+    // This endpoint MUST be disabled in production to prevent database reset
+    const config = useRuntimeConfig();
+    const allowSetup = config.allowSetup === 'true' || config.allowSetup === true;
+    
+    if (!allowSetup) {
+        console.warn('⛔ [SECURITY] Setup endpoint blocked - allowSetup is disabled');
+        throw createError({
+            statusCode: 403,
+            message: 'Setup endpoint is disabled. This endpoint can only run during initial setup.'
+        });
+    }
+
     const db = useDb();
 
     try {

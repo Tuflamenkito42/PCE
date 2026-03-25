@@ -3,35 +3,21 @@ export const useUser = () => useState<any>('user', () => null);
 export const useAuth = () => {
     const user = useUser();
 
-    // Check auth on startup using cookie directly (client & server friendly)
-    const checkAuth = () => {
+    // Check auth on startup via server endpoint (works with httpOnly cookies)
+    const checkAuth = async () => {
         try {
-            const token = useCookie('auth_token');
-            if (token.value) {
-                // Simple base64 decode for the JSON token
-                // We stored it as: Buffer.from(JSON.stringify(...)).toString('base64')
-                let jsonStr = '';
-                if (process.server) {
-                    const { Buffer } = require('node:buffer');
-                    jsonStr = Buffer.from(token.value, 'base64').toString('utf-8');
-                } else {
-                    jsonStr = atob(token.value);
-                }
+            const data = await $fetch<any>('/api/auth/me', {
+                method: 'GET'
+            });
 
-                if (jsonStr) {
-                    const decoded = JSON.parse(jsonStr);
-                    // Ensure full_name exists for the badge updates
-                    user.value = decoded;
-                    console.log('User restored from cookie:', user.value);
-                    return true;
-                }
+            if (data?.user) {
+                user.value = data.user;
+                return true;
             }
         } catch (e) {
             console.error('Auth restore error:', e);
-            // If error decoding, clear cookie to prevent loop
-            const token = useCookie('auth_token');
-            token.value = null;
         }
+
         user.value = null;
         return false;
     };
@@ -63,8 +49,13 @@ export const useAuth = () => {
     };
 
     const logout = async () => {
-        const token = useCookie('auth_token');
-        token.value = null;
+        try {
+            await $fetch('/api/auth/logout', {
+                method: 'POST'
+            });
+        } catch (e) {
+            console.error('Logout API error:', e);
+        }
         user.value = null;
         navigateTo('/login');
     };

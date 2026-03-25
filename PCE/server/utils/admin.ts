@@ -1,4 +1,5 @@
 import { H3Event, createError, getCookie } from 'h3';
+import { verifyAuthToken } from './auth-token';
 
 export const validateAdmin = (event: H3Event) => {
     const token = getCookie(event, 'auth_token');
@@ -8,9 +9,7 @@ export const validateAdmin = (event: H3Event) => {
     }
 
     try {
-        const jsonStr = Buffer.from(token, 'base64').toString('utf-8');
-        const decoded = JSON.parse(jsonStr);
-        console.log('[validateAdmin] Token decoded:', decoded.email, 'Role:', decoded.role);
+        const decoded = verifyAuthToken(token);
 
         if (decoded.role !== 'admin') {
             console.warn('[validateAdmin] User is not admin:', decoded.email);

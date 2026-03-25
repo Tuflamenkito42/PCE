@@ -117,22 +117,22 @@
               <div class="promise-item">
                  <div class="promise-num">01</div>
                  <div class="promise-content">
-                    <h3>Control de Fronteras</h3>
-                    <p>Expulsión inmediata de inmigración ilegal en menos de 48 horas.</p>
+                    <h3>Justicia Implacable</h3>
+                    <p>Pena de muerte para violadores y pederastas sin excepciones.</p>
                  </div>
               </div>
               <div class="promise-item">
                  <div class="promise-num">02</div>
                  <div class="promise-content">
-                    <h3>Justicia Proporcional</h3>
-                    <p>Prisión permanente revisable para los delitos más graves.</p>
+                    <h3>Control de Fronteras</h3>
+                    <p>Expulsión inmediata de inmigración ilegal en menos de 48 horas.</p>
                  </div>
               </div>
               <div class="promise-item">
                  <div class="promise-num">03</div>
                  <div class="promise-content">
-                    <h3>Igualdad Real</h3>
-                    <p>Protección a todas las víctimas sin distinción de género.</p>
+                    <h3>Fomento de la Natalidad</h3>
+                    <p>Baja de 3 años para padres y madres siguiendo el modelo ruso.</p>
                  </div>
               </div>
            </div>

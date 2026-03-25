@@ -28,21 +28,29 @@
       </div>
     </section>
 
-    <section class="bullpatriot-section">
+    <section class="ia-promo-section">
       <div class="container">
-        <NuxtLink to="/bullpatriot" class="bullpatriot-card" aria-label="Ir al chat BULLPATRIOT">
-          <img
-            :src="bullPatriotImage"
-            alt="BULLPATRIOT"
-            class="bullpatriot-image"
-            @error="onBullPatriotImageError"
-          />
-          <div class="bullpatriot-copy">
-            <h2>BULLPATRIOT</h2>
-            <p>Asistente IA local con Ollama para responder dudas y generar noticias al instante.</p>
-            <span class="bullpatriot-action">ENTRAR AL CHAT</span>
+        <div class="ia-promo-card">
+          <div class="ia-promo-copy">
+            <p class="ia-promo-chip">NUEVO</p>
+            <h2>Prueba Nuestra IA</h2>
+            <p>
+              Haz clic en el toro y entra en BULLPATRIOT para resolver dudas,
+              consultar propuestas y generar contenido al instante. Tambien puedes
+              encontrar el acceso directo en la barra de navegación superior.
+            </p>
+            <NuxtLink to="/bullpatriot" class="btn btn-pce-primary">ABRIR BULLPATRIOT</NuxtLink>
           </div>
-        </NuxtLink>
+
+          <NuxtLink
+            to="/bullpatriot"
+            class="ia-promo-bull"
+            aria-label="Prueba nuestra IA clicando el toro"
+          >
+            <img src="/images/bullpatriot.png" alt="Toro BULLPATRIOT" />
+            <span>Prueba nuestra IA clicando el toro</span>
+          </NuxtLink>
+        </div>
       </div>
     </section>
 
@@ -100,7 +108,7 @@
           <strong>Control de Fronteras:</strong> Estableceremos un protocolo de expulsión inmediata de inmigrantes ilegales en menos de 48 horas.
         </PromiseCard>
         <PromiseCard>
-          <strong>Justicia Proporcional:</strong> Endurecimiento de penas graves con prisión permanente revisable para violadores y pederastas.
+          <strong>Justicia Implacable:</strong> Pena de muerte para violadores y pederastas: medida extrema pero necesaria contra crímenes irreversibles que destruyen vidas y dignidad humana. Justicia firme para víctimas, infancia y sociedad.
         </PromiseCard>
         <PromiseCard>
           <strong>Igualdad ante la Ley:</strong> Reconocimiento equitativo de todas las víctimas de violencia, independientemente de su sexo.
@@ -117,13 +125,6 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
-const bullPatriotImage = ref('/images/bullpatriot.png')
-
-const onBullPatriotImageError = () => {
-  bullPatriotImage.value = '/images/logo.png'
-}
 
 useHead({
   title: 'Protección Civil Española - PCE',
@@ -261,62 +262,115 @@ useHead({
   justify-content: center;
 }
 
-.bullpatriot-section {
-  padding: 20px 0 55px;
+.ia-promo-section {
+  padding: 12px 0 62px;
 }
 
-.bullpatriot-card {
-  background: linear-gradient(140deg, #1a1a1a 0%, #2d1515 70%, #5e2c2c 100%);
-  border: 2px solid rgba(185, 175, 176, 0.25);
-  border-radius: 18px;
-  text-decoration: none;
+.ia-promo-card {
+  position: relative;
+  isolation: isolate;
   display: grid;
-  grid-template-columns: 190px 1fr;
-  gap: 26px;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 24px;
   align-items: center;
-  padding: 22px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  padding: 30px;
+  border-radius: 22px;
+  border: 1px solid rgba(214, 188, 148, 0.35);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(214, 188, 148, 0.16), transparent 34%),
+    radial-gradient(circle at 85% 85%, rgba(255, 255, 255, 0.08), transparent 40%),
+    linear-gradient(125deg, rgba(35, 16, 16, 0.98) 0%, rgba(88, 32, 34, 0.94) 55%, rgba(62, 27, 29, 0.95) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 18px 34px rgba(0, 0, 0, 0.38);
 }
 
-.bullpatriot-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.45);
+.ia-promo-card::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  pointer-events: none;
+  z-index: -1;
 }
 
-.bullpatriot-image {
-  width: 190px;
-  height: 190px;
-  object-fit: cover;
-  border-radius: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.16);
-  background: #111;
-}
-
-.bullpatriot-copy h2 {
-  margin: 0 0 10px;
+.ia-promo-copy h2 {
+  margin: 0 0 12px;
   font-family: 'Cinzel', serif;
-  font-size: 2.2rem;
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
   color: #ffffff;
-  letter-spacing: 2px;
+  letter-spacing: 1.2px;
+  text-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
 }
 
-.bullpatriot-copy p {
-  margin: 0 0 16px;
-  color: rgba(255, 255, 255, 0.87);
-  line-height: 1.55;
-  font-size: 1.02rem;
+.ia-promo-copy p {
+  margin: 0 0 22px;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.62;
+  max-width: 62ch;
 }
 
-.bullpatriot-action {
-  display: inline-flex;
-  padding: 12px 20px;
-  border-radius: 40px;
-  background: #b9afb0;
-  color: #3e1f1f;
-  font-family: 'Cinzel', serif;
+.ia-promo-chip {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  letter-spacing: 0.8px;
   font-weight: 700;
-  letter-spacing: 1px;
+  color: #3f1e1e;
+  background: linear-gradient(120deg, #e6d2ae, #d7c3a0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.ia-promo-bull {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 250px;
+  border-radius: 16px;
+  text-decoration: none;
+  padding: 20px;
+  border: 1px solid rgba(214, 188, 148, 0.32);
+  background: #B9AFB0;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.ia-promo-bull:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34);
+  border-color: rgba(214, 188, 148, 0.58);
+}
+
+.ia-promo-bull img {
+  width: min(235px, 76%);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.45));
+  animation: bullFloat 2.8s ease-in-out infinite;
+}
+
+.ia-promo-bull span {
+  text-align: center;
+  color: #3e1f1f;
+  font-weight: 700;
+  letter-spacing: 0.45px;
+  text-transform: uppercase;
+  font-size: 0.92rem;
+}
+
+@keyframes bullFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 .news-more {
@@ -355,21 +409,23 @@ useHead({
     min-width: 100%;
   }
 
-  .bullpatriot-card {
+  .ia-promo-card {
     grid-template-columns: 1fr;
+    padding: 22px;
+  }
+
+  .ia-promo-copy {
     text-align: center;
-    padding: 20px;
   }
 
-  .bullpatriot-image {
-    width: 150px;
-    height: 150px;
-    margin: 0 auto;
+  .ia-promo-copy h2 {
+    font-size: 1.6rem;
   }
 
-  .bullpatriot-copy h2 {
-    font-size: 1.7rem;
+  .ia-promo-bull {
+    min-height: 200px;
   }
+
 }
 
 .news {

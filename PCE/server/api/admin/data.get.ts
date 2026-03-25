@@ -68,15 +68,21 @@ export default defineEventHandler(async (event) => {
                 total_votes: Number(totalVotes),
                 monthly_income: Number(monthlyIncome)
             },
+            // ✅ SECURITY: Remove sensitive fields (DNI, full data) from affiliate data
             affiliates: affiliates.map(a => ({
-                ...a,
+                id: a.id,
+                email: a.email,
+                status: a.status,
                 quota: Number(a.quota),
                 created_at: a.createdAt
+                // Note: DNI, fullName, phone removed for security
             })),
             donations: donations.map(d => ({
-                ...d,
+                id: d.id,
                 amount: Number(d.amount),
+                status: d.status,
                 created_at: d.createdAt
+                // Note: payer personal data not exposed
             })),
             users: users.map(u => ({
                 id: u.id,
@@ -86,11 +92,16 @@ export default defineEventHandler(async (event) => {
                 created_at: u.createdAt
             })),
             messages: messages.map(m => ({
-                ...m,
+                id: m.id,
+                email: m.email,
+                subject: m.subject,
+                status: m.status,
                 created_at: m.createdAt
+                // Note: Message content excluded
             })),
             subscribers: subscribers.map(s => ({
-                ...s,
+                id: s.id,
+                email: s.email,
                 subscribed_at: s.subscribedAt
             })),
             votes: votes.map(v => ({

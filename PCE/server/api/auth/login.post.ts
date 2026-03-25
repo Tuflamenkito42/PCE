@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { usePrisma } from '../../utils/prisma';
+import { createAuthToken } from '../../utils/auth-token';
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
@@ -24,16 +25,18 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 401, message: 'Credenciales inválidas' });
     }
 
-    // Set cookie for session
-    const token = Buffer.from(JSON.stringify({
+    // Set signed auth cookie for session
+    const token = createAuthToken({
         id: user.id,
         email: user.email,
         role: user.role,
-        full_name: user.fullName
-    })).toString('base64');
+        full_name: user.fullName || undefined
+    });
 
     setCookie(event, 'auth_token', token, {
-        httpOnly: false,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7, // 1 semana exacta 
         path: '/'
     });

@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    const role = (email.toLowerCase().includes('staff') || email.toLowerCase().includes('pce')) ? 'staff' : 'public';
+    const role = 'public';
 
     // Insert user
     try {

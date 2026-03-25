@@ -33,6 +33,7 @@ export default defineNuxtConfig({
     dbUser: process.env.DB_USER || 'pce_user',
     dbPassword: process.env.DB_PASSWORD || 'pce_password',
     dbName: process.env.DB_NAME || 'pce_db',
+    authTokenSecret: process.env.AUTH_TOKEN_SECRET || 'dev-only-change-me',
     geminiApiKey: process.env.GEMINI_API_KEY || '',
     ollamaBaseUrl: process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434',
     ollamaChatModel: process.env.OLLAMA_CHAT_MODEL || 'llama3.1:8b',

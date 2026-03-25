@@ -94,7 +94,6 @@
           <thead>
             <tr>
               <th>Socio</th>
-              <th>DNI</th>
               <th>Cuota</th>
               <th>Estado</th>
               <th>Fecha</th>
@@ -105,11 +104,10 @@
             <tr v-for="item in filteredAffiliates" :key="item.id" class="table-row">
               <td>
                 <div class="user-info">
-                  <span class="user-name">{{ item.name }} {{ item.lastname }}</span>
-                  <span class="user-email">{{ item.email }}</span>
+                  <span class="user-name">{{ item.email }}</span>
+                  <span class="user-email" style="font-size: 0.85rem; color: #888;">ID: {{ item.id }}</span>
                 </div>
               </td>
-              <td class="mono">{{ item.dni }}</td>
               <td class="font-bold">{{ item.quota }}€<small>/mes</small></td>
               <td>
                 <select @change="updateStatus('affiliates', item.id, $event.target.value)" :class="['status-select', item.status]">
@@ -340,14 +338,7 @@
 
 <script setup>
 definePageMeta({
-  middleware: [
-    function (to, from) {
-      const { user } = useAuth()
-      if (!user.value || user.value.role !== 'admin') {
-        return navigateTo('/login')
-      }
-    }
-  ]
+  middleware: ['admin']
 })
 
 const activeTab = ref('affiliates')

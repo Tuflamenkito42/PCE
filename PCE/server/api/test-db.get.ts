@@ -1,14 +1,17 @@
 import { useDb } from "../utils/db";
+import { requireAdmin } from "../utils/auth-middleware";
 
 export default defineEventHandler(async (event) => {
+    // ✅ SECURITY: Only admin can check database connectivity
+    requireAdmin(event);
+    
     const config = useRuntimeConfig();
     const db = useDb();
 
+    // ✅ SECURITY: Don't expose actual credentials - only safe info
     const dbInfo = {
-        host: config.dbHost,
-        port: config.dbPort,
-        user: config.dbUser,
-        database: config.dbName
+        connected: false,
+        message: 'Testing connection...'
     };
 
     try {
@@ -16,17 +19,15 @@ export default defineEventHandler(async (event) => {
         return {
             success: true,
             message: 'Conexión exitosa',
-            config: dbInfo,
-            rows
+            dbInfo
         };
     } catch (e: any) {
         console.error('Test DB Error:', e);
         return {
             success: false,
             message: 'Error de conexión',
-            config: dbInfo,
-            error: e.message,
-            code: e.code
+            dbInfo,
+            error: e.message
         };
     }
 });

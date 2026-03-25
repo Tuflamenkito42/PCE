@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 const { user, logout } = useAuth()
 // Optional: user initials
@@ -11,47 +11,99 @@ const userInitials = computed(() => {
 })
 
 const mobileMenuOpen = ref(false)
+const isDarkMode = ref(false)
+const bullpatriotLogoSrc = computed(() => (isDarkMode.value ? '/images/bullpatriot2.png' : '/images/bullpatriot.png'))
+
+const applyTheme = (dark) => {
+  if (!process.client) {
+    return
+  }
+
+  document.body.classList.toggle('theme-dark', dark)
+}
+
+const toggleTheme = () => {
+  isDarkMode.value = !isDarkMode.value
+  applyTheme(isDarkMode.value)
+  if (process.client) {
+    localStorage.setItem('pce-theme', isDarkMode.value ? 'dark' : 'light')
+  }
+}
+
+onMounted(() => {
+  const saved = process.client ? localStorage.getItem('pce-theme') : null
+  isDarkMode.value = saved === 'dark'
+  applyTheme(isDarkMode.value)
+})
+
 const toggleMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
 }
 const closeMenu = () => {
   mobileMenuOpen.value = false
 }
+
 </script>
 
 <template>
   <header class="main-header">
-    <NuxtLink to="/" class="logo-link">
-      <div class="logo-container">
-        <div class="logo-shield">
-          <img src="/images/logo.png" alt="Logo PCE" class="logo-img" />
+    <div class="brand-left">
+      <NuxtLink to="/" class="logo-link">
+        <div class="logo-container">
+          <div class="logo-shield">
+            <img src="/images/logo.png" alt="Logo PCE" class="logo-img" />
+          </div>
+          <div class="logo-text">
+            <span>PROTECCION</span>
+            <span>CIVIL</span>
+            <span>ESPAÑOLA</span>
+          </div>
         </div>
-        <div class="logo-text">
-          <span>PROTECCION</span>
-          <span>CIVIL</span>
-          <span>ESPAÑOLA</span>
-        </div>
-      </div>
-    </NuxtLink>
+      </NuxtLink>
 
-    <NuxtLink to="/bullpatriot" class="bullpatriot-top-link" title="Ir a BULLPATRIOT" aria-label="Ir a BULLPATRIOT">
-      <img src="/images/bullpatriot.png" alt="BULLPATRIOT - Asistente IA" class="bullpatriot-top-icon" />
-    </NuxtLink>
+      <NuxtLink to="/bullpatriot" class="bullpatriot-top-link" title="Ir a BULLPATRIOT" aria-label="Ir a BULLPATRIOT">
+        <img :src="bullpatriotLogoSrc" alt="BULLPATRIOT - Asistente IA" class="bullpatriot-top-icon" />
+      </NuxtLink>
+    </div>
 
     <div class="desktop-nav-actions">
       <nav class="main-nav">
-        <NuxtLink to="/">INICIO</NuxtLink>
-        <NuxtLink to="/noticias">ACTUALIDAD</NuxtLink>
-        <NuxtLink to="/afiliacion">ÚNETE</NuxtLink>
-        <NuxtLink to="/programa">PROGRAMA</NuxtLink>
-        <NuxtLink to="/votaciones">VOTACIONES</NuxtLink>
-        <NuxtLink to="/contacto">CONTACTO</NuxtLink>
-        <NuxtLink to="/transparencia">TRANSPARENCIA</NuxtLink>
+        <NuxtLink to="/" class="nav-link">INICIO</NuxtLink>
+        <NuxtLink to="/noticias" class="nav-link">ACTUALIDAD</NuxtLink>
+        <NuxtLink to="/afiliacion" class="nav-link">ÚNETE</NuxtLink>
+        <NuxtLink to="/programa" class="nav-link">PROGRAMA</NuxtLink>
+        <NuxtLink to="/votaciones" class="nav-link">VOTACIONES</NuxtLink>
+        <NuxtLink to="/contacto" class="nav-link">CONTACTO</NuxtLink>
+        <NuxtLink to="/transparencia" class="nav-link">TRANSPARENCIA</NuxtLink>
       </nav>
 
       <div class="header-actions hide-mobile">
         <NuxtLink to="/dona" class="btn btn-donate">DONA</NuxtLink>
         <NuxtLink to="/afiliacion" class="btn btn-join">AFILIATE</NuxtLink>
+
+        <button
+          type="button"
+          class="theme-toggle-tab"
+          :class="{ 'is-dark': isDarkMode }"
+          :aria-label="isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+          :title="isDarkMode ? 'Modo oscuro activado' : 'Modo claro activado'"
+          @click="toggleTheme"
+        >
+          <span class="theme-toggle-track" aria-hidden="true">
+            <span class="theme-toggle-icon theme-toggle-icon-top">
+              <svg viewBox="0 0 24 24" class="theme-icon theme-icon-sun" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4.2" />
+                <path d="M12 2.8v2.4M12 18.8v2.4M21.2 12h-2.4M5.2 12H2.8M18.7 5.3l-1.7 1.7M7 17l-1.7 1.7M18.7 18.7L17 17M7 7L5.3 5.3" />
+              </svg>
+            </span>
+            <span class="theme-toggle-icon theme-toggle-icon-bottom">
+              <svg viewBox="0 0 24 24" class="theme-icon theme-icon-moon" aria-hidden="true">
+                <path d="M14.53 2.3a1 1 0 00-1.17 1.31 7 7 0 11-8.98 8.98 1 1 0 00-1.3 1.17A9 9 0 1014.52 2.3z" />
+              </svg>
+            </span>
+            <span class="theme-toggle-thumb" />
+          </span>
+        </button>
         
         <!-- Auth Actions -->
         <ClientOnly>
@@ -132,6 +184,111 @@ const closeMenu = () => {
   z-index: 1000;
 }
 
+.theme-toggle-tab {
+  --toggle-w: 32px;
+  --toggle-h: 62px;
+  --toggle-inset: 1px;
+  --thumb-size: 30px;
+  --thumb-h: 36px;
+  --thumb-left: calc((var(--toggle-w) - var(--thumb-size)) / 2);
+  --icon-size: 12px;
+  --icon-offset: 9px;
+  --thumb-travel: calc(var(--toggle-h) - (var(--toggle-inset) * 2) - var(--thumb-h));
+  width: var(--toggle-w);
+  height: var(--toggle-h);
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  padding: 0;
+  margin-inline: 4px;
+  flex-shrink: 0;
+}
+
+.theme-toggle-tab:hover {
+  transform: none;
+}
+
+.theme-toggle-track {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 999px;
+  background: #723233;
+  position: relative;
+  border: none;
+  box-shadow: none;
+  overflow: hidden;
+  transition: background-color 0.25s ease;
+}
+
+.theme-toggle-tab.is-dark .theme-toggle-track {
+  background: #000000;
+}
+
+.theme-toggle-thumb {
+  position: absolute;
+  left: var(--thumb-left);
+  top: var(--toggle-inset);
+  width: var(--thumb-size);
+  height: var(--thumb-h);
+  border-radius: 999px;
+  background: #000000;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease, background-color 0.25s ease;
+  transform: translateY(var(--thumb-travel));
+  z-index: 1;
+}
+
+.theme-toggle-tab.is-dark .theme-toggle-thumb {
+  background: #723233;
+  transform: translateY(0);
+}
+
+.theme-toggle-icon {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+}
+
+.theme-toggle-icon-top {
+  top: var(--icon-offset);
+}
+
+.theme-toggle-icon-bottom {
+  bottom: var(--icon-offset);
+}
+
+.theme-icon {
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+.theme-icon-moon {
+  color: #723233;
+  fill: currentColor;
+}
+
+.theme-icon-sun {
+  color: #000000;
+}
+
+.brand-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .logo-link {
   text-decoration: none;
   z-index: 1001;
@@ -184,7 +341,6 @@ const closeMenu = () => {
   background: transparent;
   border: none;
   padding: 6px;
-  flex: 1;
   transition: all 0.3s ease;
   cursor: pointer;
 }
@@ -219,9 +375,11 @@ const closeMenu = () => {
 }
 
 @media (max-width: 1023px) {
+  .brand-left {
+    gap: 8px;
+  }
+
   .bullpatriot-top-link {
-    margin-left: auto;
-    margin-right: 12px;
     padding: 4px;
   }
 
@@ -231,7 +389,7 @@ const closeMenu = () => {
   }
 }
 
-.main-nav a {
+.main-nav .nav-link {
   color: #723233;
   text-decoration: none;
   font-family: var(--font-heading, serif);
@@ -241,8 +399,13 @@ const closeMenu = () => {
   transition: color 0.3s;
 }
 
-.main-nav a:hover,
-.main-nav a.router-link-active {
+.main-nav .nav-link:visited,
+.main-nav .nav-link.router-link-active,
+.main-nav .nav-link.router-link-exact-active {
+  color: #723233;
+}
+
+.main-nav .nav-link:hover {
   color: #5e2c2c;
 }
 
@@ -380,6 +543,8 @@ const closeMenu = () => {
   flex-direction: column;
   transform: translateY(-150%);
   opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
   transition: all 0.3s ease-in-out;
   z-index: 1000;
   box-shadow: 0 10px 20px rgba(0,0,0,0.2);
@@ -388,6 +553,14 @@ const closeMenu = () => {
 .mobile-menu.is-open {
   transform: translateY(0);
   opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+@media (min-width: 1024px) {
+  .mobile-menu {
+    display: none;
+  }
 }
 
 .mobile-nav {
@@ -438,6 +611,7 @@ const closeMenu = () => {
   .main-header {
     padding: 0 15px;
   }
+
   .logo-text {
     font-size: 0.6rem;
   }

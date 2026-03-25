@@ -4,6 +4,13 @@ export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const ollamaBaseUrl = config.ollamaBaseUrl || 'http://127.0.0.1:11434'
   const model = config.ollamaNewsModel || 'mistral:7b'
+  const needsDockerFallback = /localhost|127\.0\.0\.1/i.test(ollamaBaseUrl)
+  const candidateBaseUrls = Array.from(new Set([
+    ollamaBaseUrl,
+    ...(needsDockerFallback
+      ? ['http://host.docker.internal:11434', 'http://172.17.0.1:11434']
+      : [])
+  ]))
 
   const body = await readBody<{
     topic?: string
@@ -51,54 +58,63 @@ Reglas:
 - No uses insultos ni lenguaje violento.
 - Escribe para lectura web clara.`
 
-  try {
-    const response = await fetch(`${ollamaBaseUrl}/api/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+  let lastError: any = null
+
+  for (const baseUrl of candidateBaseUrls) {
+    try {
+      const response = await fetch(`${baseUrl}/api/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model,
+          prompt,
+          stream: false,
+          options: {
+            temperature: 0.45,
+            num_predict: 800
+          }
+        })
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        lastError = createError({
+          statusCode: 502,
+          statusMessage: `Error Ollama (${baseUrl}): ${errorText || response.statusText}`
+        })
+        continue
+      }
+
+      const result = await response.json() as { response?: string }
+      const content = result?.response?.trim()
+
+      if (!content) {
+        lastError = createError({
+          statusCode: 502,
+          statusMessage: `Ollama no devolvio contenido para la noticia (${baseUrl})`
+        })
+        continue
+      }
+
+      return {
+        ok: true,
         model,
-        prompt,
-        stream: false,
-        options: {
-          temperature: 0.45,
-          num_predict: 800
-        }
-      })
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      throw createError({
-        statusCode: 502,
-        statusMessage: `Error Ollama: ${errorText || response.statusText}`
-      })
+        article: content
+      }
+    } catch (error: any) {
+      lastError = error
+      console.error(`Ollama news error (${baseUrl}):`, error)
     }
-
-    const result = await response.json() as { response?: string }
-    const content = result?.response?.trim()
-
-    if (!content) {
-      throw createError({
-        statusCode: 502,
-        statusMessage: 'Ollama no devolvio contenido para la noticia'
-      })
-    }
-
-    return {
-      ok: true,
-      model,
-      article: content
-    }
-  } catch (error: any) {
-    console.error('Ollama news error:', error)
-
-    if (error?.statusCode) {
-      throw error
-    }
-
-    throw createError({
-      statusCode: 500,
-      statusMessage: 'No se pudo generar la noticia con Ollama. Verifica que este activo y con el modelo descargado.'
-    })
   }
+
+  if (lastError?.statusCode) {
+    throw lastError
+  }
+
+  throw createError({
+    statusCode: 500,
+    statusMessage:
+      `No se pudo generar la noticia con Ollama. URLs probadas: ${candidateBaseUrls.join(', ')}. ` +
+      'Verifica que Ollama este activo y, si usas Docker, configura OLLAMA_BASE_URL=http://host.docker.internal:11434.'
+  })
 })

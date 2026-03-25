@@ -1,20 +1,17 @@
-import { defineEventHandler, getQuery } from 'h3';
+import { defineEventHandler } from 'h3';
 import { useDb } from '../../utils/db';
+import { requireAuth } from '../../utils/auth-middleware';
 
 export default defineEventHandler(async (event) => {
-    const query = getQuery(event);
-    const userId = query.userId;
-
-    if (!userId) {
-        return { polls: [] };
-    }
+    // ✅ SECURITY: Require authentication - cannot access other users' votes
+    const user = requireAuth(event);
 
     const db = useDb();
 
     try {
         const [rows] = await db.query(
             'SELECT poll_title FROM votes WHERE user_id = ?',
-            [userId]
+            [user.id]
         );
 
         return {
