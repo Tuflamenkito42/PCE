@@ -8,6 +8,8 @@ type ChatTurn = {
   content: string
 }
 
+type ResponseLocale = 'es' | 'ca' | 'eu' | 'gl'
+
 type Hit = { source: string; snippet: string; score?: number }
 
 type Intent =
@@ -120,20 +122,57 @@ const sanitizeHitsForResponse = (hits: Hit[], normalized: string) => {
 
 const buildFastGroundedResponse = (
   hits: Array<{ source: string; snippet: string }>,
-  normalized: string
+  normalized: string,
+  lang: ResponseLocale
 ) => {
+  const introByLang: Record<ResponseLocale, string> = {
+    es: 'Por lo que aparece en la web,',
+    ca: 'Segons el que apareix al web,',
+    eu: 'Webgunean agertzen denaren arabera,',
+    gl: 'Segundo o que aparece na web,'
+  }
+  const plusByLang: Record<ResponseLocale, string> = {
+    es: 'Ademas,',
+    ca: 'A mes,',
+    eu: 'Gainera,',
+    gl: 'Ademais,'
+  }
+  const noInfoByLang: Record<ResponseLocale, string> = {
+    es: 'No tengo suficiente informacion clara para responderte bien ahora mismo. Si quieres, afinamos la pregunta y lo miramos juntos.',
+    ca: 'No tinc prou informacio clara per respondre be ara mateix. Si vols, afinem la pregunta i ho revisem junts.',
+    eu: 'Ez daukat informazio nahikorik argi erantzun ona emateko. Nahi baduzu, galdera zehaztu eta elkarrekin begiratzen dugu.',
+    gl: 'Non teño informacion suficiente e clara para responder ben agora mesmo. Se queres, afinamos a pregunta e revisamolo xuntos.'
+  }
+
   const top = sanitizeHitsForResponse(hits, normalized).slice(0, 2)
   const parts = top.map((hit) => clip(hit.snippet, 210))
 
   if (parts.length === 0) {
-    return 'No tengo suficiente informacion clara para responderte bien ahora mismo. Si quieres, afinamos la pregunta y lo miramos juntos.'
+    return noInfoByLang[lang]
   }
 
   if (parts.length === 1) {
-    return `Por lo que aparece en la web, ${parts[0]}`
+    return `${introByLang[lang]} ${parts[0]}`
   }
 
-  return `Por lo que aparece en la web, ${parts[0]} Ademas, ${parts[1]}`
+  return `${introByLang[lang]} ${parts[0]} ${plusByLang[lang]} ${parts[1]}`
+}
+
+const detectResponseLocale = (normalized: string, hintedLocale?: string): ResponseLocale => {
+  if (hintedLocale === 'es' || hintedLocale === 'ca' || hintedLocale === 'eu' || hintedLocale === 'gl') {
+    return hintedLocale
+  }
+
+  if (/(\bkaixo\b|\beskerrik\b|\bmesedez\b|\bez\b|\bgure\b|\bzure\b|\bota\b|\bkontsulta\b|\bhobetu\b)/.test(normalized)) {
+    return 'eu'
+  }
+  if (/(\bsi us plau\b|\bdoncs\b|\bamb\b|\bnoticies\b|\bvotacio\b|\bafiliacio\b|\bteva\b)/.test(normalized)) {
+    return 'ca'
+  }
+  if (/(\bgrazas\b|\bbenvido\b|\bmais\b|\bseguridade\b|\bproposta\b|\bvotacions?\b|\bafiliacion\b)/.test(normalized)) {
+    return 'gl'
+  }
+  return 'es'
 }
 
 const buildTopicGroundedResponse = (intent: Exclude<Intent, 'general'>, hits: Hit[], normalized: string) => {
@@ -243,7 +282,7 @@ export default defineEventHandler(async (event) => {
       : [])
   ]))
 
-  const body = await readBody<{ message?: string; history?: ChatTurn[] }>(event)
+  const body = await readBody<{ message?: string; history?: ChatTurn[]; locale?: string }>(event)
   const message = body?.message?.trim()
 
   if (!message) {
@@ -265,12 +304,26 @@ export default defineEventHandler(async (event) => {
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
 
+  const responseLocale = detectResponseLocale(normalized, body?.locale)
+  const languageByLocale: Record<ResponseLocale, string> = {
+    es: 'espanol',
+    ca: 'catala',
+    eu: 'euskara',
+    gl: 'galego'
+  }
+
   if (/(partido comunista espanol|partido comunista espanola|pce comunista|comunista)/.test(normalized)) {
     return {
       ok: true,
       model: 'rule-based',
       response:
-        'Aclaracion rapida: aqui PCE significa Proteccion Civil Espanola. Si quieres, te explico programa, propuestas o actualidad dentro de esta web.'
+        responseLocale === 'ca'
+          ? 'Aclariment rapid: aqui PCE significa Proteccio Civil Espanyola. Si vols, t explico programa, propostes o actualitat d aquest web.'
+          : responseLocale === 'eu'
+            ? 'Argipen azkarra: hemen PCEk Proteccion Civil Espanola esan nahi du. Nahi baduzu, web honetako programa, proposamenak edo egunerokoa azalduko dizut.'
+            : responseLocale === 'gl'
+              ? 'Aclaracion rapida: aqui PCE significa Proteccion Civil Espanola. Se queres, explicoche programa, propostas ou actualidade desta web.'
+              : 'Aclaracion rapida: aqui PCE significa Proteccion Civil Espanola. Si quieres, te explico programa, propuestas o actualidad dentro de esta web.'
     }
   }
 
@@ -279,7 +332,13 @@ export default defineEventHandler(async (event) => {
       ok: true,
       model: 'rule-based',
       response:
-        'Te ayudo encantado, pero solo con informacion de Proteccion Civil Espanola dentro de esta web.'
+        responseLocale === 'ca'
+          ? 'T ajudo encantat, pero nomes amb informacio de Proteccio Civil Espanyola dins d aquest web.'
+          : responseLocale === 'eu'
+            ? 'Pozik lagunduko dizut, baina web honetako Proteccion Civil Espanola-ri buruzko informazioarekin bakarrik.'
+            : responseLocale === 'gl'
+              ? 'Axudoche encantado, pero so con informacion de Proteccion Civil Espanola dentro desta web.'
+              : 'Te ayudo encantado, pero solo con informacion de Proteccion Civil Espanola dentro de esta web.'
     }
   }
 
@@ -290,7 +349,13 @@ export default defineEventHandler(async (event) => {
       ok: true,
       model: 'rule-based',
       response:
-        'Hola. Soy BULLPATRIOT. Puedo ayudarte con programa, propuestas, afiliacion, votaciones, actualidad y organizacion de PCE.'
+        responseLocale === 'ca'
+          ? 'Hola. Soc BULLPATRIOT. Puc ajudar-te amb programa, propostes, afiliacio, votacions, actualitat i organitzacio de PCE.'
+          : responseLocale === 'eu'
+            ? 'Kaixo. BULLPATRIOT naiz. PCEren programa, proposamenak, afiliazioa, bozkaketak eta egunerokoa azaltzen lagun dezaket.'
+            : responseLocale === 'gl'
+              ? 'Ola. Son BULLPATRIOT. Podo axudarche con programa, propostas, afiliacion, votacions, actualidade e organizacion de PCE.'
+              : 'Hola. Soy BULLPATRIOT. Puedo ayudarte con programa, propuestas, afiliacion, votaciones, actualidad y organizacion de PCE.'
     }
   }
 
@@ -383,7 +448,7 @@ export default defineEventHandler(async (event) => {
     return {
       ok: true,
       model: 'local-knowledge-fast',
-      response: buildFastGroundedResponse(knowledgeHits, normalized)
+      response: buildFastGroundedResponse(knowledgeHits, normalized, responseLocale)
     }
   }
 
@@ -407,7 +472,8 @@ Responde solo con base en el contexto de esta web y en el mensaje del usuario. N
 Obligatorio: usa como base unicamente los fragmentos [K] proporcionados abajo.
 Si falta informacion en [K], dilo claramente y no inventes nada.
 Si la pregunta se sale del partido/web, responde con una sola frase corta indicando el alcance.
-Responde en espanol claro, directo y util.
+Responde en ${languageByLocale[responseLocale]} claro, directo y util.
+Piensa internamente y redacta en ${languageByLocale[responseLocale]}.
 Si la pregunta pide opinion, analisis o comparacion: responde en 3 bloques breves.
 1) Hecho observado en [K]
 2) Interpretacion razonada
@@ -425,7 +491,7 @@ ${knowledgeContext}`
     messages: [
       { role: 'system', content: systemPrompt },
       ...sanitizedHistory,
-      { role: 'user', content: `${message}\n\nResponde solo con informacion de [K].` }
+      { role: 'user', content: `${message}\n\nResponde solo con informacion de [K] y en ${languageByLocale[responseLocale]}.` }
     ],
     options: {
       temperature: 0.25,
@@ -482,6 +548,6 @@ ${knowledgeContext}`
   return {
     ok: true,
     model: 'local-knowledge-fallback',
-    response: buildFastGroundedResponse(knowledgeHits, normalized)
+    response: buildFastGroundedResponse(knowledgeHits, normalized, responseLocale)
   }
 })

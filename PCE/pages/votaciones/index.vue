@@ -1,17 +1,17 @@
 <template>
   <main class="votes-page container">
-    <h1 class="page-title">CENTRO DE VOTACIÓN Y PARTICIPACIÓN</h1>
+    <h1 class="page-title">{{ t('votes.title') }}</h1>
 
     <div class="votes-intro">
-      <p>Bienvenido al Centro de Participación Ciudadana de PCE. Aquí podrá ejercer su derecho al voto en consultas populares e internas de forma <strong>segura, anónima y encriptada</strong>.</p>
+      <p>{{ t('votes.intro') }}</p>
     </div>
 
     <div class="votes-layout">
       <!-- 1. Active Polls -->
       <section class="polls-section" :class="{ locked: !isLoggedIn }">
         <div v-if="!isLoggedIn" class="lock-overlay auth-lock">
-          <p>ACCESO RESTRINGIDO: INICIE SESIÓN CON BIOMETRÍA PARA VOTAR</p>
-          <NuxtLink to="/login" class="btn btn-verify-submit active" style="margin-top: 20px;">IR AL ACCESO SEGURO</NuxtLink>
+          <p>{{ t('votes.restricted') }}</p>
+          <NuxtLink to="/login" class="btn btn-verify-submit active" style="margin-top: 20px;">{{ t('votes.secureAccess') }}</NuxtLink>
         </div>
 
         <h2 class="section-subtitle">{{ pollsTitle }}</h2>
@@ -20,26 +20,26 @@
           <!-- Poll Interna -->
           <PollCard 
             v-if="isLoggedIn && (userRole === 'staff' || userRole === 'admin')"
-            :class="{ 'voted': isVoted('Presupuestos Participativos PCE 2026') }"
+            :class="{ 'voted': isVoted(t('votes.poll.staff.title')) }"
             type="intern"
-            title="Presupuestos Participativos PCE 2026"
-            description="Gestión interna de asignación de recursos operativos para el próximo año fiscal."
-            :options="['Inversión en Nuevas Sedes', 'Mejora de Equipos Emergencias']"
+            :title="t('votes.poll.staff.title')"
+            :description="t('votes.poll.staff.desc')"
+            :options="[t('votes.poll.staff.opt1'), t('votes.poll.staff.opt2')]"
             @vote="handleVote"
           >
-            <template #tag>{{ isVoted('Presupuestos Participativos PCE 2026') ? 'VOTO REGISTRADO' : 'SÓLO PERSONAL PCE' }}</template>
+            <template #tag>{{ isVoted(t('votes.poll.staff.title')) ? t('votes.voteRegistered') : t('votes.staffOnly') }}</template>
           </PollCard>
 
           <!-- Poll Pública -->
           <PollCard 
-            :class="{ 'voted': isVoted('Prioridades de Seguridad en Barrios') }"
+            :class="{ 'voted': isVoted(t('votes.poll.public.title')) }"
             type="public"
-            title="Prioridades de Seguridad en Barrios"
-            description="¿Qué medidas considera más urgentes para mejorar la seguridad en su distrito?"
-            :options="['Más Vigilancia Policial', 'Instalación Lumínica', 'Alarmas Vecinales']"
+            :title="t('votes.poll.public.title')"
+            :description="t('votes.poll.public.desc')"
+            :options="[t('votes.poll.public.opt1'), t('votes.poll.public.opt2'), t('votes.poll.public.opt3')]"
             @vote="handleVote"
           >
-            <template #tag>{{ isVoted('Prioridades de Seguridad en Barrios') ? 'VOTO REGISTRADO' : 'CONSULTA PÚBLICA' }}</template>
+            <template #tag>{{ isVoted(t('votes.poll.public.title')) ? t('votes.voteRegistered') : t('votes.publicPoll') }}</template>
           </PollCard>
         </div>
       </section>
@@ -53,6 +53,7 @@
 <script setup>
 import PollCard from './components/PollCard.vue'
 import ProposalForm from './components/ProposalForm.vue'
+const { t } = useI18n()
 
 const { user } = useAuth()
 const isLoggedIn = computed(() => !!user.value)
@@ -81,10 +82,10 @@ watch(() => user.value, () => {
 const isVoted = (title) => votedPolls.value.includes(title)
 
 const pollsTitle = computed(() => {
-  if (!isLoggedIn.value) return 'Consultas Disponibles'
+  if (!isLoggedIn.value) return t('votes.activePollsTitle')
   return (userRole.value === 'staff' || userRole.value === 'admin') 
-    ? 'Consultas Corporativas (Personal PCE)' 
-    : 'Consultas Ciudadanas Activas'
+    ? `${t('votes.activePollsTitle')} (${t('votes.staffOnly')})`
+    : t('votes.activePollsTitle')
 })
 
 const handleVote = async (data) => {
@@ -98,24 +99,24 @@ const handleVote = async (data) => {
       }
     })
     
-    alert("¡TU VOTO HA SIDO REGISTRADO DE FORMA SEGURA E ENCRIPTADA!")
+    alert(t('votes.alert.success'))
     await fetchVotedPolls() // Refresh the locked state
   } catch (error) {
     console.error(error)
-    alert("HUBO UN ERROR AL REGISTRAR TU VOTO.")
+    alert(t('votes.alert.error'))
   }
 }
 
 const handleProposalSubmit = (text) => {
-  alert("¡Propuesta enviada! Gracias por participar.")
+  alert(t('votes.proposal.sent'))
 }
 
-useHead({
-  title: 'Votaciones - PCE',
+useHead(() => ({
+  title: `${t('votes.title')} - PCE`,
   meta: [
-    { name: 'description', content: 'Participa en las votaciones y consultas de Protección Civil Española (PCE).' }
+    { name: 'description', content: t('votes.intro') }
   ]
-})
+}))
 </script>
 
 <style scoped>

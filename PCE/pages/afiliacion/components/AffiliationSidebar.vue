@@ -3,18 +3,27 @@
     <div class="card-logo">
       <img src="/images/logo.png" alt="Logo PCE" />
     </div>
-    <h3>PORQUE AFILIARTE?</h3>
+    <h3>{{ lt('POR QUÉ AFILIARTE?', 'PER QUÈ AFILIAR-TE?', 'ZERGATIK AFILIATU?', 'POR QUE AFILIARTE?') }}</h3>
     <ul class="benefits-list">
-      <li>1. Seguridad y Bienestar</li>
-      <li>2. Transparencia Total</li>
-      <li>3. Justicia Proporcional</li>
+      <li>{{ lt('1. Seguridad y Bienestar', '1. Seguretat i Benestar', '1. Segurtasuna eta Ongizatea', '1. Seguridade e Benestar') }}</li>
+      <li>{{ lt('2. Transparencia Total', '2. Transparència Total', '2. Gardentasun Osoa', '2. Transparencia Total') }}</li>
+      <li>{{ lt('3. Justicia Proporcional', '3. Justícia Proporcional', '3. Justizia Proportzionala', '3. Xustiza Proporcional') }}</li>
     </ul>
-    <button class="btn btn-join-inverse" @click="$emit('join')">AFILIATE</button>
-    <p class="small-note">TAMBIÉN PUEDES APOYARNOS MEDIANTE UNA DONACIÓN</p>
+    <button class="btn btn-join-inverse" @click="$emit('join')">{{ lt('AFÍLIATE', 'AFILIA-T', 'AFILIATU', 'AFÍLIATE') }}</button>
+    <p class="small-note">{{ lt('TAMBIÉN PUEDES APOYARNOS MEDIANTE UNA DONACIÓN', 'TAMBÉ ENS POTS DONAR SUPORT MITJANÇANT UNA DONACIÓ', 'DOHAINTZA BATEKIN ERE BABES DEZAKEZU', 'TAMÉN PODES APOIARNOS MEDIANTE UNHA DOAZÓN') }}</p>
   </aside>
 </template>
 
 <script setup>
+const { locale } = useI18n()
+
+const lt = (es, ca, eu, gl) => {
+  if (locale.value === 'ca') return ca
+  if (locale.value === 'eu') return eu
+  if (locale.value === 'gl') return gl
+  return es
+}
+
 defineEmits(['join'])
 </script>
 

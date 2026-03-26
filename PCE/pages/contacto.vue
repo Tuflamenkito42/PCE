@@ -1,13 +1,13 @@
 <template>
   <main class="contact-page container">
-    <h1 class="page-title">CONTACTO</h1>
+    <h1 class="page-title">{{ t('contact.title') }}</h1>
 
     <div class="contact-layout">
       <!-- Info Section -->
       <section class="contact-info card">
-        <h2 class="section-subtitle">¿TIENES ALGUNA DUDA?</h2>
+        <h2 class="section-subtitle">{{ t('contact.questionTitle') }}</h2>
         <p class="section-description">
-          Estamos aquí para escucharte. Si tienes preguntas sobre nuestro programa, quieres sugerir mejoras o simplemente deseas más información, contáctanos.
+          {{ t('contact.questionDesc') }}
         </p>
 
         <div class="info-items">
@@ -16,8 +16,8 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#723233" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
             </div>
             <div class="text">
-              <strong>OFICINA CENTRAL</strong>
-              <span>Calle de la Protección, 42, Madrid</span>
+              <strong>{{ t('contact.officeLabel') }}</strong>
+              <span>{{ t('contact.officeAddress') }}</span>
             </div>
           </div>
           <div class="info-item">
@@ -25,8 +25,8 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#723233" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
             </div>
             <div class="text">
-              <strong>EMAIL</strong>
-              <span>pcepartidopolitico@gmail.com</span>
+              <strong>{{ t('contact.emailLabel') }}</strong>
+              <span>{{ t('contact.email') }}</span>
             </div>
           </div>
           <div class="info-item">
@@ -34,14 +34,14 @@
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#723233" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.27-2.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             </div>
             <div class="text">
-              <strong>TELÉFONO</strong>
-              <span>+34 900 123 456</span>
+              <strong>{{ t('contact.phoneLabel') }}</strong>
+              <span>{{ t('contact.phone') }}</span>
             </div>
           </div>
         </div>
 
         <div class="social-links-container">
-          <h3>SÍGUENOS</h3>
+          <h3>{{ t('contact.followUs') }}</h3>
           <div class="social-flex">
             <!-- Social icons (reusing logic from Footer simplified) -->
             <span class="social-badge">YT</span>
@@ -54,24 +54,24 @@
 
       <!-- Form Section -->
       <section class="contact-form-section card">
-        <h2 class="section-subtitle">ESCRÍBENOS</h2>
+        <h2 class="section-subtitle">{{ t('contact.formTitle') }}</h2>
         <form @submit.prevent="handleSubmit" class="contact-form">
           <div class="form-grid">
             <div class="form-group">
-              <label for="name">NOMBRE COMPLETO *</label>
-              <input v-model="form.name" type="text" id="name" required placeholder="Tu nombre..." :disabled="loading" />
+              <label for="name">{{ t('contact.fullName') }}</label>
+              <input v-model="form.name" type="text" id="name" required :placeholder="t('contact.fullNamePlaceholder')" :disabled="loading" />
             </div>
             <div class="form-group">
-              <label for="email">DIRECCIÓN DE CORREO *</label>
-              <input v-model="form.email" type="email" id="email" required placeholder="tu@email.com" :disabled="loading" />
+              <label for="email">{{ t('contact.emailFormLabel') }}</label>
+              <input v-model="form.email" type="email" id="email" required :placeholder="t('contact.emailPlaceholder')" :disabled="loading" />
             </div>
             <div class="form-group full-width">
-              <label for="subject">ASUNTO</label>
-              <input v-model="form.subject" type="text" id="subject" placeholder="¿Sobre qué quieres hablarnos?" :disabled="loading" />
+              <label for="subject">{{ t('contact.subject') }}</label>
+              <input v-model="form.subject" type="text" id="subject" :placeholder="t('contact.subjectPlaceholder')" :disabled="loading" />
             </div>
             <div class="form-group full-width">
-              <label for="message">MENSAJE *</label>
-              <textarea v-model="form.message" id="message" required rows="6" placeholder="Escribe aquí tu mensaje..." :disabled="loading"></textarea>
+              <label for="message">{{ t('contact.message') }}</label>
+              <textarea v-model="form.message" id="message" required rows="6" :placeholder="t('contact.messagePlaceholder')" :disabled="loading"></textarea>
             </div>
           </div>
 
@@ -79,10 +79,10 @@
             <label class="checkbox-container">
               <input type="checkbox" v-model="form.accept" required :disabled="loading" />
               <span class="checkmark"></span>
-              Acepto la <NuxtLink to="/politica-privacidad">política de privacidad</NuxtLink>
+              {{ t('contact.policyAccept') }}
             </label>
             <button type="submit" class="btn btn-primary" :disabled="loading">
-              {{ loading ? 'ENVIANDO...' : 'ENVIAR MENSAJE' }}
+              {{ loading ? t('contact.sending') : t('contact.sendBtn') }}
             </button>
           </div>
 
@@ -98,6 +98,8 @@
 </template>
 
 <script setup>
+const { t } = useI18n()
+
 const form = reactive({
   name: '',
   email: '',
@@ -127,7 +129,7 @@ const handleSubmit = async () => {
       }
     })
 
-    feedback.value = '¡Mensaje enviado con éxito! Te responderemos pronto.'
+    feedback.value = t('contact.successMsg')
     feedbackType.value = 'success'
     
     // Reset form
@@ -139,7 +141,7 @@ const handleSubmit = async () => {
 
   } catch (error) {
     console.error(error)
-    feedback.value = error.data?.message || 'Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.'
+    feedback.value = error.data?.message || t('contact.errorMsg')
     feedbackType.value = 'error'
   } finally {
     loading.value = false
@@ -147,7 +149,7 @@ const handleSubmit = async () => {
 }
 
 useHead({
-  title: 'Contacto - PCE',
+  title: `${t('contact.title')} - PCE`,
   meta: [
     { name: 'description', content: 'Contacta con Protección Civil Española. Estamos aquí para escucharte y resolver tus dudas.' }
   ]

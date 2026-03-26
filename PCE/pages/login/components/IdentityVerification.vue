@@ -1,10 +1,10 @@
 <template>
   <section class="identity-verification" :class="{ locked: isLocked }">
     <div v-if="isLocked" class="lock-overlay auth-lock">
-      <p>Complete el paso anterior</p>
+      <p>{{ lt('Complete el paso anterior', 'Completa el pas anterior', 'Osatu aurreko pausoa', 'Completa o paso anterior') }}</p>
     </div>
     <div class="card-header">
-      <h2>2. Verificación Biometría</h2>
+      <h2>{{ lt('2. Verificación Biometría', '2. Verificació biomètrica', '2. Egiaztapen biometrikoa', '2. Verificación biométrica') }}</h2>
     </div>
     <div class="camera-module">
       <div class="video-wrapper">
@@ -15,12 +15,12 @@
         </div>
       </div>
       <div class="camera-controls">
-        <button class="btn btn-camera" @click="capture('dni')">Capturar DNI</button>
-        <button class="btn btn-camera" @click="capture('face')">Face Check</button>
+        <button class="btn btn-camera" @click="capture('dni')">{{ lt('Capturar DNI', 'Capturar DNI', 'DNI harrapatu', 'Capturar DNI') }}</button>
+        <button class="btn btn-camera" @click="capture('face')">{{ lt('Comprobar cara', 'Comprovar cara', 'Aurpegia egiaztatu', 'Comprobar cara') }}</button>
       </div>
     </div>
     <div class="form-group" style="margin-top: 1rem;">
-      <label>DNI / NIE Confirmación</label>
+      <label>{{ lt('Confirmación DNI / NIE', 'Confirmació DNI / NIE', 'DNI / NIE berrespena', 'Confirmación DNI / NIE') }}</label>
       <input v-model="dniInput" type="text" placeholder="12345678A" class="form-input" :class="{ 'error': dniError }" />
       <span v-if="dniError" class="error-msg">{{ dniError }}</span>
     </div>
@@ -31,7 +31,7 @@
       </div>
       <div class="preview-box">
         <img v-if="faceImage" :src="faceImage" class="preview-img" />
-        <span v-else>Face</span>
+        <span v-else>{{ lt('Cara', 'Cara', 'Aurpegia', 'Cara') }}</span>
       </div>
     </div>
     <button 
@@ -40,12 +40,21 @@
       :disabled="!isReady || isVerifying"
       @click="handleFinalLogin"
     >
-      {{ isVerifying ? 'Verificando Identidad...' : 'Iniciar Sesión' }}
+      {{ isVerifying ? lt('Verificando identidad...', 'Verificant identitat...', 'Nortasuna egiaztatzen...', 'Verificando identidade...') : lt('Iniciar sesión', 'Iniciar sessió', 'Saioa hasi', 'Iniciar sesión') }}
     </button>
   </section>
 </template>
 
 <script setup>
+const { locale } = useI18n()
+
+const lt = (es, ca, eu, gl) => {
+  if (locale.value === 'ca') return ca
+  if (locale.value === 'eu') return eu
+  if (locale.value === 'gl') return gl
+  return es
+}
+
 const props = defineProps({
   isLocked: Boolean,
   requiredDni: String
@@ -72,7 +81,7 @@ const initCamera = async () => {
     if (videoRef.value) videoRef.value.srcObject = stream
   } catch (err) {
     console.error("Camera error:", err)
-    alert("Acceso a cámara denegado.")
+    alert(lt('Acceso a cámara denegado.', 'Accés a la càmera denegat.', 'Kamerarako sarbidea ukatuta.', 'Acceso á cámara denegado.'))
   }
 }
 
@@ -106,9 +115,19 @@ const handleFinalLogin = () => {
   if (cleanInput !== cleanRequired) {
     if (!cleanRequired) {
       console.error('System Error: requiredDni is empty')
-      dniError.value = 'Error interno: No se ha podido verificar tu identidad. Reinicia el proceso.'
+      dniError.value = lt(
+        'Error interno: No se ha podido verificar tu identidad. Reinicia el proceso.',
+        'Error intern: No s ha pogut verificar la teva identitat. Reinicia el procés.',
+        'Barne errorea: Ezin izan da zure nortasuna egiaztatu. Berrabiarazi prozesua.',
+        'Erro interno: Non se puido verificar a túa identidade. Reinicia o proceso.'
+      )
     } else {
-      dniError.value = 'El DNI no coincide con el usuario registrado.'
+      dniError.value = lt(
+        'El DNI no coincide con el usuario registrado.',
+        'El DNI no coincideix amb l usuari registrat.',
+        'DNIa ez dator bat erregistratutako erabiltzailearekin.',
+        'O DNI non coincide co usuario rexistrado.'
+      )
     }
     return
   }

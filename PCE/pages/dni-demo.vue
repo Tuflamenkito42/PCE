@@ -1,6 +1,7 @@
 <template>
   <div class="dni-scanner-demo">
-    <h1>Demo: DNI Scanner Integration</h1>
+    <h1>{{ t('dniDemo.title') }}</h1>
+    <p class="demo-description">{{ t('dniDemo.description') }}</p>
     
     <div class="demo-layout">
       <!-- DNI Scanner Component -->
@@ -57,6 +58,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import DniScanner from '@/components/DniScanner.vue'
+const { t } = useI18n()
 
 // Form data
 const formData = ref({
@@ -104,12 +106,12 @@ const submitForm = () => {
   console.log('📤 Submitting form:', formData.value)
 }
 
-useHead({
-  title: 'DNI Scanner Demo - PCE',
+useHead(() => ({
+  title: `${t('dniDemo.title')} - PCE`,
   meta: [
-    { name: 'description', content: 'Demostración del componente de escaneo de DNI con detección facial y OCR' }
+    { name: 'description', content: t('dniDemo.description') }
   ]
-})
+}))
 </script>
 
 <style scoped>

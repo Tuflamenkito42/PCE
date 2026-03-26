@@ -4,14 +4,12 @@
     <section class="transparency-hero">
       <div class="container animate-in">
         <div class="hero-brand-overlay">
-          <h1 class="page-title">PORTAL DE TRANSPARENCIA</h1>
+          <h1 class="page-title">{{ t('transparency.title') }}</h1>
         </div>
         <div class="title-divider"></div>
         <div class="subtitle-glass">
           <p class="hero-subtitle">
-            En cumplimiento de la Ley 19/2013 de Transparencia, Acceso a la Información Pública y Buen Gobierno, 
-            y nuestro compromiso ético con la ciudadanía, Protección Civil Española (PCE) pone a disposición 
-            pública toda su información institucional, organizativa y económica.
+            {{ t('transparency.intro') }}
           </p>
         </div>
       </div>
@@ -26,9 +24,9 @@
         <div class="category-section animate-in" style="animation-delay: 0.1s">
           <div class="category-header">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            <h2>Información Institucional y Organizativa</h2>
+            <h2>{{ t('transparency.institutional') }}</h2>
           </div>
-          <p class="category-desc">Estructura, normativas internas y órganos de dirección.</p>
+          <p class="category-desc">{{ t('transparency.institutionalDesc') }}</p>
           <div class="docs-list">
             <a v-for="doc in docsInstitucional" :key="doc.title" :href="doc.link" target="_blank" class="doc-item glass-hover">
               <span class="doc-icon">
@@ -49,9 +47,9 @@
         <div class="category-section animate-in" style="animation-delay: 0.2s">
           <div class="category-header">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h12"/><path d="M4 14h9"/><path d="M19 6a7.7 7.7 0 0 0-5.2-2A7.9 7.9 0 0 0 6 12c0 4.4 3.5 8 7.8 8 2 0 3.8-.8 5.2-2"/></svg>
-            <h2>Información Económica y Financiera</h2>
+            <h2>{{ t('transparency.economic') }}</h2>
           </div>
-          <p class="category-desc">Cuentas anuales, presupuestos, auditorías y subvenciones.</p>
+          <p class="category-desc">{{ t('transparency.economicDesc') }}</p>
           <div class="docs-list">
             <a v-for="doc in docsEconomica" :key="doc.title" :href="doc.link" target="_blank" class="doc-item glass-hover">
               <span class="doc-icon">
@@ -72,9 +70,9 @@
         <div class="category-section animate-in" style="animation-delay: 0.3s">
           <div class="category-header">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            <h2>Contratos y Convenios</h2>
+            <h2>{{ t('transparency.contracts') }}</h2>
           </div>
-          <p class="category-desc">Contratos formalizados con administraciones y proveedores.</p>
+          <p class="category-desc">{{ t('transparency.contractsDesc') }}</p>
           <div class="docs-list">
             <a v-for="doc in docsContratos" :key="doc.title" :href="doc.link" target="_blank" class="doc-item glass-hover">
               <span class="doc-icon">
@@ -95,9 +93,9 @@
         <div class="category-section animate-in" style="animation-delay: 0.4s">
           <div class="category-header">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-            <h2>Altos Cargos y Retribuciones</h2>
+            <h2>{{ t('transparency.executives') }}</h2>
           </div>
-          <p class="category-desc">Sueldos, declaraciones de bienes y compatibilidades.</p>
+          <p class="category-desc">{{ t('transparency.executivesDesc') }}</p>
           <div class="docs-list">
             <a v-for="doc in docsCargos" :key="doc.title" :href="doc.link" target="_blank" class="doc-item glass-hover">
               <span class="doc-icon">
@@ -119,13 +117,8 @@
       <!-- Info Box -->
       <div class="info-box glass animate-in" style="animation-delay: 0.5s">
         <div class="info-box-content">
-          <h3>Tribunal de Cuentas y Fiscalización</h3>
-          <p>
-            El PCE remite anualmente sus cuentas detalladas al Tribunal de Cuentas para su fiscalización 
-            conforme a lo establecido en la Ley sobre financiación de los partidos políticos.
-            Asimismo, nuestra entidad se audita de forma externa y rigurosa por firmas independientes para 
-            garantizar la máxima transparencia hacia nuestros afiliados y la sociedad.
-          </p>
+          <h3>{{ t('transparency.auditTitle') }}</h3>
+          <p>{{ t('transparency.auditDesc') }}</p>
         </div>
       </div>
 
@@ -134,39 +127,41 @@
 </template>
 
 <script setup>
-useHead({
-  title: 'Portal de Transparencia - Protección Civil Española',
+const { t } = useI18n()
+
+useHead(() => ({
+  title: `${t('transparency.title')} - Protección Civil Española`,
   meta: [
-    { name: 'description', content: 'Accede al Portal de Transparencia del Partido de Protección Civil Española (PCE). Cuentas, presupuestos, organización y estatutos.' }
+    { name: 'description', content: t('transparency.intro') }
   ]
-})
+}))
 
-const docsInstitucional = [
-  { title: 'Estatutos del Partido', date: 'Actualizado: Enero 2024', link: '/documents/estatutos-del-partido.pdf' },
-  { title: 'Código Ético y de Conducta', date: 'Actualizado: Febrero 2024', link: '/documents/codigo-etico-de-conducta.pdf' },
-  { title: 'Organigrama y Estructura Directiva', date: 'Actualizado: Marzo 2024', link: '/documents/organigrama-directiva.pdf' },
-  { title: 'Reglamento de Organización Nacional', date: 'Actualizado: Diciembre 2023', link: '/documents/reglamento-organizacion.pdf' }
-]
+const docsInstitucional = computed(() => [
+  { title: t('transparency.estatutos'), date: 'Actualizado: Enero 2024', link: '/documents/estatutos-del-partido.pdf' },
+  { title: t('transparency.doc.ethicsCode'), date: 'Actualizado: Febrero 2024', link: '/documents/codigo-etico-de-conducta.pdf' },
+  { title: t('transparency.doc.orgChart'), date: 'Actualizado: Marzo 2024', link: '/documents/organigrama-directiva.pdf' },
+  { title: t('transparency.doc.orgRules'), date: 'Actualizado: Diciembre 2023', link: '/documents/reglamento-organizacion.pdf' }
+])
 
-const docsEconomica = [
-  { title: 'Presupuestos Generales 2024', date: 'Aprobado: Enero 2024', link: '/documents/presupuestos-2024.pdf' },
-  { title: 'Cuentas Anuales Ejercicio 2023', date: 'Publicado: Marzo 2024', link: '/documents/cuentas-anuales-2023.pdf' },
-  { title: 'Informe de Auditoría Externa 2023', date: 'Publicado: Marzo 2024', link: '/documents/auditoria-externa-2023.pdf' },
-  { title: 'Registro de Donaciones', date: 'Publicado: Abril 2024', link: '/documents/registro-donaciones.pdf' },
-  { title: 'Subvenciones Públicas Recibidas', date: 'Actualizado: Anual', link: '/documents/subvenciones-publicas.pdf' }
-]
+const docsEconomica = computed(() => [
+  { title: t('transparency.presupuestos'), date: 'Aprobado: Enero 2024', link: '/documents/presupuestos-2024.pdf' },
+  { title: t('transparency.doc.accounts'), date: 'Publicado: Marzo 2024', link: '/documents/cuentas-anuales-2023.pdf' },
+  { title: t('transparency.doc.auditReport'), date: 'Publicado: Marzo 2024', link: '/documents/auditoria-externa-2023.pdf' },
+  { title: t('transparency.doc.donationRegistry'), date: 'Publicado: Abril 2024', link: '/documents/registro-donaciones.pdf' },
+  { title: t('transparency.doc.publicGrants'), date: 'Actualizado: Anual', link: '/documents/subvenciones-publicas.pdf' }
+])
 
-const docsContratos = [
-  { title: 'Relación de Contratos Menores 2023', date: 'Publicado: Enero 2024', link: '/documents/contratos-menores-2023.pdf' },
-  { title: 'Contratos con Proveedores', date: 'Actualizado: Mensual', link: '/documents/contratos-proveedores.pdf' },
-  { title: 'Convenios Suscritos con Entidades', date: 'Actualizado: Anual', link: '/documents/convenios-entidades.pdf' }
-]
+const docsContratos = computed(() => [
+  { title: t('transparency.doc.minorContracts'), date: 'Publicado: Enero 2024', link: '/documents/contratos-menores-2023.pdf' },
+  { title: t('transparency.doc.providers'), date: 'Actualizado: Mensual', link: '/documents/contratos-proveedores.pdf' },
+  { title: t('transparency.doc.agreements'), date: 'Actualizado: Anual', link: '/documents/convenios-entidades.pdf' }
+])
 
-const docsCargos = [
-  { title: 'Retribuciones de Altos Cargos y Directivos', date: 'Actualizado: Enero 2024', link: '/documents/retribuciones-cargos.pdf' },
-  { title: 'Gastos de Representación y Dietas', date: 'Actualizado: Semestral', link: '/documents/gastos-representacion.pdf' },
-  { title: 'Declaración de Bienes y Rentas', date: 'Actualizado: Anual', link: '/documents/declaracion-bienes.pdf' }
-]
+const docsCargos = computed(() => [
+  { title: t('transparency.doc.salaries'), date: 'Actualizado: Enero 2024', link: '/documents/retribuciones-cargos.pdf' },
+  { title: t('transparency.doc.expenses'), date: 'Actualizado: Semestral', link: '/documents/gastos-representacion.pdf' },
+  { title: t('transparency.doc.assets'), date: 'Actualizado: Anual', link: '/documents/declaracion-bienes.pdf' }
+])
 </script>
 
 <style scoped>

@@ -1,6 +1,6 @@
 <template>
   <main class="affiliation-page container">
-    <h1 class="page-title">AFILIACIÓN</h1>
+    <h1 class="page-title">{{ t('affiliation.title') }}</h1>
 
     <div class="affiliation-layout">
       <!-- Left: Form -->
@@ -28,27 +28,27 @@
                     <div class="check-mark">✓</div>
                   </div>
                 </div>
-                <h2 class="form-subtitle">YA ERES AFILIADO</h2>
+                <h2 class="form-subtitle">{{ t('affiliation.alreadyAffiliated') }}</h2>
                 <div class="success-message">
                   <p>Hola <strong>{{ affiliationData.name }}</strong>, gracias por tu compromiso.</p>
                   <p>Tu afiliación está activa y contribuyes con <strong>{{ affiliationData.quota }}€/mes</strong>.</p>
                   
                   <div class="affiliation-number">
-                    <span>NÚMERO DE AFILIADO</span>
+                    <span>{{ t('affiliation.affiliationNumber') }}</span>
                     <strong>#{{ affiliationData.id }}</strong>
                   </div>
                 </div>
                 
                 <div class="success-actions">
                   <button @click="handleCancelSubscription" class="btn" style="background: #723233; color: white;">
-                    {{ isCancelling ? 'Cancelando...' : 'Cancelar Suscripción' }}
+                    {{ isCancelling ? t('affiliation.cancelInProgress') : t('affiliation.cancelSubscription') }}
                   </button>
                 </div>
               </div>
 
               <!-- STEP 1: DATOS PERSONALES + DNI SCANNER -->
               <div v-else-if="currentStep === 1" class="step-content">
-                <h2 class="form-subtitle">DATOS PERSONALES</h2>
+                <h2 class="form-subtitle">{{ t('affiliation.personalData') }}</h2>
                 
                 <!-- DNI SCANNER -->
                 <div class="dni-scanner-section">
@@ -56,39 +56,39 @@
                 </div>
 
                 <div class="form-divider">
-                  <span>O introduce los datos manualmente</span>
+                  <span>{{ t('affiliation.manualEntry') }}</span>
                 </div>
 
                 <div class="form-grid">
                   <div class="form-group">
-                    <label>NOMBRE *</label>
-                    <input v-model="formData.name" type="text" placeholder="Nombre" required :class="{ 'error': errors.name }" />
+                    <label>{{ t('affiliation.name') }}</label>
+                    <input v-model="formData.name" type="text" :placeholder="t('affiliation.namePlaceholder')" required :class="{ 'error': errors.name }" />
                     <span v-if="errors.name" class="error-msg">{{ errors.name }}</span>
                   </div>
                   <div class="form-group">
-                    <label>APELLIDOS *</label>
-                    <input v-model="formData.lastname" type="text" placeholder="Apellidos" required :class="{ 'error': errors.lastname }" />
+                    <label>{{ t('affiliation.lastname') }}</label>
+                    <input v-model="formData.lastname" type="text" :placeholder="t('affiliation.lastnamePlaceholder')" required :class="{ 'error': errors.lastname }" />
                     <span v-if="errors.lastname" class="error-msg">{{ errors.lastname }}</span>
                   </div>
                   <div class="form-group">
-                    <label>DNI / NIE *</label>
-                    <input v-model="formData.dni" type="text" placeholder="Ejemplo: 12345678A" required :class="{ 'error': errors.dni, 'valid': dniValid }" />
+                    <label>{{ t('affiliation.dni') }}</label>
+                    <input v-model="formData.dni" type="text" :placeholder="t('affiliation.dniPlaceholder')" required :class="{ 'error': errors.dni, 'valid': dniValid }" />
                     <span v-if="errors.dni" class="error-msg">{{ errors.dni }}</span>
-                    <span v-else-if="dniValid" class="success-msg">✓ DNI válido</span>
+                    <span v-else-if="dniValid" class="success-msg">{{ t('affiliation.dniValid') }}</span>
                   </div>
                   <div class="form-group">
-                    <label>FECHA DE NACIMIENTO *</label>
+                    <label>{{ t('affiliation.dateOfBirth') }}</label>
                     <input v-model="formData.birthdate" type="date" required :class="{ 'error': errors.birthdate }" />
                     <span v-if="errors.birthdate" class="error-msg">{{ errors.birthdate }}</span>
                   </div>
                   <div class="form-group">
-                    <label>EMAIL PRINCIPAL *</label>
-                    <input v-model="formData.email" type="email" placeholder="Email principal" required :class="{ 'error': errors.email }" />
+                    <label>{{ t('affiliation.emailPrimary') }}</label>
+                    <input v-model="formData.email" type="email" :placeholder="t('affiliation.emailPlaceholder')" required :class="{ 'error': errors.email }" />
                     <span v-if="errors.email" class="error-msg">{{ errors.email }}</span>
                   </div>
                   <div class="form-group">
-                    <label>TELÉFONO PRINCIPAL *</label>
-                    <input v-model="formData.phone" type="tel" placeholder="Teléfono principal" required :class="{ 'error': errors.phone }" />
+                    <label>{{ t('affiliation.phoneNumber') }}</label>
+                    <input v-model="formData.phone" type="tel" :placeholder="t('affiliation.phoneNumber')" required :class="{ 'error': errors.phone }" />
                     <span v-if="errors.phone" class="error-msg">{{ errors.phone }}</span>
                   </div>
                 </div>
@@ -96,8 +96,8 @@
 
               <!-- STEP 2: CUOTA -->
               <div v-else-if="currentStep === 2" class="step-content">
-                <h2 class="form-subtitle">CUOTA DE AFILIACIÓN</h2>
-                <p class="step-description">Selecciona tu cuota mensual. Todas las contribuciones ayudan a fortalecer nuestro movimiento.</p>
+                <h2 class="form-subtitle">{{ lt('CUOTA DE AFILIACIÓN', 'QUOTA D AFILIACIÓ', 'AFILIAZIO KUOTA', 'COTA DE AFILIACIÓN') }}</h2>
+                <p class="step-description">{{ lt('Selecciona tu cuota mensual. Todas las contribuciones ayudan a fortalecer nuestro movimiento.', 'Selecciona la teva quota mensual. Totes les contribucions ajuden a enfortir el nostre moviment.', 'Aukeratu zure hileko kuota. Ekarpen guztiek gure mugimendua indartzen laguntzen dute.', 'Selecciona a túa cota mensual. Todas as contribucións axudan a fortalecer o noso movemento.') }}</p>
                 
                 <div class="quota-options">
                   <div 
@@ -106,7 +106,7 @@
                     :class="['quota-card', { selected: formData.quota === quota.value }]"
                     @click="formData.quota = quota.value"
                   >
-                    <div class="quota-badge" v-if="quota.recommended">Recomendado</div>
+                    <div class="quota-badge" v-if="quota.recommended">{{ lt('Recomendado', 'Recomanat', 'Gomendatua', 'Recomendado') }}</div>
                     <div class="quota-amount">{{ quota.label }}</div>
                     <div class="quota-description">{{ quota.description }}</div>
                     <div class="quota-check">✓</div>
@@ -114,13 +114,13 @@
                 </div>
 
                 <div v-if="formData.quota === 'custom'" class="custom-quota">
-                  <label>Cantidad personalizada (€/mes)</label>
+                  <label>{{ lt('Cantidad personalizada (€/mes)', 'Quantitat personalitzada (€/mes)', 'Zenbateko pertsonalizatua (€/hilean)', 'Cantidade personalizada (€/mes)') }}</label>
                   <input 
                     v-model.number="formData.customAmount" 
                     type="number" 
                     min="5" 
                     step="1" 
-                    placeholder="Mínimo 5€"
+                    :placeholder="lt('Mínimo 5€', 'Mínim 5€', 'Gutxienez 5€', 'Mínimo 5€')"
                   />
                 </div>
               </div>
@@ -129,28 +129,28 @@
               <div v-else-if="currentStep === 3" class="step-content">
                 <div class="payment-summary card-accent">
                   <div class="summary-header">
-                    <h2 class="form-subtitle">RESUMEN DEL PAGO</h2>
-                    <p class="step-description">Introduce tus datos de tarjeta para finalizar el proceso.</p>
+                    <h2 class="form-subtitle">{{ lt('RESUMEN DEL PAGO', 'RESUM DEL PAGAMENT', 'ORDAINKETAREN LABURPENA', 'RESUMO DO PAGAMENTO') }}</h2>
+                    <p class="step-description">{{ lt('Introduce tus datos de tarjeta para finalizar el proceso.', 'Introdueix les teves dades de targeta per finalitzar el procés.', 'Sartu zure txartelaren datuak prozesua amaitzeko.', 'Introduce os teus datos da tarxeta para finalizar o proceso.') }}</p>
                   </div>
                   
                   <div class="payment-grid">
                     <div class="summary-item">
-                      <span class="summary-label">CUOTA MENSUAL</span>
+                      <span class="summary-label">{{ lt('CUOTA MENSUAL', 'QUOTA MENSUAL', 'HILEKO KUOTA', 'COTA MENSUAL') }}</span>
                       <span class="summary-value highlight-green">{{ selectedQuotaAmount }}€</span>
                     </div>
                     <div class="summary-item">
-                      <span class="summary-label">PRIMER CARGO</span>
-                      <span class="summary-value">HOY</span>
+                      <span class="summary-label">{{ lt('PRIMER CARGO', 'PRIMER CÀRREC', 'LEHEN KOBRANTZA', 'PRIMEIRO COBRO') }}</span>
+                      <span class="summary-value">{{ lt('HOY', 'AVUI', 'GAUR', 'HOXE') }}</span>
                     </div>
                     <div class="summary-item">
-                      <span class="summary-label">PRÓXIMO CARGO</span>
+                      <span class="summary-label">{{ lt('PRÓXIMO CARGO', 'PRÒXIM CÀRREC', 'HURRENGO KOBRANTZA', 'PRÓXIMO COBRO') }}</span>
                       <span class="summary-value">{{ nextChargeDate }}</span>
                     </div>
                   </div>
                 </div>
 
                   <div class="stripe-container">
-                    <label class="input-label">DATOS DE LA TARJETA</label>
+                    <label class="input-label">{{ lt('DATOS DE LA TARJETA', 'DADES DE LA TARGETA', 'TXARTELAREN DATUAK', 'DATOS DA TARXETA') }}</label>
                     <StripeCard ref="stripeCardRef" @ready="stripeReady = true" @change="handleCardChange" />
                   </div>
 
@@ -164,8 +164,8 @@
                     <div class="alert-content">
                       <strong>
                         {{ 
-                          paymentStatus === 'success' ? 'CONFIRMADO' : 
-                          paymentStatus === 'processing' ? 'PROCESANDO' : 'ERROR' 
+                          paymentStatus === 'success' ? lt('CONFIRMADO', 'CONFIRMAT', 'BAIEZTATUTA', 'CONFIRMADO') : 
+                          paymentStatus === 'processing' ? lt('PROCESANDO', 'PROCESSANT', 'PROZESATZEN', 'PROCESANDO') : 'ERROR' 
                         }}
                       </strong>
                       <p>{{ paymentError }}</p>
@@ -176,14 +176,14 @@
 
               <!-- STEP 4: CONFIRMACIÓN -->
               <div v-else-if="currentStep === 4" class="step-content">
-                <h2 class="form-subtitle">CONFIRMACIÓN</h2>
-                <p class="step-description">Revisa tus datos antes de finalizar la afiliación.</p>
+                <h2 class="form-subtitle">{{ lt('CONFIRMACIÓN', 'CONFIRMACIÓ', 'BAIEZTAPENA', 'CONFIRMACIÓN') }}</h2>
+                <p class="step-description">{{ lt('Revisa tus datos antes de finalizar la afiliación.', 'Revisa les teves dades abans de finalitzar l afiliació.', 'Egiaztatu zure datuak afiliazioa amaitu aurretik.', 'Revisa os teus datos antes de finalizar a afiliación.') }}</p>
 
                 <div class="confirmation-grid">
                   <div class="confirmation-section">
-                    <h3>Datos Personales</h3>
+                    <h3>{{ lt('Datos personales', 'Dades personals', 'Datu pertsonalak', 'Datos persoais') }}</h3>
                     <div class="data-row">
-                      <span class="label">Nombre completo:</span>
+                      <span class="label">{{ lt('Nombre completo:', 'Nom complet:', 'Izen-abizenak:', 'Nome completo:') }}</span>
                       <span class="value">{{ formData.name }} {{ formData.lastname }}</span>
                     </div>
                     <div class="data-row">
@@ -191,7 +191,7 @@
                       <span class="value">{{ formData.dni }}</span>
                     </div>
                     <div class="data-row">
-                      <span class="label">Fecha de nacimiento:</span>
+                      <span class="label">{{ lt('Fecha de nacimiento:', 'Data de naixement:', 'Jaiotze data:', 'Data de nacemento:') }}</span>
                       <span class="value">{{ formatDate(formData.birthdate) }}</span>
                     </div>
                     <div class="data-row">
@@ -199,27 +199,32 @@
                       <span class="value">{{ formData.email }}</span>
                     </div>
                     <div class="data-row">
-                      <span class="label">Teléfono:</span>
+                      <span class="label">{{ lt('Teléfono:', 'Telèfon:', 'Telefonoa:', 'Teléfono:') }}</span>
                       <span class="value">{{ formData.phone }}</span>
                     </div>
                   </div>
 
                   <div class="confirmation-section">
-                    <h3>Cuota de Afiliación</h3>
+                    <h3>{{ lt('Cuota de afiliación', 'Quota d afiliació', 'Afiliazio kuota', 'Cota de afiliación') }}</h3>
                     <div class="data-row">
-                      <span class="label">Cuota mensual:</span>
+                      <span class="label">{{ lt('Cuota mensual:', 'Quota mensual:', 'Hileko kuota:', 'Cota mensual:') }}</span>
                       <span class="value highlight">{{ selectedQuotaAmount }}€/mes</span>
                     </div>
                     <div class="data-row">
-                      <span class="label">Método de pago:</span>
-                      <span class="value">Tarjeta de crédito/débito</span>
+                      <span class="label">{{ lt('Método de pago:', 'Mètode de pagament:', 'Ordainketa metodoa:', 'Método de pagamento:') }}</span>
+                      <span class="value">{{ lt('Tarjeta de crédito/débito', 'Targeta de crèdit/dèbit', 'Kreditu/zordunketa txartela', 'Tarxeta de crédito/débito') }}</span>
                     </div>
                   </div>
 
                   <div class="confirmation-section full-width">
                     <label class="checkbox-label">
                       <input type="checkbox" v-model="formData.acceptTerms" required />
-                      <span>Acepto los <a href="/condiciones-uso" target="_blank">términos y condiciones</a> y la <a href="/politica-privacidad" target="_blank">política de privacidad</a></span>
+                      <span>
+                        {{ lt('Acepto los', 'Accepto els', 'Onartzen ditut', 'Acepto os') }}
+                        <a href="/condiciones-uso" target="_blank">{{ lt('términos y condiciones', 'termes i condicions', 'terminoak eta baldintzak', 'termos e condicións') }}</a>
+                        {{ lt('y la', 'i la', 'eta', 'e a') }}
+                        <a href="/politica-privacidad" target="_blank">{{ lt('política de privacidad', 'política de privacitat', 'pribatutasun politika', 'política de privacidade') }}</a>
+                      </span>
                     </label>
                   </div>
 
@@ -233,8 +238,8 @@
                       <div class="alert-content">
                         <strong>
                           {{ 
-                            paymentStatus === 'success' ? 'CONFIRMADO' : 
-                            paymentStatus === 'processing' ? 'PROCESANDO' : 'ERROR' 
+                              paymentStatus === 'success' ? lt('CONFIRMADO', 'CONFIRMAT', 'BAIEZTATUTA', 'CONFIRMADO') : 
+                              paymentStatus === 'processing' ? lt('PROCESANDO', 'PROCESSANT', 'PROZESATZEN', 'PROCESANDO') : 'ERROR' 
                           }}
                         </strong>
                         <p>{{ paymentError }}</p>
@@ -252,26 +257,26 @@
                   </div>
                 </div>
                 
-                <h2 class="form-subtitle text-center">¡AFILIACIÓN COMPLETADA!</h2>
+                <h2 class="form-subtitle text-center">{{ lt('¡AFILIACIÓN COMPLETADA!', 'AFILIACIÓ COMPLETADA!', 'AFILIAZIOA OSATUTA!', 'AFILIACIÓN COMPLETADA!') }}</h2>
                 <div class="success-message text-center">
-                  <p>Gracias <strong>{{ formData.name }}</strong>, tu proceso de afiliación se ha completado correctamente.</p>
-                  <p>Hemos guardado tus datos y pronto recibirás un correo de confirmación con los siguientes pasos.</p>
+                  <p>{{ lt('Gracias', 'Gràcies', 'Eskerrik asko', 'Grazas') }} <strong>{{ formData.name }}</strong>, {{ lt('tu proceso de afiliación se ha completado correctamente.', 'el teu procés d afiliació s ha completat correctament.', 'zure afiliazio prozesua ondo osatu da.', 'o teu proceso de afiliación completouse correctamente.') }}</p>
+                  <p>{{ lt('Hemos guardado tus datos y pronto recibirás un correo de confirmación con los siguientes pasos.', 'Hem desat les teves dades i aviat rebràs un correu de confirmació amb els passos següents.', 'Zure datuak gorde ditugu eta laster jasoko duzu berrespen-mezu bat hurrengo pausoekin.', 'Gardamos os teus datos e pronto recibirás un correo de confirmación cos seguintes pasos.') }}</p>
                   
                   <div class="affiliation-number">
-                    <span>NÚMERO DE SOLICITUD</span>
+                    <span>{{ lt('NÚMERO DE SOLICITUD', 'NÚMERO DE SOL·LICITUD', 'ESKAERA ZENBAKIA', 'NÚMERO DE SOLICITUDE') }}</span>
                     <strong>#{{ Date.now().toString().slice(-6) }}</strong>
                   </div>
                 </div>
 
                 <div class="success-actions">
-                  <NuxtLink to="/" class="btn btn-finish">VOLVER AL INICIO</NuxtLink>
+                  <NuxtLink to="/" class="btn btn-finish">{{ lt('VOLVER AL INICIO', 'TORNAR A L INICI', 'HASIERARA ITZULI', 'VOLVER AO INICIO') }}</NuxtLink>
                 </div>
               </div>
             </div>
           </transition>
 
           <div v-if="currentStep < 5" class="form-nav">
-            <button v-if="currentStep > 1" type="button" class="btn" @click="previousStep">Anterior</button>
+            <button v-if="currentStep > 1" type="button" class="btn" @click="previousStep">{{ lt('Anterior', 'Anterior', 'Aurrekoa', 'Anterior') }}</button>
             <button 
               v-if="currentStep < 4" 
               type="button" 
@@ -279,7 +284,7 @@
               @click="nextStep"
               :disabled="!canProceed"
             >
-              Siguiente
+              {{ lt('Siguiente', 'Següent', 'Hurrengoa', 'Seguinte') }}
             </button>
             <button 
               v-if="currentStep === 4" 
@@ -287,8 +292,8 @@
               class="btn btn-next"
               :disabled="isProcessing || !formData.acceptTerms"
             >
-              <span v-if="isProcessing">Procesando...</span>
-              <span v-else>Finalizar Afiliación</span>
+              <span v-if="isProcessing">{{ lt('Procesando...', 'Processant...', 'Prozesatzen...', 'Procesando...') }}</span>
+              <span v-else>{{ lt('Finalizar afiliación', 'Finalitzar afiliació', 'Afiliazioa amaitu', 'Finalizar afiliación') }}</span>
             </button>
           </div>
         </form>
@@ -303,12 +308,26 @@
 <script setup>
 import AffiliationSidebar from './components/AffiliationSidebar.vue'
 import DniScanner from '@/components/DniScanner.vue'
+const { t, locale } = useI18n()
 import StripeCard from '@/components/StripeCard.vue'
 import { isValidEmail, isValidDNI } from '@/utils/validation'
 import { computed } from 'vue'
 
+const lt = (es, ca, eu, gl) => {
+  if (locale.value === 'ca') return ca
+  if (locale.value === 'eu') return eu
+  if (locale.value === 'gl') return gl
+  return es
+}
+
 const currentStep = ref(1)
-const stepLabels = ['Datos personales', 'Cuota', 'Datos Bancarios', 'Confirmación', 'Finalizado']
+const stepLabels = computed(() => [
+  lt('Datos personales', 'Dades personals', 'Datu pertsonalak', 'Datos persoais'),
+  lt('Cuota', 'Quota', 'Kuota', 'Cota'),
+  lt('Datos bancarios', 'Dades bancàries', 'Banku datuak', 'Datos bancarios'),
+  lt('Confirmación', 'Confirmació', 'Baieztapena', 'Confirmación'),
+  lt('Finalizado', 'Finalitzat', 'Amaituta', 'Finalizado')
+])
 
 // Form Data
 const formData = reactive({
@@ -365,7 +384,7 @@ const checkAffiliationExisting = async (email) => {
 }
 
 const handleCancelSubscription = async () => {
-    if (!confirm('¿Estás seguro de que quieres cancelar tu afiliación?')) return
+  if (!confirm(lt('¿Estás seguro de que quieres cancelar tu afiliación?', 'Segur que vols cancel·lar la teva afiliació?', 'Ziur zaude zure afiliazioa ezeztatu nahi duzula?', 'Estás seguro de que queres cancelar a túa afiliación?'))) return
     
     isCancelling.value = true
     try {
@@ -376,11 +395,11 @@ const handleCancelSubscription = async () => {
 
         if (error.value) throw error.value
 
-        alert('Suscripción cancelada correctamente.')
+        alert(lt('Suscripción cancelada correctamente.', 'Subscripció cancel·lada correctament.', 'Harpidetza behar bezala ezeztatu da.', 'Subscrición cancelada correctamente.'))
         isAlreadyAffiliated.value = false
         // Reset form or redirect
     } catch (e) {
-        alert('Error al cancelar: ' + (e.message || 'Error desconocido'))
+        alert(lt('Error al cancelar: ', 'Error en cancel·lar: ', 'Ezeztatzean errorea: ', 'Erro ao cancelar: ') + (e.message || lt('Error desconocido', 'Error desconegut', 'Errore ezezaguna', 'Erro descoñecido')))
     } finally {
         isCancelling.value = false
     }
@@ -388,11 +407,11 @@ const handleCancelSubscription = async () => {
 
 // Quota options
 const quotaOptions = [
-  { value: '5', label: '5€/mes', description: 'Apoyo básico', recommended: false },
-  { value: '10', label: '10€/mes', description: 'Apoyo estándar', recommended: true },
-  { value: '20', label: '20€/mes', description: 'Apoyo comprometido', recommended: false },
-  { value: '50', label: '50€/mes', description: 'Apoyo premium', recommended: false },
-  { value: 'custom', label: 'Personalizado', description: 'Elige tu cantidad', recommended: false }
+  { value: '5', label: '5€/mes', description: lt('Apoyo básico', 'Suport bàsic', 'Oinarrizko laguntza', 'Apoio básico'), recommended: false },
+  { value: '10', label: '10€/mes', description: lt('Apoyo estándar', 'Suport estàndard', 'Laguntza estandarra', 'Apoio estándar'), recommended: true },
+  { value: '20', label: '20€/mes', description: lt('Apoyo comprometido', 'Suport compromès', 'Konpromisozko laguntza', 'Apoio comprometido'), recommended: false },
+  { value: '50', label: '50€/mes', description: lt('Apoyo premium', 'Suport premium', 'Premium laguntza', 'Apoio premium'), recommended: false },
+  { value: 'custom', label: lt('PERSONALIZADO', 'PERSONALITZAT', 'PERTSONALIZATUA', 'PERSONALIZADO'), description: lt('Elige tu cantidad', 'Tria la teva quantitat', 'Aukeratu zure zenbatekoa', 'Elixe a túa cantidade'), recommended: false }
 ]
 
 // Computed
@@ -411,7 +430,8 @@ const selectedQuotaAmount = computed(() => {
 const nextChargeDate = computed(() => {
   const date = new Date()
   date.setMonth(date.getMonth() + 1)
-  return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  const localeMap = { es: 'es-ES', ca: 'ca-ES', eu: 'eu-ES', gl: 'gl-ES' }
+  return date.toLocaleDateString(localeMap[locale.value] || 'es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
 })
 
 const canProceed = computed(() => {
@@ -456,22 +476,22 @@ const validateStep1 = () => {
   errors.value = {}
   let valid = true
 
-  if (!formData.name) { errors.value.name = "EL NOMBRE ES OBLIGATORIO"; valid = false; }
-  if (!formData.lastname) { errors.value.lastname = "LOS APELLIDOS SON OBLIGATORIOS"; valid = false; }
+  if (!formData.name) { errors.value.name = t('affiliation.requiredName'); valid = false; }
+  if (!formData.lastname) { errors.value.lastname = t('affiliation.requiredLastname'); valid = false; }
   
   if (!isValidDNI(formData.dni)) {
-    errors.value.dni = "DNI/NIE INVÁLIDO"; 
+    errors.value.dni = t('affiliation.invalidDni'); 
     valid = false; 
   }
 
-  if (!formData.birthdate) { errors.value.birthdate = "LA FECHA DE NACIMIENTO ES OBLIGATORIA"; valid = false; }
+  if (!formData.birthdate) { errors.value.birthdate = t('affiliation.requiredBirthdate'); valid = false; }
 
   if (!isValidEmail(formData.email)) {
-    errors.value.email = "EMAIL INVÁLIDO"; 
+    errors.value.email = t('affiliation.invalidEmail'); 
     valid = false; 
   }
 
-  if (!formData.phone) { errors.value.phone = "EL TELÉFONO ES OBLIGATORIO"; valid = false; }
+  if (!formData.phone) { errors.value.phone = t('affiliation.requiredPhone'); valid = false; }
 
   return valid
 }
@@ -504,7 +524,7 @@ const handleCardChange = (complete) => {
 
 const handleSubmit = async () => {
   if (!formData.acceptTerms) {
-    alert('DEBES ACEPTAR LOS TÉRMINOS Y CONDICIONES')
+    alert(lt('DEBES ACEPTAR LOS TÉRMINOS Y CONDICIONES', 'HAS D ACCEPTAR ELS TERMES I CONDICIONS', 'BALDINTZAK ETA TERMINOAK ONARTU BEHAR DITUZU', 'DEBES ACEPTAR OS TERMOS E CONDICIÓNS'))
     return
   }
 
@@ -537,13 +557,13 @@ const handleSubmit = async () => {
         console.warn('Entrando en modo simulación (Claves de Stripe no configuradas)')
         
         paymentStatus.value = 'processing'
-        paymentError.value = 'VERIFICANDO DATOS DE TARJETA...'
+        paymentError.value = lt('VERIFICANDO DATOS DE TARJETA...', 'VERIFICANT DADES DE TARGETA...', 'TXARTEL DATUAK EGIAZTATZEN...', 'VERIFICANDO DATOS DA TARXETA...')
         
         // Brief delay to simulate a real check
         await new Promise(resolve => setTimeout(resolve, 1500))
         
         paymentStatus.value = 'success'
-        paymentError.value = '¡PAGO ACEPTADO CORRECTAMENTE!'
+        paymentError.value = lt('¡PAGO ACEPTADO CORRECTAMENTE!', 'PAGAMENT ACCEPTAT CORRECTAMENT!', 'ORDAINKETA ONDO ONARTU DA!', 'PAGAMENTO ACEPTADO CORRECTAMENTE!')
         await new Promise(resolve => setTimeout(resolve, 1000))
 
         // Save to DB (Simulated)
@@ -559,18 +579,18 @@ const handleSubmit = async () => {
         currentStep.value = 5
         return
       }
-      throw new Error(errorMsg || 'ERROR DE CONEXIÓN CON EL SERVIDOR')
+      throw new Error(errorMsg || lt('ERROR DE CONEXIÓN CON EL SERVIDOR', 'ERROR DE CONNEXIÓ AMB EL SERVIDOR', 'ZERBITZARIAREKIKO KONEXIO ERROREA', 'ERRO DE CONEXIÓN CO SERVIDOR'))
     }
 
     if (!paymentData.value?.clientSecret) {
-      throw new Error('NO SE RECIBIÓ RESPUESTA DEL SERVIDOR DE PAGOS')
+      throw new Error(lt('NO SE RECIBIÓ RESPUESTA DEL SERVIDOR DE PAGOS', 'NO S HA REBUT RESPOSTA DEL SERVIDOR DE PAGAMENTS', 'EZ DA ORDAINKETA ZERBITZARIKO ERANTZUNIK JASO', 'NON SE RECIBIU RESPOSTA DO SERVIDOR DE PAGOS'))
     }
 
     // 3. Confirm payment with Stripe
     const { stripe: stripeInstance, initStripe } = useStripe()
     await initStripe()
 
-    if (!stripeInstance.value) throw new Error('ERROR AL INICIALIZAR STRIPE')
+    if (!stripeInstance.value) throw new Error(lt('ERROR AL INICIALIZAR STRIPE', 'ERROR EN INICIALITZAR STRIPE', 'ERROREA STRIPE ABIATZEAN', 'ERRO AO INICIALIZAR STRIPE'))
 
     const { error } = await stripeInstance.value.confirmCardPayment(paymentData.value.clientSecret, {
       payment_method: {
@@ -598,7 +618,7 @@ const handleSubmit = async () => {
     
   } catch (error) {
     console.error('Payment error:', error)
-    paymentError.value = (error.message || 'ERROR AL PROCESAR EL PAGO').toUpperCase()
+    paymentError.value = (error.message || lt('ERROR AL PROCESAR EL PAGO', 'ERROR EN PROCESSAR EL PAGAMENT', 'ERROREA ORDAINKETA PROZESATZEAN', 'ERRO AO PROCESAR O PAGO')).toUpperCase()
     paymentStatus.value = 'error'
     isProcessing.value = false
   }
@@ -607,15 +627,16 @@ const handleSubmit = async () => {
 const formatDate = (dateString) => {
   if (!dateString) return ''
   const date = new Date(dateString)
-  return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  const localeMap = { es: 'es-ES', ca: 'ca-ES', eu: 'eu-ES', gl: 'gl-ES' }
+  return date.toLocaleDateString(localeMap[locale.value] || 'es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
-useHead({
-  title: 'Afiliación - PCE',
+useHead(() => ({
+  title: `${t('affiliation.title')} - PCE`,
   meta: [
-    { name: 'description', content: 'Únete a Protección Civil Española (PCE) y forma parte del cambio. Proceso de afiliación sencillo y rápido.' }
+    { name: 'description', content: `${t('affiliation.personalData')}` }
   ]
-})
+}))
 </script>
 
 <style scoped>

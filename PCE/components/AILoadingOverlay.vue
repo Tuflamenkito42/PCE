@@ -7,7 +7,7 @@
         </div>
       </div>
       <div class="info-content">
-        <h3>Cargando Inteligencia Artificial</h3>
+        <h3>{{ lt('Cargando Inteligencia Artificial', 'Carregant Intel·ligència Artificial', 'Adimen Artifiziala kargatzen', 'Cargando Intelixencia Artificial') }}</h3>
         <p>{{ message }}</p>
         <div class="progress-bar">
           <div class="progress-fill" :style="{ width: progress + '%' }"></div>
@@ -18,6 +18,15 @@
 </template>
 
 <script setup>
+const { locale } = useI18n()
+
+const lt = (es, ca, eu, gl) => {
+  if (locale.value === 'ca') return ca
+  if (locale.value === 'eu') return eu
+  if (locale.value === 'gl') return gl
+  return es
+}
+
 const props = defineProps({
   show: {
     type: Boolean,

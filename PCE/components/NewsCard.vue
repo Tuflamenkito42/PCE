@@ -12,7 +12,7 @@
       <div v-if="imageError" class="image-fallback">
         <div class="fallback-overlay">
           <img src="/images/logo.png" alt="PCE" class="fallback-logo" />
-          <span class="fallback-text">PCE ACTUALIDAD</span>
+          <span class="fallback-text">{{ lt('PCE ACTUALIDAD', 'PCE ACTUALITAT', 'PCE GAURKOTASUNA', 'PCE ACTUALIDADE') }}</span>
         </div>
       </div>
     </div>
@@ -25,7 +25,7 @@
       <p class="news-excerpt" v-if="excerpt">{{ excerpt }}</p>
       <slot />
       <NuxtLink v-if="url" :to="url" class="read-more-btn">
-        Leer más
+        {{ lt('Leer más', 'Llegir més', 'Irakurri gehiago', 'Ler máis') }}
         <span class="arrow-icon">→</span>
       </NuxtLink>
     </div>
@@ -34,6 +34,14 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+const { locale } = useI18n()
+
+const lt = (es, ca, eu, gl) => {
+  if (locale.value === 'ca') return ca
+  if (locale.value === 'eu') return eu
+  if (locale.value === 'gl') return gl
+  return es
+}
 
 const props = defineProps({
   title: String,
@@ -54,10 +62,16 @@ const handleError = () => {
 
 const formattedDate = computed(() => {
   if (!props.date) return ''
-  
+
+  const localeMap = {
+    es: 'es-ES',
+    ca: 'ca-ES',
+    eu: 'eu-ES',
+    gl: 'gl-ES'
+  }
   const date = new Date(props.date)
   const options = { year: 'numeric', month: 'long', day: 'numeric' }
-  return date.toLocaleDateString('es-ES', options)
+  return date.toLocaleDateString(localeMap[locale.value] || 'es-ES', options)
 })
 </script>
 

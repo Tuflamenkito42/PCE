@@ -8,8 +8,8 @@
     />
     
     <div class="scanner-header">
-      <h2>Escanear DNI/NIE</h2>
-      <p>Sube una foto de tu DNI para extraer los datos automáticamente</p>
+      <h2>{{ lt('Escanear DNI/NIE', 'Escanejar DNI/NIE', 'DNI/NIE eskaneatu', 'Escanear DNI/NIE') }}</h2>
+      <p>{{ lt('Sube una foto de tu DNI para extraer los datos automáticamente', 'Puja una foto del teu DNI per extreure les dades automàticament', 'Igo zure DNIaren argazkia datuak automatikoki ateratzeko', 'Sube unha foto do teu DNI para extraer os datos automaticamente') }}</p>
     </div>
 
     <!-- File Upload -->
@@ -27,7 +27,7 @@
             <circle cx="432" cy="184" r="24" fill="#5E2C2C"/>
           </svg>
         </div>
-        <span class="upload-text">{{ uploadedFile ? uploadedFile.name : 'SELECCIONAR IMAGEN DEL DNI' }}</span>
+        <span class="upload-text">{{ uploadedFile ? uploadedFile.name : lt('SELECCIONAR IMAGEN DEL DNI', 'SELECCIONAR IMATGE DEL DNI', 'HAUTATU DNI-REN IRUDIA', 'SELECCIONAR IMAXE DO DNI') }}</span>
         <input 
           id="dni-upload" 
           ref="fileInput"
@@ -49,43 +49,43 @@
     <div v-if="imageLoaded" v-show="!isProcessing" class="canvas-container">
       <canvas ref="canvas"></canvas>
       <div v-if="faceDetected" class="face-indicator">
-        ✅ Cara detectada
+        {{ lt('✅ Cara detectada', '✅ Cara detectada', '✅ Aurpegia detektatuta', '✅ Cara detectada') }}
       </div>
       <div v-else class="face-indicator error">
-        ⚠️ No se detectó ninguna cara
+        {{ lt('⚠️ No se detectó ninguna cara', '⚠️ No s ha detectat cap cara', '⚠️ Ez da aurpegirik detektatu', '⚠️ Non se detectou ningunha cara') }}
       </div>
     </div>
 
     <!-- Extracted Data -->
     <div v-if="dniData && !isProcessing" class="result-section">
-      <h3>Datos Extraídos</h3>
+      <h3>{{ lt('Datos Extraídos', 'Dades extretes', 'Ateratako datuak', 'Datos extraidos') }}</h3>
       <div class="data-grid">
         <div class="data-item">
-          <label>DNI/NIE:</label>
+          <label>{{ lt('DNI/NIE:', 'DNI/NIE:', 'DNI/NIE:', 'DNI/NIE:') }}</label>
           <span :class="{ valid: dniData.valido, invalid: !dniData.valido }">
-            {{ dniData.dni || 'No detectado' }}
+            {{ dniData.dni || lt('No detectado', 'No detectat', 'Ez da detektatu', 'Non detectado') }}
           </span>
         </div>
         <div class="data-item">
-          <label>Nombre:</label>
-          <span>{{ dniData.nombre || 'No detectado' }}</span>
+          <label>{{ lt('Nombre:', 'Nom:', 'Izena:', 'Nome:') }}</label>
+          <span>{{ dniData.nombre || lt('No detectado', 'No detectat', 'Ez da detektatu', 'Non detectado') }}</span>
         </div>
         <div class="data-item">
-          <label>Apellidos:</label>
-          <span>{{ dniData.apellidos || 'No detectado' }}</span>
+          <label>{{ lt('Apellidos:', 'Cognoms:', 'Abizenak:', 'Apelidos:') }}</label>
+          <span>{{ dniData.apellidos || lt('No detectado', 'No detectat', 'Ez da detektatu', 'Non detectado') }}</span>
         </div>
         <div class="data-item">
-          <label>Fecha de Nacimiento:</label>
-          <span>{{ dniData.fecha_nacimiento || 'No detectado' }}</span>
+          <label>{{ lt('Fecha de Nacimiento:', 'Data de naixement:', 'Jaiotze data:', 'Data de nacemento:') }}</label>
+          <span>{{ dniData.fecha_nacimiento || lt('No detectado', 'No detectat', 'Ez da detektatu', 'Non detectado') }}</span>
         </div>
         <div class="data-item">
-          <label>Fecha de Caducidad:</label>
-          <span>{{ dniData.fecha_caducidad || 'No detectado' }}</span>
+          <label>{{ lt('Fecha de Caducidad:', 'Data de caducitat:', 'Iraungitze data:', 'Data de caducidade:') }}</label>
+          <span>{{ dniData.fecha_caducidad || lt('No detectado', 'No detectat', 'Ez da detektatu', 'Non detectado') }}</span>
         </div>
         <div class="data-item full-width">
-          <label>Estado:</label>
+          <label>{{ lt('Estado:', 'Estat:', 'Egoera:', 'Estado:') }}</label>
           <span :class="{ valid: dniData.valido, invalid: !dniData.valido }">
-            {{ dniData.valido ? '✅ DNI/NIE Válido' : '❌ DNI/NIE Inválido' }}
+            {{ dniData.valido ? lt('✅ DNI/NIE Válido', '✅ DNI/NIE vàlid', '✅ DNI/NIE baliozkoa', '✅ DNI/NIE valido') : lt('❌ DNI/NIE Inválido', '❌ DNI/NIE invàlid', '❌ DNI/NIE baliogabea', '❌ DNI/NIE invalido') }}
           </span>
         </div>
       </div>
@@ -93,10 +93,10 @@
       <!-- Action Buttons -->
       <div class="action-buttons">
         <button @click="useDniData" class="btn-use" :disabled="!dniData.nombre && !dniData.dni">
-          Usar estos datos
+          {{ lt('Usar estos datos', 'Utilitzar aquestes dades', 'Erabili datu hauek', 'Usar estes datos') }}
         </button>
         <button @click="resetScanner" class="btn-reset">
-          Escanear otro DNI
+          {{ lt('Escanear otro DNI', 'Escanejar un altre DNI', 'Beste DNI bat eskaneatu', 'Escanear outro DNI') }}
         </button>
       </div>
     </div>
@@ -111,6 +111,15 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import AILoadingOverlay from './AILoadingOverlay.vue'
+
+const { locale } = useI18n()
+
+const lt = (es, ca, eu, gl) => {
+  if (locale.value === 'ca') return ca
+  if (locale.value === 'eu') return eu
+  if (locale.value === 'gl') return gl
+  return es
+}
 
 
 // Props & Emits
@@ -144,7 +153,7 @@ const uploadDNI = async (event) => {
   
   try {
     isProcessing.value = true
-    processingMessage.value = 'Cargando imagen...'
+    processingMessage.value = lt('Cargando imagen...', 'Carregant imatge...', 'Irudia kargatzen...', 'Cargando imaxe...')
     
     // Load image
     const img = await loadImage(file)
@@ -177,7 +186,7 @@ const uploadDNI = async (event) => {
     
   } catch (error) {
     console.error('Error processing DNI:', error)
-    errorMessage.value = `Error al procesar el DNI: ${error.message}`
+    errorMessage.value = `${lt('Error al procesar el DNI', 'Error en processar el DNI', 'Errorea DNI prozesatzean', 'Erro ao procesar o DNI')}: ${error.message}`
     isProcessing.value = false
   }
 }
@@ -241,7 +250,7 @@ const drawDetection = (img, detection) => {
     // Draw label
     ctx.fillStyle = '#00ff00'
     ctx.font = '16px Arial'
-    ctx.fillText('Cara detectada', box.x, box.y - 10)
+    ctx.fillText(lt('Cara detectada', 'Cara detectada', 'Aurpegia detektatuta', 'Cara detectada'), box.x, box.y - 10)
   }
 }
 
@@ -252,14 +261,14 @@ const performOCR = async (img) => {
   try {
     isLoadingModels.value = true
     loadingProgress.value = 10
-    processingMessage.value = 'Enviando imagen a Gemini AI...'
+    processingMessage.value = lt('Enviando imagen a Gemini AI...', 'Enviant imatge a Gemini AI...', 'Irudia Gemini AI-ra bidaltzen...', 'Enviando imaxe a Gemini AI...')
     
     // Convert image to base64 (without prefix)
     const base64Data = img.src.split(',')[1];
     const mimeType = img.src.split(',')[0].split(':')[1].split(';')[0];
     
     loadingProgress.value = 30
-    processingMessage.value = 'Gemini está analizando tu DNI...'
+    processingMessage.value = lt('Gemini está analizando tu DNI...', 'Gemini està analitzant el teu DNI...', 'Gemini zure DNIa aztertzen ari da...', 'Gemini esta a analizar o teu DNI...')
 
     const response = await fetch('/api/scan-dni', {
       method: 'POST',
@@ -274,11 +283,11 @@ const performOCR = async (img) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.statusMessage || 'Error al procesar el DNI');
+      throw new Error(errorData.statusMessage || lt('Error al procesar el DNI', 'Error en processar el DNI', 'Errorea DNI prozesatzean', 'Erro ao procesar o DNI'));
     }
 
     loadingProgress.value = 80
-    processingMessage.value = 'Estructurando datos...'
+    processingMessage.value = lt('Estructurando datos...', 'Estructurant dades...', 'Datuak egituratzen...', 'Estruturando datos...')
     
     const structuredData = await response.json();
     

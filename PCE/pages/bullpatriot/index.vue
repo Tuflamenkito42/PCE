@@ -5,8 +5,8 @@
 
     <section class="chat-stage">
       <img class="hero-logo" src="/images/bullpatriot.png" alt="Logo de Bullpatriot" />
-      <h1 class="hero-title">BULLPATRIOT</h1>
-      <p class="subtitle">Asistente del partido para consultas sobre actividad, programa y propuestas.</p>
+      <h1 class="hero-title">{{ t('bullpatriot.title') }}</h1>
+      <p class="subtitle">{{ t('bullpatriot.subtitle') }}</p>
 
       <article class="chat-shell">
         <div class="chat-toolbar">
@@ -102,13 +102,13 @@
         <form class="chat-form" @submit.prevent="sendMessage">
           <textarea
             v-model="chatInput"
-            placeholder="Pregunta lo que quieras: actualidad, propuestas o informacion del partido..."
+            :placeholder="t('bullpatriot.placeholder')"
             rows="3"
             @keydown="onComposerKeydown"
             :disabled="!chatReady"
           />
           <button class="btn" :disabled="!chatReady || chatLoading || !chatInput.trim()" type="submit">
-            {{ chatLoading ? 'Enviando...' : 'Enviar' }}
+            {{ chatLoading ? t('login.loadingMsg') : t('bullpatriot.send') }}
           </button>
         </form>
       </article>
@@ -119,6 +119,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRouter } from '#app'
+const { t, locale } = useI18n()
 
 type Message = {
   role: 'user' | 'assistant'
@@ -134,15 +135,15 @@ type ConversationSession = {
   messages: Message[]
 }
 
-useHead({
-  title: 'BULLPATRIOT - Chat IA Local',
+useHead(() => ({
+  title: `${t('bullpatriot.title')} - PCE`,
   meta: [
-    { name: 'description', content: 'BULLPATRIOT: chat local con Ollama en un entorno visual inmersivo para PCE.' }
+    { name: 'description', content: t('bullpatriot.description') }
   ],
   bodyAttrs: {
     class: 'bullpatriot-body'
   }
-})
+}))
 
 const { user } = useAuth()
 const router = useRouter()
@@ -425,7 +426,8 @@ const sendMessage = async () => {
       method: 'POST',
       body: {
         message,
-        history
+        history,
+        locale: locale.value
       }
     })
 

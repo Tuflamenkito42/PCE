@@ -2,6 +2,7 @@
 import IdentityVerification from './components/IdentityVerification.vue'
 
 import { isValidEmail, isStrongPassword, isValidDNI } from '@/utils/validation'
+const { t } = useI18n()
 
 const currentStep = ref(1)
 const isLogin = ref(true)
@@ -93,20 +94,20 @@ const handleFinalSuccess = async () => {
   }
 }
 
-useHead({
-  title: isLogin.value ? 'Acceso Seguro - PCE' : 'Registro Seguro - PCE',
+useHead(() => ({
+  title: `${t('login.title')} - PCE`,
   meta: [
-    { name: 'description', content: 'Identifíquese de forma segura para acceder al centro de votación y servicios de Protección Civil Española (PCE).' }
+    { name: 'description', content: t('login.subtitle') }
   ]
-})
+}))
 </script>
 
 <template>
   <main class="login-page">
     <div class="login-container container">
       <div class="auth-intro">
-        <h1>{{ isLogin ? 'SISTEMA DE ACCESO SEGURO' : 'REGISTRO DE NUEVO USUARIO' }}</h1>
-        <p>{{ isLogin ? 'Identifíquese para acceder a sus servicios personalizados y centro de votación.' : 'Cree su cuenta para participar en las consultas y votaciones de PCE.' }}</p>
+        <h1>{{ t('login.title') }}</h1>
+        <p>{{ t('login.subtitle') }}</p>
       </div>
 
       <div class="auth-grid">
@@ -126,13 +127,13 @@ useHead({
               <span v-if="errors.dni" class="error-msg">{{ errors.dni }}</span>
             </div>
             <div class="form-group">
-              <label>Usuario / Email</label>
-              <input v-model="email" type="text" placeholder="Correo electrónico" required :class="{ 'error': errors.email }" />
+              <label>{{ t('login.email') }}</label>
+              <input v-model="email" type="text" :placeholder="t('login.emailPlaceholder')" required :class="{ 'error': errors.email }" />
               <span v-if="errors.email" class="error-msg">{{ errors.email }}</span>
             </div>
             <div class="form-group">
-              <label>Contraseña</label>
-              <input v-model="password" type="password" placeholder="••••••••" required :class="{ 'error': errors.password }" />
+              <label>{{ t('login.password') }}</label>
+              <input v-model="password" type="password" :placeholder="t('login.passwordPlaceholder')" required :class="{ 'error': errors.password }" />
               <span v-if="errors.password" class="error-msg">{{ errors.password }}</span>
             </div>
             
@@ -141,11 +142,11 @@ useHead({
                  {{ errors.general || 'Por favor revise los errores en el formulario.' }}
               </p>
               <button type="submit" class="btn btn-verify-submit active">
-                {{ isLogin ? 'Continuar a Biometría' : 'Registrar y Continuar' }}
+                {{ t('login.loginBtn') }}
               </button>
               
               <p class="toggle-auth" @click="toggleAuthMode">
-                {{ isLogin ? '¿No tienes cuenta? Regístrate aquí' : '¿Ya tienes cuenta? Inicia sesión' }}
+                {{ isLogin ? `${t('login.noAccount')} ${t('login.signUp')}` : t('login.loginBtn') }}
               </p>
             </div>
           </form>

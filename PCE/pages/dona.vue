@@ -1,18 +1,18 @@
 <template>
   <main class="donation-page container">
-    <h1 class="page-title">DONACIONES</h1>
+    <h1 class="page-title">{{ t('donation.title') }}</h1>
 
     <div class="donation-layout">
       <!-- Left: Form -->
       <div class="form-container card">
         <div class="form-content">
-          <h2 class="form-subtitle">APOYA NUESTRO MOVIMIENTO</h2>
-          <p class="step-description">Tu contribución nos ayuda a seguir trabajando por una España más segura y protegida. Todas las donaciones se destinan íntegramente a las acciones de PCE.</p>
+          <h2 class="form-subtitle">{{ t('donation.supportTitle') }}</h2>
+          <p class="step-description">{{ t('donation.supportDesc') }}</p>
           
           <div class="donation-steps" v-if="!isSuccess">
             <!-- STEP 1: AMOUNT -->
             <div v-if="step === 1" class="step-content">
-              <label class="input-label">SELECCIONA LA CANTIDAD</label>
+              <label class="input-label">{{ t('donation.selectAmount') }}</label>
               <div class="quota-options">
                 <div 
                   v-for="amount in donationOptions" 
@@ -27,31 +27,31 @@
                   :class="['quota-card', { selected: selectedAmount === 'custom' }]"
                   @click="focusCustomAmount"
                 >
-                  <div class="quota-amount">Otro</div>
+                  <div class="quota-amount">{{ t('donation.other') }}</div>
                   <div class="quota-check">✓</div>
                 </div>
               </div>
 
               <!-- Input for Custom Amount -->
               <div v-if="selectedAmount === 'custom'" class="form-group-don full-width custom-amount-container">
-                  <label class="input-label">INTRODUCE LA CANTIDAD (€)</label>
+                  <label class="input-label">{{ t('donation.customAmount') }}</label>
                   <input 
                     ref="customAmountInput"
                     v-model="customAmount" 
                     type="number" 
                     min="1" 
-                    placeholder="Ej: 15" 
+                    :placeholder="t('donation.customAmount')" 
                     class="form-input-don" 
                   />
               </div>
 
                 <div class="form-group-don full-width">
-                  <label class="input-label">TU EMAIL (OPCIONAL)</label>
-                  <input v-model="donorData.email" type="email" placeholder="email@ejemplo.com" class="form-input-don" />
+                  <label class="input-label">{{ t('donation.email') }}</label>
+                  <input v-model="donorData.email" type="email" :placeholder="t('donation.emailPlaceholder')" class="form-input-don" />
                 </div>
 
                 <div class="donation-actions">
-                  <button class="btn btn-next" :disabled="!finalAmount" @click="step = 2">Continuar</button>
+                  <button class="btn btn-next" :disabled="!finalAmount" @click="step = 2">{{ lt('Continuar', 'Continuar', 'Jarraitu', 'Continuar') }}</button>
                 </div>
               </div>
 
@@ -59,16 +59,16 @@
               <div v-else-if="step === 2" class="step-content">
                 <div class="payment-summary card-accent">
                   <div class="summary-header">
-                    <h2 class="form-subtitle">RESUMEN</h2>
+                    <h2 class="form-subtitle">{{ t('donation.summary') }}</h2>
                   </div>
                   <div class="summary-item center">
-                    <span class="summary-label">TOTAL DONACIÓN</span>
+                    <span class="summary-label">{{ t('donation.amount') }}</span>
                     <span class="summary-value highlight-green">{{ finalAmount }}€</span>
                   </div>
                 </div>
 
                 <div class="stripe-container">
-                  <label class="input-label">DATOS DE LA TARJETA</label>
+                  <label class="input-label">{{ lt('DATOS DE LA TARJETA', 'DADES DE LA TARGETA', 'TXARTELAREN DATUAK', 'DATOS DA TARXETA') }}</label>
                   <StripeCard ref="stripeCardRef" @ready="stripeReady = true" @change="handleCardChange" />
                 </div>
 
@@ -82,8 +82,8 @@
                   <div class="alert-content">
                     <strong>
                       {{ 
-                        paymentStatus === 'success' ? 'CONFIRMADO' : 
-                        paymentStatus === 'processing' ? 'PROCESANDO' : 'ERROR' 
+                        paymentStatus === 'success' ? lt('CONFIRMADO', 'CONFIRMAT', 'BAIEZTATUTA', 'CONFIRMADO') : 
+                        paymentStatus === 'processing' ? lt('PROCESANDO', 'PROCESSANT', 'PROZESATZEN', 'PROCESANDO') : 'ERROR' 
                       }}
                     </strong>
                     <p>{{ paymentError }}</p>
@@ -92,14 +92,14 @@
               </transition>
 
               <div class="donation-actions">
-                <button class="btn" @click="step = 1">Anterior</button>
+                <button class="btn" @click="step = 1">{{ lt('Anterior', 'Anterior', 'Aurrekoa', 'Anterior') }}</button>
                 <button 
                   class="btn btn-next" 
                   :disabled="isProcessing || !cardComplete" 
                   @click="handleDonation"
                 >
-                  <span v-if="isProcessing">Procesando...</span>
-                  <span v-else>Donar ahora</span>
+                  <span v-if="isProcessing">{{ lt('Procesando...', 'Processant...', 'Prozesatzen...', 'Procesando...') }}</span>
+                  <span v-else>{{ lt('Donar ahora', 'Donar ara', 'Orain eman', 'Doar agora') }}</span>
                 </button>
               </div>
 
@@ -114,19 +114,19 @@
               </div>
             </div>
             
-            <h2 class="form-subtitle text-center">¡MUCHAS GRACIAS!</h2>
+            <h2 class="form-subtitle text-center">{{ lt('¡MUCHAS GRACIAS!', 'MOLTES GRÀCIES!', 'ESKERRIK ASKO!', 'MOITAS GRAZAS!') }}</h2>
             <div class="success-message text-center">
-              <p>Tu donación de <strong>{{ finalAmount }}€</strong> ha sido procesada correctamente.</p>
-              <p>Gracias a personas como tú, PCE puede seguir creciendo.</p>
+              <p>{{ lt('Tu donación de', 'La teva donació de', 'Zure dohaintza', 'A túa doazón de') }} <strong>{{ finalAmount }}€</strong> {{ lt('ha sido procesada correctamente.', 's ha processat correctament.', 'ondo prozesatu da.', 'foi procesada correctamente.') }}</p>
+              <p>{{ lt('Gracias a personas como tú, PCE puede seguir creciendo.', 'Gràcies a persones com tu, PCE pot continuar creixent.', 'Zu bezalako pertsonei esker, PCEk hazten jarrai dezake.', 'Grazas a persoas coma ti, PCE pode seguir medrando.') }}</p>
               
               <div class="affiliation-number">
-                <span>CÓDIGO DE DONACIÓN</span>
+                <span>{{ lt('CÓDIGO DE DONACIÓN', 'CODI DE DONACIÓ', 'DOHAINTZA KODEA', 'CÓDIGO DE DOAZÓN') }}</span>
                 <strong>#DON{{ Date.now().toString().slice(-5) }}</strong>
               </div>
             </div>
 
             <div class="success-actions">
-              <NuxtLink to="/" class="btn btn-finish">VOLVER AL INICIO</NuxtLink>
+              <NuxtLink to="/" class="btn btn-finish">{{ lt('VOLVER AL INICIO', 'TORNAR A L INICI', 'HASIERARA ITZULI', 'VOLVER AO INICIO') }}</NuxtLink>
             </div>
           </div>
         </div>
@@ -137,13 +137,13 @@
         <div class="card-logo">
           <img src="/images/logo.png" alt="Logo PCE" />
         </div>
-        <h3>¿A DÓNDE VA TU DINERO?</h3>
+        <h3>{{ lt('¿A DÓNDE VA TU DINERO?', 'ON VA ELS TEUS DINERS?', 'NORA DOA ZURE DIRUA?', 'A ONDE VAI O TEU DIÑEIRO?') }}</h3>
         <ul class="benefits-list">
-          <li>1. CAMPAÑAS DE PREVENCIÓN</li>
-          <li>2. MATERIAL DE PROTECCIÓN</li>
-          <li>3. ACCIÓN SOCIAL</li>
+          <li>{{ lt('1. CAMPAÑAS DE PREVENCIÓN', '1. CAMPANYES DE PREVENCIÓ', '1. PREBENTZIO KANPAINAK', '1. CAMPAÑAS DE PREVENCIÓN') }}</li>
+          <li>{{ lt('2. MATERIAL DE PROTECCIÓN', '2. MATERIAL DE PROTECCIÓ', '2. BABES MATERIALA', '2. MATERIAL DE PROTECCIÓN') }}</li>
+          <li>{{ lt('3. ACCIÓN SOCIAL', '3. ACCIÓ SOCIAL', '3. EKINTZA SOZIALA', '3. ACCIÓN SOCIAL') }}</li>
         </ul>
-        <p class="small-note">TU AYUDA ES FUNDAMENTAL PARA NOSOTROS</p>
+        <p class="small-note">{{ lt('TU AYUDA ES FUNDAMENTAL PARA NOSOTROS', 'LA TEVA AJUDA ÉS FONAMENTAL PER A NOSALTRES', 'ZURE LAGUNTZA FUNTSEZKOA DA GURETZAT', 'A TÚA AXUDA É FUNDAMENTAL PARA NÓS') }}</p>
       </aside>
     </div>
   </main>
@@ -151,6 +151,14 @@
 
 <script setup>
 import StripeCard from '@/components/StripeCard.vue'
+const { t, locale } = useI18n()
+
+const lt = (es, ca, eu, gl) => {
+  if (locale.value === 'ca') return ca
+  if (locale.value === 'eu') return eu
+  if (locale.value === 'gl') return gl
+  return es
+}
 
 const step = ref(1)
 const selectedAmount = ref('10')
@@ -219,10 +227,10 @@ const handleDonation = async () => {
       
       if (lowerError.includes('api key') || lowerError.includes('secret') || lowerError.includes('llave')) {
         paymentStatus.value = 'processing'
-        paymentError.value = 'Verificando datos de tarjeta...'
+        paymentError.value = lt('Verificando datos de tarjeta...', 'Verificant dades de la targeta...', 'Txartelaren datuak egiaztatzen...', 'Verificando datos da tarxeta...')
         await new Promise(r => setTimeout(r, 1500))
         paymentStatus.value = 'success'
-        paymentError.value = '¡Pago aceptado correctamente!'
+        paymentError.value = lt('¡Pago aceptado correctamente!', 'Pagament acceptat correctament!', 'Ordainketa ondo onartu da!', 'Pagamento aceptado correctamente!')
         await new Promise(r => setTimeout(r, 1000))
 
         await useFetch('/api/donacion', {
@@ -237,11 +245,11 @@ const handleDonation = async () => {
         isSuccess.value = true
         return
       }
-      throw new Error(errorMsg || 'Error de conexión')
+      throw new Error(errorMsg || lt('Error de conexión', 'Error de connexió', 'Konexio errorea', 'Erro de conexión'))
     }
 
     if (!paymentData.value?.clientSecret) {
-      throw new Error('No se recibió la clave de pago')
+      throw new Error(lt('No se recibió la clave de pago', 'No s ha rebut la clau de pagament', 'Ez da ordainketa gakoa jaso', 'Non se recibiu a clave de pagamento'))
     }
 
     const { stripe: stripeInstance, initStripe } = useStripe()
@@ -272,14 +280,14 @@ const handleDonation = async () => {
     isSuccess.value = true
   } catch (error) {
     console.error('Donation error:', error)
-    paymentError.value = error.message || 'Error al procesar la donación'
+    paymentError.value = error.message || lt('Error al procesar la donación', 'Error en processar la donació', 'Errorea dohaintza prozesatzean', 'Erro ao procesar a doazón')
     isProcessing.value = false
   }
 }
 
 useHead({
-  title: 'Dona - PCE',
-  meta: [{ name: 'description', content: 'Apoya a PCE con tu donación.' }]
+  title: `${t('donation.title')} - PCE`,
+  meta: [{ name: 'description', content: t('donation.supportDesc') }]
 })
 </script>
 

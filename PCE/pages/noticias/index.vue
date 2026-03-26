@@ -2,20 +2,20 @@
   <main class="news-page container">
     <section class="news-hero">
       <div class="hero-header-box">
-        <h1 class="page-title">NOTICIAS Y ACTUALIDAD</h1>
-        <p class="hero-subtitle">Mantente informado sobre los acontecimientos políticos más relevantes</p>
+        <h1 class="page-title">{{ t('news.title') }}</h1>
+        <p class="hero-subtitle">{{ t('news.subtitle') }}</p>
       </div>
     </section>
 
     <section class="news-search">
-      <h2 class="search-label">Buscar</h2>
+      <h2 class="search-label">{{ t('news.search') }}</h2>
       <div class="search-wrapper">
         <input 
           type="text" 
           class="search-input" 
           v-model="searchQuery"
           @input="filterNews"
-          placeholder="BUSCAR NOTICIAS..."
+          :placeholder="t('news.searchPlaceholder')"
         />
         <div class="filter-action" @click="toggleFilters">
           <span class="filter-icon">
@@ -25,7 +25,7 @@
               <path d="M10 18H14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
           </span>
-          <span class="filter-text">FILTRO</span>
+          <span class="filter-text">{{ t('news.filter') }}</span>
         </div>
       </div>
 
@@ -59,15 +59,15 @@
       </div>
 
       <div class="load-more" v-if="hasMoreNews">
-        <button @click="loadMore" class="btn btn-load-more-sm">CARGAR MÁS</button>
+        <button @click="loadMore" class="btn btn-load-more-sm">{{ t('news.loadMore') }}</button>
       </div>
 
       <div class="no-more-news" v-else-if="displayedNews.length > 0">
-        <p>No hay más noticias disponibles</p>
+        <p>{{ t('news.noMore') }}</p>
       </div>
 
       <div class="no-results" v-if="filteredNews.length === 0 && searchQuery">
-        <p>No se encontraron noticias con "{{ searchQuery }}"</p>
+        <p>{{ t('news.notFound') }} "{{ searchQuery }}"</p>
       </div>
     </section>
   </main>
@@ -75,13 +75,14 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+const { t } = useI18n()
 
-useHead({
-  title: 'Noticias - Protección Civil Española',
+useHead(() => ({
+  title: `${t('news.title')} - ${t('brand.proteccion')} ${t('brand.civil')} ${t('brand.espanola')}`,
   meta: [
-    { name: 'description', content: 'Mantente al día con las últimas noticias y actualidad de Protección Civil Española (PCE).' }
+    { name: 'description', content: t('news.subtitle') }
   ]
-})
+}))
 
 // Noticias de política de España e Inmigración centradas en el PCE
 const allNews = ref([

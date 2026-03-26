@@ -1,6 +1,6 @@
 <template>
   <main class="page-content container">
-    <h1 class="page-title">PROGRAMA</h1>
+    <h1 class="page-title">{{ t('program.title') }}</h1>
 
     <section class="promises-section">
       <div class="promises-grid">
@@ -21,14 +21,16 @@
     </div>
 
     <section class="promises-actions">
-        <button @click="openPdfModal" class="btn btn-action-large btn-highlight">VER PROGRAMA COMPLETO</button>
-        <a href="/uploads/Programa Electoral Completo.pdf" download class="btn btn-action-large">DESCARGAR PDF ELECTORAL</a>
+        <button @click="openPdfModal" class="btn btn-action-large btn-highlight">{{ t('program.fullProgram') }}</button>
+        <a href="/uploads/Programa Electoral Completo.pdf" download class="btn btn-action-large">{{ t('program.downloadPdf') }}</a>
     </section>
   </main>
   <Newsletter />
 </template>
 
 <script setup>
+const { t } = useI18n()
+
 const isPdfModalOpen = ref(false)
 
 const openPdfModal = () => {
@@ -41,24 +43,24 @@ const closePdfModal = () => {
   document.body.style.overflow = 'auto' // Restore scrolling
 }
 
-const promises = [
-  { title: 'Justicia implacable', desc: 'Pena de muerte para violadores y pederastas: medida extrema pero necesaria contra crímenes irreversibles que destruyen vidas y dignidad humana. Justicia firme para víctimas, infancia y sociedad.' },
-  { title: 'Control de Fronteras', desc: 'Estableceremos un protocolo de expulsión inmediata de inmigrantes ilegales en menos de 48 horas, con protección temporal únicamente para ciudadanos de países en conflicto armado reconocido internacionalmente.' },
-  { title: 'Fomento de la Natalidad', desc: 'Implementación de la misma norma que Rusia en la baja por maternidad y paternidad, extendiéndola hasta los 3 años de duración para fomentar la natalidad y asegurar el bienestar de las familias españolas.' },
-  { title: 'Igualdad ante la Ley', desc: 'Reconocimiento equitativo de todas las víctimas de violencia sexual y de género, independientemente de su sexo, con cadena perpetua para maltratadores y maltratadoras. Protección legal igual para hombres y mujeres víctimas.' },
-  { title: 'Reducción de Impuestos', desc: 'Reducción del IRPF del 3-5% para la clase media, IVA del 10% en productos básicos y eliminación completa del impuesto de sucesiones y donaciones para fortalecer la economía familiar.' },
-  { title: 'Seguridad Pública', desc: 'Prohibición del burka y niqab en espacios públicos por razones de seguridad e identificación. Respeto total a otros símbolos religiosos que no impidan la identificación facial.' },
-  { title: 'Igualdad de Género Real', desc: 'Igualdad salarial efectiva, permisos de paternidad y maternidad iguales, y eliminación de discriminación laboral. Las decisiones se basarán en competencia y méritos, no en género.' },
-  { title: 'Protección del Ciudadano', desc: 'Defensor del Pueblo reforzado e independiente, transparencia total en datos públicos y protección contra vigilancia masiva sin orden judicial. Acceso a justicia rápida y gratuita.' },
-  { title: 'Apoyo a Autónomos y PYMES', desc: 'Reducción de cotizaciones a la Seguridad Social del 30% al 20-25%, eliminación de burocracia innecesaria y simplificación administrativa. Digitalización total de trámites en 72 horas.' }
-]
+const promises = computed(() => [
+  { title: t('program.promise1'), desc: t('program.promise1Desc') },
+  { title: t('program.promise2'), desc: t('program.promise2Desc') },
+  { title: t('program.promise3'), desc: t('program.promise3Desc') },
+  { title: t('program.promise4'), desc: t('program.promise4Desc') },
+  { title: t('program.promise5'), desc: t('program.promise5Desc') },
+  { title: t('program.promise6'), desc: t('program.promise6Desc') },
+  { title: t('program.promise7'), desc: t('program.promise7Desc') },
+  { title: t('program.promise8'), desc: t('program.promise8Desc') },
+  { title: t('program.promise9'), desc: t('program.promise9Desc') }
+])
 
-useHead({
-  title: 'Programa - Protección Civil Española',
+useHead(() => ({
+  title: t('program.meta'),
   meta: [
-    { name: 'description', content: 'Conoce nuestro programa electoral. Medidas concretas para mejorar España.' }
+    { name: 'description', content: t('program.metaDesc') }
   ]
-})
+}))
 </script>
 
 <style scoped>

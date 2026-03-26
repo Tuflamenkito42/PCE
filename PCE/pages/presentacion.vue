@@ -26,10 +26,10 @@
           <div class="logo-shield-container">
             <img src="/images/logo.png" alt="PCE Logo" class="main-logo" />
           </div>
-          <h1 class="brand-title">Protección Civil Española</h1>
-          <p class="brand-subtitle">Seguridad • Bienestar • Transparencia</p>
+          <h1 class="brand-title">{{ t('presentation.brand') }}</h1>
+          <p class="brand-subtitle">{{ t('presentation.tagline') }}</p>
           <div class="divider"></div>
-          <p class="intro-text">Presentación Oficial del Proyecto PCE 2024</p>
+          <p class="intro-text">{{ t('presentation.intro') }}</p>
         </div>
       </section>
 
@@ -37,28 +37,28 @@
       <section class="slide slide-mission">
         <div class="container grid-2">
           <div class="content animate-slide-left">
-            <h2 class="section-title">Nuestra Misión</h2>
-            <p>PCE nace como respuesta a la necesidad de una sociedad más segura y transparente.</p>
+            <h2 class="section-title">{{ t('presentation.mission') }}</h2>
+            <p>{{ t('presentation.missionDesc') }}</p>
             <ul class="mission-list">
               <li>
                 <span class="icon">🛡️</span>
                 <div>
-                  <strong>Seguridad Ciudadana</strong>
-                  <p>Protocolos de actuación rápidos y efectivos.</p>
+                  <strong>{{ t('presentation.security') }}</strong>
+                  <p>{{ t('presentation.securityDesc') }}</p>
                 </div>
               </li>
               <li>
                 <span class="icon">💎</span>
                 <div>
-                  <strong>Transparencia Total</strong>
-                  <p>Gestión pública auditable por cualquier ciudadano.</p>
+                  <strong>{{ lt('Transparencia Total', 'Transparència Total', 'Gardentasun Osoa', 'Transparencia Total') }}</strong>
+                  <p>{{ lt('Gestión pública auditable por cualquier ciudadano.', 'Gestió pública auditable per qualsevol ciutadà.', 'Edozein herritarrek auditatu dezakeen kudeaketa publikoa.', 'Xestión pública auditable por calquera cidadán.') }}</p>
                 </div>
               </li>
               <li>
                 <span class="icon">🤝</span>
                 <div>
-                  <strong>Solidaridad</strong>
-                  <p>Apoyo directo a las familias y colectivos vulnerables.</p>
+                  <strong>{{ lt('Solidaridad', 'Solidaritat', 'Elkartasuna', 'Solidariedade') }}</strong>
+                  <p>{{ lt('Apoyo directo a las familias y colectivos vulnerables.', 'Suport directe a les famílies i col·lectius vulnerables.', 'Familiei eta kolektibo ahulei laguntza zuzena.', 'Apoio directo ás familias e colectivos vulnerables.') }}</p>
                 </div>
               </li>
             </ul>
@@ -74,36 +74,36 @@
       <!-- SLIDE 3: VIDEO PUBLICITARIO -->
       <section class="slide slide-video">
         <div class="video-presentation-container">
-          <h2 class="video-overlay-title">Video Publicitario</h2>
+          <h2 class="video-overlay-title">{{ lt('Video Publicitario', 'Vídeo publicitari', 'Iragarki bideoa', 'Vídeo publicitario') }}</h2>
           <div class="video-wrapper">
              <video controls class="ad-video" ref="adVideo">
                <source src="/videos/promocion_pce.mp4" type="video/mp4" />
-               Tu navegador no soporta videos.
+               {{ lt('Tu navegador no soporta videos.', 'El teu navegador no admet vídeos.', 'Zure nabigatzaileak ez ditu bideoak onartzen.', 'O teu navegador non soporta vídeos.') }}
              </video>
           </div>
-          <p class="video-caption">Campaña de lanzamiento - "Protegiendo el mañana"</p>
+          <p class="video-caption">{{ lt('Campaña de lanzamiento - "Protegiendo el mañana"', 'Campanya de llançament - "Protegint el demà"', 'Abiarazte kanpaina - "Bihar babesten"', 'Campaña de lanzamento - "Protexendo o mañá"') }}</p>
         </div>
       </section>
 
       <!-- SLIDE 4: INNOVACIÓN TECNOLÓGICA -->
       <section class="slide slide-tech">
         <div class="container">
-          <h2 class="section-title text-center">Tecnología al Servicio del Ciudadano</h2>
+          <h2 class="section-title text-center">{{ lt('Tecnología al Servicio del Ciudadano', 'Tecnologia al Servei de la Ciutadania', 'Herritarren zerbitzura dagoen teknologia', 'Tecnoloxía ao servizo da cidadanía') }}</h2>
           <div class="tech-grid">
             <div class="tech-card">
               <div class="tech-icon">🔍</div>
               <h3>AI DNI Scanner</h3>
-              <p>Proceso de afiliación 100% digital con verificación biométrica en segundos.</p>
+              <p>{{ lt('Proceso de afiliación 100% digital con verificación biométrica en segundos.', 'Procés d afiliació 100% digital amb verificació biomètrica en segons.', 'Afiliatzeko %100 prozesu digitala egiaztapen biometrikoarekin segundo gutxitan.', 'Proceso de afiliación 100% dixital con verificación biométrica en segundos.') }}</p>
             </div>
             <div class="tech-card">
               <div class="tech-icon">📊</div>
-              <h3>Escrutinio Real</h3>
-              <p>Visualización en tiempo real de votaciones y resultados internos.</p>
+              <h3>{{ lt('Escrutinio Real', 'Escrutini Real', 'Benetako zenbaketa', 'Escrutinio real') }}</h3>
+              <p>{{ lt('Visualización en tiempo real de votaciones y resultados internos.', 'Visualització en temps real de votacions i resultats interns.', 'Bozketen eta barne emaitzen bistaratzea denbora errealean.', 'Visualización en tempo real de votacións e resultados internos.') }}</p>
             </div>
             <div class="tech-card">
               <div class="tech-icon">💳</div>
-              <h3>Donaciones Seguras</h3>
-              <p>Integración con Stripe para una recaudación de fondos transparente.</p>
+              <h3>{{ lt('Donaciones Seguras', 'Donacions Segures', 'Dohaintza seguruak', 'Doazóns seguras') }}</h3>
+              <p>{{ lt('Integración con Stripe para una recaudación de fondos transparente.', 'Integració amb Stripe per a una recaptació de fons transparent.', 'Stripe integrazioa diru-bilketa garden baterako.', 'Integración con Stripe para unha recadación transparente de fondos.') }}</p>
             </div>
           </div>
         </div>
@@ -112,27 +112,27 @@
       <!-- SLIDE 5: COMPROMISO ELECTORAL -->
       <section class="slide slide-promises">
         <div class="container">
-           <h2 class="section-title">Pilares de Nuestro Programa</h2>
+          <h2 class="section-title">{{ lt('Pilares de Nuestro Programa', 'Pilars del Nostre Programa', 'Gure Programaren Oinarriak', 'Piares do noso programa') }}</h2>
            <div class="promises-showcase">
               <div class="promise-item">
                  <div class="promise-num">01</div>
                  <div class="promise-content">
-                    <h3>Justicia Implacable</h3>
-                    <p>Pena de muerte para violadores y pederastas sin excepciones.</p>
+                <h3>{{ lt('Justicia Implacable', 'Justícia Implacable', 'Justizia Gupidagabea', 'Xustiza implacable') }}</h3>
+                <p>{{ lt('Pena de muerte para violadores y pederastas sin excepciones.', 'Pena de mort per a violadors i pederastes sense excepcions.', 'Heriotza-zigorra bortxatzaile eta pederastentzat, salbuespenik gabe.', 'Pena de morte para violadores e pederastas sen excepcións.') }}</p>
                  </div>
               </div>
               <div class="promise-item">
                  <div class="promise-num">02</div>
                  <div class="promise-content">
-                    <h3>Control de Fronteras</h3>
-                    <p>Expulsión inmediata de inmigración ilegal en menos de 48 horas.</p>
+                <h3>{{ lt('Control de Fronteras', 'Control de Fronteres', 'Mugen Kontrola', 'Control de fronteiras') }}</h3>
+                <p>{{ lt('Expulsión inmediata de inmigración ilegal en menos de 48 horas.', 'Expulsió immediata de la immigració il·legal en menys de 48 hores.', 'Legez kanpoko immigrazioaren berehalako kanporatzea 48 ordutik behera.', 'Expulsión inmediata da inmigración ilegal en menos de 48 horas.') }}</p>
                  </div>
               </div>
               <div class="promise-item">
                  <div class="promise-num">03</div>
                  <div class="promise-content">
-                    <h3>Fomento de la Natalidad</h3>
-                    <p>Baja de 3 años para padres y madres siguiendo el modelo ruso.</p>
+                <h3>{{ lt('Fomento de la Natalidad', 'Foment de la Natalitat', 'Jaiotza Sustapena', 'Fomento da natalidade') }}</h3>
+                <p>{{ lt('Baja de 3 años para padres y madres siguiendo el modelo ruso.', 'Baixa de 3 anys per a pares i mares seguint el model rus.', '3 urteko baimena aita eta amarentzat, errusiar eredua jarraituz.', 'Baixa de 3 anos para pais e nais seguindo o modelo ruso.') }}</p>
                  </div>
               </div>
            </div>
@@ -143,8 +143,8 @@
       <section class="slide slide-outro">
         <div class="glass-card animate-zoom-in shadow-pce">
           <img src="/images/logo.png" alt="PCE Logo" class="outro-logo" />
-          <h2 class="brand-title">Únete al Cambio</h2>
-          <p>Tu participación es la clave para una España más fuerte.</p>
+          <h2 class="brand-title">{{ lt('Únete al Cambio', 'Uneix-te al Canvi', 'Bat egin aldaketarekin', 'Únete ao cambio') }}</h2>
+          <p>{{ lt('Tu participación es la clave para una España más fuerte.', 'La teva participació és la clau per a una Espanya més forta.', 'Zure parte-hartzea da Espainia indartsuago baten giltza.', 'A túa participación é a clave para unha España máis forte.') }}</p>
           <div class="cta-links">
             <div class="cta-item">
               <span>🌐</span>
@@ -155,7 +155,7 @@
               <p>contacto@pce.org</p>
             </div>
           </div>
-          <button class="btn-presentation">Afíliate ahora</button>
+          <button class="btn-presentation">{{ lt('Afíliate ahora', 'Afilia t ara', 'Afiliatu orain', 'Afíliate agora') }}</button>
         </div>
       </section>
 
@@ -165,6 +165,14 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+const { t, locale } = useI18n()
+
+const lt = (es, ca, eu, gl) => {
+  if (locale.value === 'ca') return ca
+  if (locale.value === 'eu') return eu
+  if (locale.value === 'gl') return gl
+  return es
+}
 
 const currentSlide = ref(0)
 const totalSlides = 6
@@ -204,12 +212,12 @@ onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown)
 })
 
-useHead({
-  title: 'Presentación PCE - Proyecto Oficial',
+useHead(() => ({
+  title: `${t('presentation.title')} - PCE`,
   meta: [
-    { name: 'description', content: 'Presentación de los pilares y tecnología de Protección Civil Española.' }
+    { name: 'description', content: t('presentation.missionDesc') }
   ]
-})
+}))
 </script>
 
 <style scoped>

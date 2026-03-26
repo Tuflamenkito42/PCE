@@ -1,5 +1,13 @@
 <script setup>
 const isOpen = useCookieControl()
+const { t, locale } = useI18n()
+
+const lt = (es, ca, eu, gl) => {
+  if (locale.value === 'ca') return ca
+  if (locale.value === 'eu') return eu
+  if (locale.value === 'gl') return gl
+  return es
+}
 </script>
 
 <template>
@@ -44,15 +52,26 @@ const isOpen = useCookieControl()
       </div>
 
       <div class="footer-buttons">
-        <NuxtLink to="/dona" class="btn btn-donate-sm">DONA</NuxtLink>
-        <NuxtLink to="/afiliacion" class="btn btn-join-sm">AFILIATE</NuxtLink>
+        <NuxtLink to="/dona" class="btn btn-donate-sm">{{ t('cta.donate') }}</NuxtLink>
+        <NuxtLink to="/afiliacion" class="btn btn-join-sm">{{ t('cta.join') }}</NuxtLink>
+      </div>
+
+      <div class="footer-reporting">
+        <h4>{{ lt('Canal de Denuncias', 'Canal de Denúncies', 'Salaketa Kanala', 'Canle de Denuncias') }}</h4>
+        <p>{{ lt('Si deseas comunicar una incidencia o denuncia, puedes hacerlo de forma confidencial.', 'Si vols comunicar una incidència o denúncia, ho pots fer de manera confidencial.', 'Gorabehera edo salaketa bat jakinarazi nahi baduzu, modu konfidentzialean egin dezakezu.', 'Se queres comunicar unha incidencia ou denuncia, podes facelo de forma confidencial.') }}</p>
+        <a
+          class="btn-reporting"
+          href="mailto:pcepartidopolitico@gmail.com?subject=Canal%20de%20Denuncias"
+        >
+          {{ lt('Abrir canal de denuncias', 'Obrir canal de denúncies', 'Ireki salaketa kanala', 'Abrir canle de denuncias') }}
+        </a>
       </div>
 
       <div class="footer-links">
-        <NuxtLink to="/transparencia">TRANSPARENCIA</NuxtLink>
-        <NuxtLink to="/politica-privacidad">POLÍTICA DE PRIVACIDAD</NuxtLink>
-        <NuxtLink to="/condiciones-uso">CONDICIONES DE USO</NuxtLink>
-        <a href="#" @click.prevent="isOpen = true">POLÍTICA DE COOKIES</a>
+        <NuxtLink to="/transparencia">{{ t('nav.transparency') }}</NuxtLink>
+        <NuxtLink to="/politica-privacidad">{{ t('footer.privacy') }}</NuxtLink>
+        <NuxtLink to="/condiciones-uso">{{ t('footer.terms') }}</NuxtLink>
+        <a href="#" @click.prevent="isOpen = true">{{ t('footer.cookies') }}</a>
       </div>
     </div>
   </footer>
@@ -120,6 +139,53 @@ const isOpen = useCookieControl()
 
         &:hover {
           color: #ccc;
+        }
+      }
+    }
+
+    .footer-reporting {
+      width: min(760px, 100%);
+      background: rgba(114, 50, 51, 0.2);
+      border: 1px solid rgba(185, 175, 176, 0.45);
+      border-radius: 12px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+
+      h4 {
+        font-family: 'Cinzel', serif;
+        color: #ffffff;
+        letter-spacing: 1px;
+        font-size: 1.05rem;
+        margin: 0;
+      }
+
+      p {
+        color: #e6dedf;
+        font-size: 0.9rem;
+        text-align: center;
+        margin: 0;
+        max-width: 640px;
+      }
+
+      .btn-reporting {
+        background: #000;
+        color: #fff;
+        border: 1px solid #b9afb0;
+        border-radius: 8px;
+        padding: 10px 16px;
+        font-family: 'Cinzel', serif;
+        font-size: 0.82rem;
+        text-decoration: none;
+        letter-spacing: 0.4px;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #723233;
+          color: #fff;
+          border-color: #ffffff;
         }
       }
     }

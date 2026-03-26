@@ -1,19 +1,21 @@
 <script setup>
-useHead({
-  title: 'Política de Privacidad - PCE',
+const { t } = useI18n()
+
+useHead(() => ({
+  title: `${t('privacy.title')} - PCE`,
   meta: [
-    { name: 'description', content: 'Política de Privacidad de Protección Civil Española (PCE). Conozca cómo tratamos sus datos personales.' }
+    { name: 'description', content: t('privacy.dataCollectionDesc') }
   ]
-})
+}))
 </script>
 
 <template>
   <main class="legal-page">
     <div class="legal-container">
-      <h1>POLÍTICA DE PRIVACIDAD</h1>
+      <h1>{{ t('privacy.title') }}</h1>
       
       <div class="legal-content card">
-        <p class="last-update">Última actualización: 27 de Enero de 2026</p>
+        <p class="last-update">{{ t('privacy.lastUpdated') }}27 de Enero de 2026</p>
 
         <section>
           <h2>1. INFORMACIÓN GENERAL</h2>
@@ -32,8 +34,8 @@ useHead({
         </section>
 
         <section>
-          <h2>3. FINALIDAD DEL TRATAMIENTO</h2>
-          <p>Tratamos sus datos personales para las siguientes finalidades:</p>
+          <h2>3. {{ t('privacy.dataCollection') }}</h2>
+          <p>{{ t('privacy.dataCollectionDesc') }}</p>
           <ul>
             <li>Gestionar su registro y acceso como usuario o afiliado.</li>
             <li>Procesar su participación en votaciones y consultas ciudadanas.</li>

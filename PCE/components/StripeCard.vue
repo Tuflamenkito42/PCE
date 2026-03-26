@@ -2,11 +2,11 @@
   <div class="stripe-card-element">
     <div v-if="loading" class="loading-state">
       <div class="spinner"></div>
-      <p>Cargando pasarela de pago segura...</p>
+      <p>{{ lt('Cargando pasarela de pago segura...', 'Carregant passarel·la de pagament segura...', 'Ordainketa pasabide segurua kargatzen...', 'Cargando pasarela de pago segura...') }}</p>
     </div>
     
     <div v-else-if="error" class="error-state">
-      <p>❌ Error: {{ error }}</p>
+      <p>❌ {{ lt('Error', 'Error', 'Errorea', 'Erro') }}: {{ error }}</p>
     </div>
     
     <div v-else>
@@ -26,6 +26,15 @@
 <script setup lang="ts">
 import { ref, onMounted, shallowRef } from 'vue'
 import { useStripe } from '@/composables/useStripe'
+
+const { locale } = useI18n()
+
+const lt = (es: string, ca: string, eu: string, gl: string) => {
+  if (locale.value === 'ca') return ca
+  if (locale.value === 'eu') return eu
+  if (locale.value === 'gl') return gl
+  return es
+}
 
 const emit = defineEmits(['ready', 'change', 'error'])
 

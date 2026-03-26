@@ -1,24 +1,26 @@
 <script setup>
-useHead({
-  title: 'Condiciones de Uso - PCE',
+const { t } = useI18n()
+
+useHead(() => ({
+  title: `${t('terms.title')} - PCE`,
   meta: [
-    { name: 'description', content: 'Condiciones de uso y aviso legal del sitio web de Protección Civil Española (PCE).' }
+    { name: 'description', content: t('terms.acceptanceDesc') }
   ]
-})
+}))
 </script>
 
 <template>
   <main class="legal-page">
     <div class="legal-container">
-      <h1>CONDICIONES DE USO</h1>
+      <h1>{{ t('terms.title') }}</h1>
       
       <div class="legal-content card">
-        <p class="last-update">Última actualización: 27 de Enero de 2026</p>
+        <p class="last-update">{{ t('terms.lastUpdated') }}27 de Enero de 2026</p>
 
         <section>
-          <h2>1. INTRODUCCIÓN</h2>
+          <h2>1. {{ t('terms.acceptance') }}</h2>
           <p>
-            Bienvenido al sitio web de Protección Civil Española (PCE). El acceso y uso de este sitio web atribuye la condición de usuario e implica la aceptación rotunda de las presentes Condiciones de Uso. Le recomendamos leerlas atentamente.
+            {{ t('terms.acceptanceDesc') }}
           </p>
         </section>
 

@@ -1,10 +1,10 @@
 <template>
   <section class="newsletter-section">
     <div class="newsletter-content">
-      <h3>RECIBE TODAS LAS NOVEDADES EN TU EMAIL</h3>
+      <h3>{{ lt('RECIBE TODAS LAS NOVEDADES EN TU EMAIL', 'REP TOTES LES NOVETATS AL TEU CORREU', 'JASO BERRITASUN GUZTIAK ZURE POSTAN', 'RECIBE TODAS AS NOVIDADES NO TEU EMAIL') }}</h3>
       <form class="newsletter-form" @submit.prevent="handleSubmit">
         <div class="input-group">
-          <label for="email">DIRECCIÓN DE CORREO</label>
+          <label for="email">{{ lt('DIRECCIÓN DE CORREO', 'ADREÇA DE CORREU', 'POSTA HELBIDEA', 'ENDEREZO DE CORREO') }}</label>
           <input 
             v-model="email" 
             type="email" 
@@ -24,14 +24,14 @@
               :disabled="loading"
               required 
             />
-            <label for="privacy">ACEPTO LA POLÍTICA DE PRIVACIDAD</label>
+            <label for="privacy">{{ lt('ACEPTO LA POLÍTICA DE PRIVACIDAD', 'ACCEPTO LA POLÍTICA DE PRIVACITAT', 'PRIBATUTASUN POLITIKA ONARTZEN DUT', 'ACEPTO A POLÍTICA DE PRIVACIDADE') }}</label>
           </div>
           <button 
             type="submit" 
             class="btn btn-submit"
             :disabled="loading"
           >
-            {{ loading ? 'ENVIANDO...' : 'ENVIAR' }}
+            {{ loading ? lt('ENVIANDO...', 'ENVIANT...', 'BIDALTZEN...', 'ENVIANDO...') : lt('ENVIAR', 'ENVIAR', 'BIDALI', 'ENVIAR') }}
           </button>
         </div>
         <p v-if="message" :class="['feedback-message', { error: isError }]">
@@ -43,6 +43,15 @@
 </template>
 
 <script setup>
+const { locale } = useI18n()
+
+const lt = (es, ca, eu, gl) => {
+  if (locale.value === 'ca') return ca
+  if (locale.value === 'eu') return eu
+  if (locale.value === 'gl') return gl
+  return es
+}
+
 const email = ref('')
 const privacy = ref(false)
 const loading = ref(false)
@@ -61,13 +70,23 @@ const handleSubmit = async () => {
       method: 'POST',
       body: { email: email.value }
     })
-    message.value = '¡Gracias por suscribirte! Te hemos enviado un correo de confirmación.'
+    message.value = lt(
+      '¡Gracias por suscribirte! Te hemos enviado un correo de confirmación.',
+      'Gràcies per subscriure t! T hem enviat un correu de confirmació.',
+      'Eskerrik asko harpidetzeagatik! Berrespen mezu bat bidali dizugu.',
+      'Grazas por subscribirte! Enviámosche un correo de confirmación.'
+    )
     email.value = ''
     privacy.value = false
   } catch (error) {
     console.error(error)
     isError.value = true
-    message.value = error.data?.message || 'Ha ocurrido un error. Por favor, inténtalo de nuevo.'
+    message.value = error.data?.message || lt(
+      'Ha ocurrido un error. Por favor, inténtalo de nuevo.',
+      'S ha produït un error. Si us plau, torna ho a intentar.',
+      'Errore bat gertatu da. Saiatu berriro, mesedez.',
+      'Produciuse un erro. Por favor, téntao de novo.'
+    )
   } finally {
     loading.value = false
   }

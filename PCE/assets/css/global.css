@@ -92,8 +92,43 @@ body.theme-dark .main-nav .nav-link.router-link-exact-active {
     color: #b9afb0;
 }
 
+body.theme-dark .main-nav .nav-link:hover,
+body.theme-dark .btn-admin:hover,
+body.theme-dark .btn-logout:hover,
+body.theme-dark .user-auth-link:hover {
+    color: #723233 !important;
+}
+
 body.theme-dark .logo-text {
     border-left-color: #8e7b7d;
+}
+
+body.theme-dark .language-current,
+body.theme-dark .language-name,
+body.theme-dark .language-caret,
+body.theme-dark .language-option,
+body.theme-dark .language-option span {
+    color: #b9afb0 !important;
+    opacity: 1 !important;
+}
+
+body.theme-dark .language-current {
+    background: #2f2829 !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+body.theme-dark .language-menu {
+    background: #2f2829 !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+body.theme-dark .language-option:hover {
+    background: rgba(185, 175, 176, 0.12) !important;
+}
+
+body.theme-dark .language-option.is-active {
+    border-color: #b9afb0 !important;
+    background: rgba(185, 175, 176, 0.18) !important;
 }
 
 h1,

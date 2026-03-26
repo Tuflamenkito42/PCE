@@ -15,7 +15,7 @@
       <div class="container welcome-container">
         <div class="welcome-box animate-in">
           <p class="welcome-intro-text">
-            Protección Civil Española (PCE) es un partido comprometido con la seguridad, el bienestar y la protección de la ciudadanía. Trabajamos por una sociedad más preparada, solidaria y transparente, poniendo en el centro la prevención, la respuesta ante emergencias y el apoyo a quienes más lo necesitan. Descubre quiénes somos, nuestras propuestas y cómo puedes formar parte del cambio.
+            {{ t('home.welcome') }}
           </p>
         </div>
       </div>
@@ -24,7 +24,7 @@
     <!-- 3. Sección del Botón AFILIATE (Ahora rectangular como los demás, con estilo premium) -->
     <section class="affiliate-cta-section">
       <div class="container cta-container">
-        <NuxtLink to="/afiliacion" class="btn btn-pce-primary btn-xl">AFILIATE</NuxtLink>
+        <NuxtLink to="/afiliacion" class="btn btn-pce-primary btn-xl">{{ t('cta.join') }}</NuxtLink>
       </div>
     </section>
 
@@ -32,14 +32,12 @@
       <div class="container">
         <div class="ia-promo-card">
           <div class="ia-promo-copy">
-            <p class="ia-promo-chip">NUEVO</p>
-            <h2>Prueba Nuestra IA</h2>
+            <p class="ia-promo-chip">{{ t('home.newChip') }}</p>
+            <h2>{{ t('home.tryIaTitle') }}</h2>
             <p>
-              Haz clic en el toro y entra en BULLPATRIOT para resolver dudas,
-              consultar propuestas y generar contenido al instante. Tambien puedes
-              encontrar el acceso directo en la barra de navegación superior.
+              {{ t('home.tryIaText') }}
             </p>
-            <NuxtLink to="/bullpatriot" class="btn btn-pce-primary">ABRIR BULLPATRIOT</NuxtLink>
+            <NuxtLink to="/bullpatriot" class="btn btn-pce-primary">{{ t('home.openBullpatriot') }}</NuxtLink>
           </div>
 
           <NuxtLink
@@ -48,33 +46,33 @@
             aria-label="Prueba nuestra IA clicando el toro"
           >
             <img src="/images/bullpatriot.png" alt="Toro BULLPATRIOT" />
-            <span>Prueba nuestra IA clicando el toro</span>
+            <span>{{ t('home.tryIaBull') }}</span>
           </NuxtLink>
         </div>
       </div>
     </section>
 
     <section class="news container">
-      <h2 class="section-title">NOTICIAS</h2>
+      <h2 class="section-title">{{ t('home.newsTitle') }}</h2>
       <div class="news-layout">
         <div class="news-list">
           <NewsCard 
-            title="Programa Electoral PCE"
-            excerpt="Nuestro equipo presenta las soluciones reales para las próximas elecciones." 
+            :title="t('home.newsCard1Title')"
+            :excerpt="t('home.newsCard1Excerpt')" 
             date="2024-03-20"
             url="/noticias/1"
             image="https://images.unsplash.com/photo-1555848962-6e79363ec58f?auto=format&fit=crop&q=80&w=400"
           />
           <NewsCard 
-            title="Nueva Sede Madrid"
-            excerpt="Inauguramos nuestro nuevo espacio de atención al ciudadano." 
+            :title="t('home.newsCard2Title')"
+            :excerpt="t('home.newsCard2Excerpt')" 
             date="2024-03-15"
             url="/noticias/2"
             image="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=400"
           />
           <NewsCard 
-            title="Prevención de Incendios"
-            excerpt="Campaña informativa para la protección de nuestros bosques." 
+            :title="t('home.newsCard3Title')"
+            :excerpt="t('home.newsCard3Excerpt')" 
             date="2024-03-10"
             url="/noticias/3"
             image="https://images.unsplash.com/photo-1542353436-312f02c1629e?auto=format&fit=crop&q=80&w=400"
@@ -82,41 +80,41 @@
         </div>
         <div class="social-box">
           <div class="x-profile-card">
-            <h3>SÍGUENOS EN X</h3>
+            <h3>{{ t('home.followX') }}</h3>
             <div class="x-profile-info">
               <div class="x-handle">@tuflamenkito42</div>
-              <p>Mantente al día con nuestras últimas noticias y actualizaciones</p>
+              <p>{{ t('home.followXDesc') }}</p>
             </div>
             <a href="https://x.com/tuflamenkito42" target="_blank" rel="noopener noreferrer" class="x-follow-btn">
               <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
               </svg>
-              Seguir en X
+              {{ t('home.followOnX') }}
             </a>
           </div>
         </div>
       </div>
       <div class="news-more">
-        <NuxtLink to="/noticias" class="btn btn-pce-secondary">MÁS NOTICIAS</NuxtLink>
+        <NuxtLink to="/noticias" class="btn btn-pce-secondary">{{ t('home.moreNews') }}</NuxtLink>
       </div>
     </section>
 
     <section class="promises container">
-      <h2 class="section-title">PROMESAS ELECTORALES</h2>
+      <h2 class="section-title">{{ t('home.promisesTitle') }}</h2>
       <div class="promises-grid">
         <PromiseCard>
-          <strong>Justicia implacable:</strong> Pena de muerte para violadores y pederastas: medida extrema pero necesaria contra crímenes irreversibles que destruyen vidas y dignidad humana. Justicia firme para víctimas, infancia y sociedad.
+          <strong>{{ t('home.promise1Title') }}</strong> {{ t('home.promise1Text') }}
         </PromiseCard>
         <PromiseCard>
-          <strong>Control de Fronteras:</strong> Estableceremos un protocolo de expulsión inmediata de inmigrantes ilegales en menos de 48 horas, con protección temporal únicamente para ciudadanos de países en conflicto armado reconocido internacionalmente.
+          <strong>{{ t('home.promise2Title') }}</strong> {{ t('home.promise2Text') }}
         </PromiseCard>
         <PromiseCard>
-          <strong>Fomento de la Natalidad:</strong> Implementación de la misma norma que Rusia en la baja por maternidad y paternidad, extendiéndola hasta los 3 años de duración para fomentar la natalidad y asegurar el bienestar de las familias españolas.
+          <strong>{{ t('home.promise3Title') }}</strong> {{ t('home.promise3Text') }}
         </PromiseCard>
       </div>
       <div class="promises-actions">
-        <NuxtLink to="/programa" class="btn btn-pce-primary">MÁS PROMESAS</NuxtLink>
-        <a href="#" class="btn btn-pce-primary">DESCARGAR PDF ELECTORAL</a>
+        <NuxtLink to="/programa" class="btn btn-pce-primary">{{ t('home.morePromises') }}</NuxtLink>
+        <a href="#" class="btn btn-pce-primary">{{ t('home.downloadPdf') }}</a>
       </div>
     </section>
 
@@ -125,13 +123,12 @@
 </template>
 
 <script setup>
+const { t } = useI18n()
 
-useHead({
-  title: 'Protección Civil Española - PCE',
-  meta: [
-    { name: 'description', content: 'Protección Civil Española (PCE) es un partido comprometido con la seguridad, el bienestar y la protección de la ciudadanía.' }
-  ]
-})
+useHead(() => ({
+  title: t('meta.homeTitle'),
+  meta: [{ name: 'description', content: t('meta.homeDescription') }]
+}))
 </script>
 
 <style scoped>

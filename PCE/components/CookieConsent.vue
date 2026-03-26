@@ -3,14 +3,14 @@
     <div v-if="isOpen" class="cookie-banner">
       <div class="cookie-content">
         <div class="cookie-text">
-          <h3>POLÍTICA DE COOKIES</h3>
+          <h3>{{ t('cookie.title') }}</h3>
           <p>
-            Utilizamos cookies propias y de terceros para mejorar su experiencia y nuestros servicios, analizando la navegación en nuestro sitio web.
+            {{ t('cookie.text') }}
           </p>
         </div>
         <div class="cookie-actions">
-          <button @click="rejectCookies" class="btn btn-reject">RECHAZAR</button>
-          <button @click="acceptCookies" class="btn btn-accept">ACEPTAR</button>
+          <button @click="rejectCookies" class="btn btn-reject">{{ t('cookie.reject') }}</button>
+          <button @click="acceptCookies" class="btn btn-accept">{{ t('cookie.accept') }}</button>
         </div>
       </div>
     </div>
@@ -19,6 +19,7 @@
 
 <script setup>
 const isOpen = useCookieControl()
+const { t } = useI18n()
 
 onMounted(() => {
   const consent = localStorage.getItem('pce_cookie_consent')

@@ -1,30 +1,31 @@
 <template>
   <section class="proposals-section card">
     <div class="card-header">
-      <h2>Tu Voz: Propuestas Electorales</h2>
+      <h2>{{ t('votes.proposal.title') }}</h2>
     </div>
     <div class="card-body">
-      <p>Escriba aquí las propuestas o promesas que le gustaría ver en nuestro programa electoral.</p>
+      <p>{{ t('votes.proposal.desc') }}</p>
       <form @submit.prevent="handleSubmit">
         <div class="form-group">
-          <textarea v-model="text" placeholder="Escribe aquí tu propuesta detallada..." rows="4"></textarea>
+          <textarea v-model="text" :placeholder="t('votes.proposal.placeholder')" rows="4"></textarea>
         </div>
-        <button type="submit" class="btn btn-verify-submit active">Enviar Propuesta</button>
+        <button type="submit" class="btn btn-verify-submit active">{{ t('votes.proposal.send') }}</button>
       </form>
       <div class="stats">
-        <span>Ya hemos recibido 1,240 sugerencias esta semana.</span>
+        <span>{{ t('votes.proposal.stats') }}</span>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
+const { t } = useI18n()
 const text = ref('')
 const emit = defineEmits(['submit'])
 
 const handleSubmit = () => {
   if (text.value.length < 10) {
-    alert("Por favor, describe tu propuesta con más detalle.")
+    alert(t('votes.proposal.minLength'))
     return
   }
   emit('submit', text.value)
