@@ -105,13 +105,13 @@
       <h2 class="section-title">PROMESAS ELECTORALES</h2>
       <div class="promises-grid">
         <PromiseCard>
-          <strong>Control de Fronteras:</strong> Estableceremos un protocolo de expulsión inmediata de inmigrantes ilegales en menos de 48 horas.
+          <strong>Justicia implacable:</strong> Pena de muerte para violadores y pederastas: medida extrema pero necesaria contra crímenes irreversibles que destruyen vidas y dignidad humana. Justicia firme para víctimas, infancia y sociedad.
         </PromiseCard>
         <PromiseCard>
-          <strong>Justicia Implacable:</strong> Pena de muerte para violadores y pederastas: medida extrema pero necesaria contra crímenes irreversibles que destruyen vidas y dignidad humana. Justicia firme para víctimas, infancia y sociedad.
+          <strong>Control de Fronteras:</strong> Estableceremos un protocolo de expulsión inmediata de inmigrantes ilegales en menos de 48 horas, con protección temporal únicamente para ciudadanos de países en conflicto armado reconocido internacionalmente.
         </PromiseCard>
         <PromiseCard>
-          <strong>Igualdad ante la Ley:</strong> Reconocimiento equitativo de todas las víctimas de violencia, independientemente de su sexo.
+          <strong>Fomento de la Natalidad:</strong> Implementación de la misma norma que Rusia en la baja por maternidad y paternidad, extendiéndola hasta los 3 años de duración para fomentar la natalidad y asegurar el bienestar de las familias españolas.
         </PromiseCard>
       </div>
       <div class="promises-actions">

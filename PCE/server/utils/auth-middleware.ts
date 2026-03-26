@@ -38,7 +38,7 @@ export const requireAuth = (event: H3Event): AuthUser => {
  */
 export const requireAdmin = (event: H3Event): AuthUser => {
     const user = requireAuth(event);
-    if (user.role !== 'admin') {
+    if (String(user.role || '').toLowerCase() !== 'admin') {
         throw createError({
             statusCode: 403,
             message: 'Forbidden: Admin access required'

@@ -173,13 +173,13 @@
             <tr v-for="item in filteredMessages" :key="item.id" class="table-row">
               <td>
                 <div class="user-info">
-                  <span class="user-name">{{ item.name }}</span>
-                  <span class="user-email">{{ item.email }}</span>
+                  <span class="user-name">{{ item.name || 'Sin nombre' }}</span>
+                  <span class="user-email">{{ item.email || '-' }}</span>
                 </div>
               </td>
-              <td class="font-bold">{{ item.subject }}</td>
-              <td class="msg-cell clickable" @click="openMessageModal(item)" :title="item.message">
-                {{ item.message.substring(0, 50) }}{{ item.message.length > 50 ? '...' : '' }}
+              <td class="font-bold">{{ item.subject || '-' }}</td>
+              <td class="msg-cell clickable" @click="openMessageModal(item)" :title="item.message || ''">
+                {{ (item.message || '').substring(0, 50) }}{{ (item.message || '').length > 50 ? '...' : '' }}
                 <span class="read-more-hint">(ver más)</span>
               </td>
               <td class="text-muted">{{ formatDate(item.created_at) }}</td>
@@ -310,21 +310,21 @@
         <div class="modal-body message-detail">
           <div class="detail-row">
             <span class="detail-label">Remitente:</span>
-            <span class="detail-value">{{ selectedMessage.name }} &lt;{{ selectedMessage.email }}&gt;</span>
+            <span class="detail-value">{{ selectedMessage?.name || 'Sin nombre' }} &lt;{{ selectedMessage?.email || '-' }}&gt;</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Fecha:</span>
-            <span class="detail-value">{{ formatDate(selectedMessage.created_at) }}</span>
+            <span class="detail-value">{{ formatDate(selectedMessage?.created_at) }}</span>
           </div>
           <div class="detail-row">
             <span class="detail-label">Asunto:</span>
-            <span class="detail-value font-bold">{{ selectedMessage.subject }}</span>
+            <span class="detail-value font-bold">{{ selectedMessage?.subject || '-' }}</span>
           </div>
           
           <div class="detail-divider"></div>
           
           <div class="message-content-full">
-            {{ selectedMessage.message }}
+            {{ selectedMessage?.message || 'Sin contenido' }}
           </div>
         </div>
 
@@ -351,46 +351,52 @@ const newsletterForm = reactive({
 })
 
 const { data, pending, error, refresh } = await useFetch('/api/admin/data')
+const toSearchable = (value) => String(value ?? '').toLowerCase()
 
 // Filtering logic
 const filteredAffiliates = computed(() => {
   if (!data.value?.affiliates) return []
+  const q = toSearchable(searchQuery.value)
   return data.value.affiliates.filter(a => 
-    `${a.name} ${a.lastname}`.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    a.email.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    a.dni.toLowerCase().includes(searchQuery.value.toLowerCase())
+    `${a.name || ''} ${a.lastname || ''}`.toLowerCase().includes(q) ||
+    toSearchable(a.email).includes(q) ||
+    toSearchable(a.dni).includes(q)
   )
 })
 
 const filteredDonations = computed(() => {
   if (!data.value?.donations) return []
+  const q = toSearchable(searchQuery.value)
   return data.value.donations.filter(d => 
-    (d.email || '').toLowerCase().includes(searchQuery.value.toLowerCase())
+    toSearchable(d.email).includes(q)
   )
 })
 
 const filteredMessages = computed(() => {
   if (!data.value?.messages) return []
+  const q = toSearchable(searchQuery.value)
   return data.value.messages.filter(m => 
-    m.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    m.email.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    m.subject.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    m.message.toLowerCase().includes(searchQuery.value.toLowerCase())
+    toSearchable(m.name).includes(q) ||
+    toSearchable(m.email).includes(q) ||
+    toSearchable(m.subject).includes(q) ||
+    toSearchable(m.message).includes(q)
   )
 })
 
 const filteredSubscribers = computed(() => {
   if (!data.value?.subscribers) return []
+  const q = toSearchable(searchQuery.value)
   return data.value.subscribers.filter(s => 
-    s.email.toLowerCase().includes(searchQuery.value.toLowerCase())
+    toSearchable(s.email).includes(q)
   )
 })
 
 const filteredUsers = computed(() => {
   if (!data.value?.users) return []
+  const q = toSearchable(searchQuery.value)
   return data.value.users.filter(u => 
-    u.full_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    u.email.toLowerCase().includes(searchQuery.value.toLowerCase())
+    toSearchable(u.full_name).includes(q) ||
+    toSearchable(u.email).includes(q)
   )
 })
 // Scrutiny Logic

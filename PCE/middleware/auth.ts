@@ -1,5 +1,10 @@
-export default defineRouteMiddleware((to, from) => {
-    const { user } = useAuth();
+export default defineNuxtRouteMiddleware(async (to, from) => {
+    const { user, checkAuth } = useAuth();
+
+    // Restore session from httpOnly cookie on direct navigation/refresh
+    if (!user.value) {
+        await checkAuth();
+    }
 
     // ✅ SECURITY: Requiere autenticación para acceder a bullpatriot
     if (!user.value) {
