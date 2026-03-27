@@ -1,6 +1,8 @@
 import { useDb } from '../utils/db';
 import { sendEmail } from '../utils/email';
 
+const ADMIN_NOTIFICATION_EMAIL = 'pcepartidopolitico@gmail.com';
+
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     const db = useDb();
@@ -36,7 +38,7 @@ export default defineEventHandler(async (event) => {
         const config = useRuntimeConfig();
         if (config.smtpUser) {
             await sendEmail(
-                config.smtpUser,
+                ADMIN_NOTIFICATION_EMAIL,
                 `📝 Nueva Afiliación: ${body.name} ${body.lastname}`,
                 `
                 <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">

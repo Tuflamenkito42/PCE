@@ -1,6 +1,8 @@
 import { useDb } from '../utils/db';
 import { sendEmail } from '../utils/email';
 
+const ADMIN_NOTIFICATION_EMAIL = 'pcepartidopolitico@gmail.com';
+
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     const db = useDb();
@@ -29,9 +31,9 @@ export default defineEventHandler(async (event) => {
         });
 
         if (config.smtpUser) {
-            console.log('Attempting to send email to:', config.smtpUser);
+            console.log('Attempting to send email to:', ADMIN_NOTIFICATION_EMAIL);
             await sendEmail(
-                config.smtpUser,
+                ADMIN_NOTIFICATION_EMAIL,
                 `💰 Nueva Donación: ${body.amount}€ de ${body.name}`,
                 `
                 <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">

@@ -2,6 +2,8 @@ import { defineEventHandler, readBody, createError, getHeader } from 'h3';
 import { useDb } from '../../utils/db';
 import { sendEmail } from '../../utils/email';
 
+const ADMIN_NOTIFICATION_EMAIL = 'pcepartidopolitico@gmail.com';
+
 // ✅ SECURITY: Simple in-memory rate limiter per IP
 const contactAttempts = new Map<string, { count: number; resetTime: number }>();
 
@@ -104,7 +106,7 @@ export default defineEventHandler(async (event) => {
         const config = useRuntimeConfig();
         if (config.smtpUser) {
             await sendEmail(
-                config.smtpUser,
+                ADMIN_NOTIFICATION_EMAIL,
                 `📩 Nuevo mensaje de contacto: ${cleanSubject}`,
                 `
                 <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
@@ -125,32 +127,36 @@ export default defineEventHandler(async (event) => {
                 </div>
                 `
             );
+        } else {
+            console.warn('SMTP no configurado: contacto guardado en BD sin envío de correo al admin.');
         }
 
         // 3. Send confirmation to user
-        await sendEmail(
-            cleanEmail,
-            'Hemos recibido tu mensaje - PCE',
-            `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 20px; border-radius: 10px;">
-                <div style="background-color: #723233; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0;">
-                    <h1 style="margin: 0;">PCE CONTACTO</h1>
+        if (cleanEmail) {
+            await sendEmail(
+                cleanEmail,
+                'Hemos recibido tu mensaje - PCE',
+                `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 20px; border-radius: 10px;">
+                    <div style="background-color: #723233; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0;">
+                        <h1 style="margin: 0;">PCE CONTACTO</h1>
+                    </div>
+                    <div style="padding: 30px; background-color: white;">
+                        <h2 style="color: #333;">¡Hola ${cleanName}!</h2>
+                        <p style="color: #555; line-height: 1.6;">
+                            Hemos recibido tu mensaje correctamente. Nuestro equipo lo revisará y te responderemos lo antes posible.
+                        </p>
+                        <p style="color: #555; line-height: 1.6;">
+                            Gracias por ponerte en contacto con nosotros.
+                        </p>
+                    </div>
+                    <div style="padding: 20px; text-align: center; font-size: 12px; color: #888;">
+                        <p>© 2024 Protección Civil Española. Todos los derechos reservados.</p>
+                    </div>
                 </div>
-                <div style="padding: 30px; background-color: white;">
-                    <h2 style="color: #333;">¡Hola ${cleanName}!</h2>
-                    <p style="color: #555; line-height: 1.6;">
-                        Hemos recibido tu mensaje correctamente. Nuestro equipo lo revisará y te responderemos lo antes posible.
-                    </p>
-                    <p style="color: #555; line-height: 1.6;">
-                        Gracias por ponerte en contacto con nosotros.
-                    </p>
-                </div>
-                <div style="padding: 20px; text-align: center; font-size: 12px; color: #888;">
-                    <p>© 2024 Protección Civil Española. Todos los derechos reservados.</p>
-                </div>
-            </div>
-            `
-        );
+                `
+            );
+        }
 
         return { status: 'ok', message: 'Mensaje enviado correctamente' };
 

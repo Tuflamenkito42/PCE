@@ -2,20 +2,25 @@ import nodemailer from 'nodemailer';
 
 export const sendEmail = async (to: string, subject: string, html: string) => {
     const config = useRuntimeConfig();
+    const smtpHost = String(config.smtpHost || '').trim();
+    const smtpUser = String(config.smtpUser || '').trim();
+    // Gmail app passwords are sometimes pasted with spaces; normalize before auth.
+    const smtpPass = String(config.smtpPass || '').replace(/\s+/g, '').trim();
+    const smtpPort = Number(config.smtpPort);
 
     // Check if critical configuration exists
-    if (!config.smtpHost || !config.smtpUser || !config.smtpPass) {
+    if (!smtpHost || !smtpUser || !smtpPass) {
         console.warn('SMTP configuration missing. Email not sent.');
         return;
     }
 
     const transporter = nodemailer.createTransport({
-        host: config.smtpHost,
-        port: Number(config.smtpPort),
-        secure: Number(config.smtpPort) === 465, // true for 465, false for other ports
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465, // true for 465, false for other ports
         auth: {
-            user: config.smtpUser,
-            pass: config.smtpPass, // App Password if using Gmail
+            user: smtpUser,
+            pass: smtpPass, // App Password if using Gmail
         },
         tls: {
             rejectUnauthorized: false
@@ -24,7 +29,7 @@ export const sendEmail = async (to: string, subject: string, html: string) => {
 
     try {
         const info = await transporter.sendMail({
-            from: `"${config.smtpFrom}" <${config.smtpUser}>`,
+            from: `"${config.smtpFrom}" <${smtpUser}>`,
             to,
             subject,
             html,
