@@ -53,6 +53,32 @@ export default defineEventHandler(async (event) => {
                 </div>
                 `
             );
+
+            if (body.email) {
+                await sendEmail(
+                    String(body.email).toLowerCase().trim(),
+                    'Gracias por tu donación - PCE',
+                    `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 20px; border-radius: 10px;">
+                        <div style="background-color: #723233; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0;">
+                            <h1 style="margin: 0;">DONACIÓN RECIBIDA</h1>
+                        </div>
+                        <div style="padding: 30px; background-color: white;">
+                            <h2 style="color: #333;">¡Muchas gracias${body.name ? `, ${body.name}` : ''}!</h2>
+                            <p style="color: #555; line-height: 1.6;">
+                                Hemos recibido correctamente tu donación de <strong>${body.amount}€</strong>.
+                            </p>
+                            <p style="color: #555; line-height: 1.6;">
+                                Tu apoyo nos ayuda a seguir adelante con nuestras iniciativas.
+                            </p>
+                        </div>
+                        <div style="padding: 20px; text-align: center; font-size: 12px; color: #888;">
+                            <p>© 2026 Protección Civil Española. Todos los derechos reservados.</p>
+                        </div>
+                    </div>
+                    `
+                );
+            }
         }
 
         return {

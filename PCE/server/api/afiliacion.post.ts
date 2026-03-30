@@ -1,34 +1,189 @@
 import { useDb } from '../utils/db';
 import { sendEmail } from '../utils/email';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { extname, join } from 'node:path';
+import { randomUUID } from 'node:crypto';
 
 const ADMIN_NOTIFICATION_EMAIL = 'pcepartidopolitico@gmail.com';
 
+const ensureAffiliationsTableExists = async (db: ReturnType<typeof useDb>) => {
+    await db.query(`
+        CREATE TABLE IF NOT EXISTS affiliations (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            lastname VARCHAR(255) NOT NULL,
+            dni VARCHAR(20) NOT NULL,
+            birthdate DATE,
+            email VARCHAR(255) NOT NULL,
+            phone VARCHAR(20),
+            quota DECIMAL(10, 2) NOT NULL,
+            message TEXT,
+            card_photo_path VARCHAR(255),
+            card_photo_mime VARCHAR(120),
+            payment_intent_id VARCHAR(255),
+            status VARCHAR(50) DEFAULT 'pending',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_affiliations_email (email),
+            INDEX idx_affiliations_dni (dni),
+            INDEX idx_affiliations_status (status)
+        ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `);
+
+    const [columns]: any = await db.query(`
+        SELECT COLUMN_NAME
+        FROM INFORMATION_SCHEMA.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'affiliations'
+    `);
+
+    const existingColumns = new Set((columns || []).map((col: any) => String(col.COLUMN_NAME || '').toLowerCase()));
+
+    if (!existingColumns.has('payment_intent_id')) {
+        await db.query('ALTER TABLE affiliations ADD COLUMN payment_intent_id VARCHAR(255) NULL');
+    }
+    if (!existingColumns.has('status')) {
+        await db.query("ALTER TABLE affiliations ADD COLUMN status VARCHAR(50) DEFAULT 'pending'");
+    }
+    if (!existingColumns.has('card_photo_path')) {
+        await db.query('ALTER TABLE affiliations ADD COLUMN card_photo_path VARCHAR(255) NULL');
+    }
+    if (!existingColumns.has('card_photo_mime')) {
+        await db.query('ALTER TABLE affiliations ADD COLUMN card_photo_mime VARCHAR(120) NULL');
+    }
+};
+
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event);
+    const contentType = String(getHeader(event, 'content-type') || '').toLowerCase();
+
+    let body: any = {};
+    let cardPhotoFile: { filename: string; type: string; data: Buffer } | null = null;
+
+    if (contentType.includes('multipart/form-data')) {
+        const parts = await readMultipartFormData(event);
+
+        if (!parts || parts.length === 0) {
+            throw createError({
+                statusCode: 400,
+                message: 'No se recibieron datos de afiliación'
+            });
+        }
+
+        for (const part of parts) {
+            if (!part.name) continue;
+
+            if (part.name === 'cardPhoto') {
+                cardPhotoFile = {
+                    filename: part.filename || 'card-photo',
+                    type: part.type || 'application/octet-stream',
+                    data: part.data
+                };
+                continue;
+            }
+
+            body[part.name] = part.data?.toString('utf8') || '';
+        }
+    } else {
+        body = await readBody(event);
+    }
+
     const db = useDb();
 
-    // Check if DNI already affiliated
-    const [existingAff] = await db.query('SELECT id FROM affiliations WHERE dni = ?', [body.dni]);
-    if ((existingAff as any).length > 0) {
+    const cleanEmail = String(body.email || '').toLowerCase().trim();
+    const cleanDni = String(body.dni || '').toUpperCase().trim();
+
+    const numericQuota = Number(body.quota);
+
+    if (!cleanEmail || !cleanDni || !body.name || !body.lastname || !body.birthdate || !body.quota) {
         throw createError({
-            statusCode: 409,
-            message: 'Ya existe una solicitud de afiliación con este DNI/NIE'
+            statusCode: 400,
+            message: 'Faltan campos obligatorios para completar la afiliación'
         });
     }
 
+    if (!numericQuota || Number.isNaN(numericQuota) || numericQuota < 5) {
+        throw createError({
+            statusCode: 400,
+            message: 'La cuota seleccionada no es válida'
+        });
+    }
+
+    if (!body.payment_intent_id) {
+        throw createError({
+            statusCode: 400,
+            message: 'No se ha podido validar el pago. Intenta de nuevo.'
+        });
+    }
+
+    if (!cardPhotoFile) {
+        throw createError({
+            statusCode: 400,
+            message: 'Debes subir una foto para generar tu carné de socio.'
+        });
+    }
+
+    const allowedImageMimes = new Set(['image/jpeg', 'image/png', 'image/webp']);
+    const extension = extname(cardPhotoFile.filename || '').toLowerCase();
+    const allowedExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+
+    if (!allowedImageMimes.has(cardPhotoFile.type) && !allowedExtensions.has(extension)) {
+        throw createError({
+            statusCode: 400,
+            message: 'Formato de foto no válido. Usa JPG, PNG o WEBP.'
+        });
+    }
+
+    const maxPhotoSize = 5 * 1024 * 1024;
+    if (cardPhotoFile.data.length > maxPhotoSize) {
+        throw createError({
+            statusCode: 400,
+            message: 'La foto supera el tamaño máximo permitido de 5MB.'
+        });
+    }
+
+    const safeExtension = allowedExtensions.has(extension) ? extension : '.jpg';
+    const photosDir = join(process.cwd(), 'public', 'uploads', 'affiliation-photos');
+    await mkdir(photosDir, { recursive: true });
+
+    const storedFilename = `${Date.now()}-${randomUUID()}${safeExtension}`;
+    const absolutePhotoPath = join(photosDir, storedFilename);
+    await writeFile(absolutePhotoPath, cardPhotoFile.data);
+
+    const publicPhotoPath = `/uploads/affiliation-photos/${storedFilename}`;
+
     try {
+        await ensureAffiliationsTableExists(db);
+
+        // Check if DNI already affiliated
+        const [existingAff] = await db.query('SELECT id FROM affiliations WHERE dni = ? AND status IN (?, ?, ?)', [cleanDni, 'paid', 'active', 'simulated_paid']);
+        if ((existingAff as any).length > 0) {
+            throw createError({
+                statusCode: 400,
+                message: 'Ya existe una solicitud de afiliación con este DNI/NIE'
+            });
+        }
+
+        // Check if email already affiliated (common case when user is logged in)
+        const [existingAffByEmail] = await db.query('SELECT id FROM affiliations WHERE email = ? AND status IN (?, ?, ?)', [cleanEmail, 'paid', 'active', 'simulated_paid']);
+        if ((existingAffByEmail as any).length > 0) {
+            throw createError({
+                statusCode: 400,
+                message: 'Este email ya tiene una afiliación activa'
+            });
+        }
+
         const [result]: any = await db.query(
-            `INSERT INTO affiliations (name, lastname, dni, birthdate, email, phone, quota, message, payment_intent_id, status) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO affiliations (name, lastname, dni, birthdate, email, phone, quota, message, card_photo_path, card_photo_mime, payment_intent_id, status) 
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 body.name,
                 body.lastname,
-                body.dni,
+                cleanDni,
                 body.birthdate,
-                body.email,
-                body.phone,
-                body.quota,
+                cleanEmail,
+                body.phone || null,
+                numericQuota,
                 body.message || null,
+                publicPhotoPath,
+                cardPhotoFile.type,
                 body.payment_intent_id,
                 body.status || 'pending'
             ]
@@ -119,6 +274,9 @@ export default defineEventHandler(async (event) => {
             id: result.insertId
         };
     } catch (error: any) {
+        if (error?.statusCode) {
+            throw error;
+        }
         console.error('Database error:', error);
         throw createError({
             statusCode: 500,

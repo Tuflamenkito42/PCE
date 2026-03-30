@@ -87,9 +87,27 @@
                     <span v-if="errors.email" class="error-msg">{{ errors.email }}</span>
                   </div>
                   <div class="form-group">
+                    <label>{{ lt('Confirmar email', 'Confirmar correu', 'Emaila berretsi', 'Confirmar email') }}</label>
+                    <input v-model="formData.confirmEmail" type="email" :placeholder="lt('Repite tu email', 'Repeteix el teu correu', 'Errepikatu zure emaila', 'Repite o teu email')" required :class="{ 'error': errors.confirmEmail }" />
+                    <span v-if="errors.confirmEmail" class="error-msg">{{ errors.confirmEmail }}</span>
+                  </div>
+                  <div class="form-group">
                     <label>{{ t('affiliation.phoneNumber') }}</label>
                     <input v-model="formData.phone" type="tel" :placeholder="t('affiliation.phoneNumber')" required :class="{ 'error': errors.phone }" />
                     <span v-if="errors.phone" class="error-msg">{{ errors.phone }}</span>
+                  </div>
+
+                  <div class="form-group">
+                    <label>{{ lt('Foto para el carné de socio', 'Foto per al carnet de soci', 'Bazkide txartelerako argazkia', 'Foto para o carné de socio') }} *</label>
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      @change="handleCardPhotoChange"
+                      :class="{ 'error': errors.cardPhoto }"
+                    />
+                    <p class="photo-help">{{ lt('Esta foto se utilizará exclusivamente para generar tu carné de socio.', 'Aquesta foto s utilitzarà exclusivament per generar el teu carnet de soci.', 'Argazki hau zure bazkide txartela sortzeko bakarrik erabiliko da.', 'Esta foto empregarase exclusivamente para xerar o teu carné de socio.') }}</p>
+                    <img v-if="cardPhotoPreview" :src="cardPhotoPreview" :alt="lt('Vista previa de la foto para el carné', 'Vista prèvia de la foto per al carnet', 'Txartelerako argazkiaren aurrebista', 'Vista previa da foto para o carné')" class="card-photo-preview" />
+                    <span v-if="errors.cardPhoto" class="error-msg">{{ errors.cardPhoto }}</span>
                   </div>
                 </div>
               </div>
@@ -197,10 +215,6 @@
                     <div class="data-row">
                       <span class="label">Email:</span>
                       <span class="value">{{ formData.email }}</span>
-                    </div>
-                    <div class="data-row">
-                      <span class="label">{{ lt('Teléfono:', 'Telèfon:', 'Telefonoa:', 'Teléfono:') }}</span>
-                      <span class="value">{{ formData.phone }}</span>
                     </div>
                   </div>
 
@@ -336,11 +350,16 @@ const formData = reactive({
   dni: '',
   birthdate: '',
   email: '',
+  confirmEmail: '',
   phone: '',
   quota: '10',
   customAmount: null,
   acceptTerms: false
 })
+
+const cardPhotoFile = ref(null)
+const cardPhotoPreview = ref('')
+const CARD_PHOTO_RATIO = 112 / 246
 
 const errors = ref({})
 const isProcessing = ref(false)
@@ -472,6 +491,135 @@ const handleDniData = (data) => {
   }
 }
 
+const processCardPhotoFile = async (file) => {
+  if (!process.client) return file
+
+  const sourceUrl = URL.createObjectURL(file)
+
+  try {
+    const image = await new Promise((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => resolve(img)
+      img.onerror = () => reject(new Error('No se pudo procesar la imagen'))
+      img.src = sourceUrl
+    })
+
+    const sourceWidth = image.naturalWidth || image.width
+    const sourceHeight = image.naturalHeight || image.height
+    if (!sourceWidth || !sourceHeight) {
+      throw new Error('Dimensiones inválidas')
+    }
+
+    let cropWidth = sourceWidth
+    let cropHeight = sourceHeight
+
+    if (sourceWidth / sourceHeight > CARD_PHOTO_RATIO) {
+      cropWidth = Math.round(sourceHeight * CARD_PHOTO_RATIO)
+    } else {
+      cropHeight = Math.round(sourceWidth / CARD_PHOTO_RATIO)
+    }
+
+    const freeX = Math.max(0, sourceWidth - cropWidth)
+    const freeY = Math.max(0, sourceHeight - cropHeight)
+
+    // Para fotos de retrato, prioriza cabeza/rostro (encuadre ligeramente superior)
+    const offsetX = Math.round(freeX / 2)
+    const offsetY = Math.round(freeY * 0.22)
+
+    const outputWidth = 560
+    const outputHeight = Math.round(outputWidth / CARD_PHOTO_RATIO)
+    const canvas = document.createElement('canvas')
+    canvas.width = outputWidth
+    canvas.height = outputHeight
+
+    const ctx = canvas.getContext('2d')
+    if (!ctx) {
+      throw new Error('No se pudo inicializar el procesado de imagen')
+    }
+
+    ctx.drawImage(
+      image,
+      offsetX,
+      offsetY,
+      cropWidth,
+      cropHeight,
+      0,
+      0,
+      outputWidth,
+      outputHeight
+    )
+
+    const processedBlob = await new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          reject(new Error('No se pudo exportar la imagen procesada'))
+          return
+        }
+        resolve(blob)
+      }, 'image/jpeg', 0.92)
+    })
+
+    const processedFile = new File(
+      [processedBlob],
+      `card-photo-${Date.now()}.jpg`,
+      { type: 'image/jpeg' }
+    )
+
+    return processedFile
+  } finally {
+    URL.revokeObjectURL(sourceUrl)
+  }
+}
+
+const handleCardPhotoChange = async (event) => {
+  const target = event.target
+  const file = target?.files?.[0]
+
+  if (!file) {
+    if (cardPhotoPreview.value) {
+      URL.revokeObjectURL(cardPhotoPreview.value)
+    }
+    cardPhotoFile.value = null
+    cardPhotoPreview.value = ''
+    return
+  }
+
+  const allowedTypes = new Set(['image/jpeg', 'image/png', 'image/webp'])
+  if (!allowedTypes.has(file.type)) {
+    errors.value.cardPhoto = lt('Formato no válido. Usa JPG, PNG o WEBP.', 'Format no vàlid. Usa JPG, PNG o WEBP.', 'Formatu baliogabea. Erabili JPG, PNG edo WEBP.', 'Formato non válido. Usa JPG, PNG ou WEBP.')
+    cardPhotoFile.value = null
+    cardPhotoPreview.value = ''
+    target.value = ''
+    return
+  }
+
+  const maxSize = 5 * 1024 * 1024
+  if (file.size > maxSize) {
+    errors.value.cardPhoto = lt('La foto no puede superar 5MB.', 'La foto no pot superar 5MB.', 'Argazkiak ezin du 5MB gainditu.', 'A foto non pode superar 5MB.')
+    cardPhotoFile.value = null
+    cardPhotoPreview.value = ''
+    target.value = ''
+    return
+  }
+
+  try {
+    errors.value.cardPhoto = ''
+    const processedFile = await processCardPhotoFile(file)
+
+    if (cardPhotoPreview.value) {
+      URL.revokeObjectURL(cardPhotoPreview.value)
+    }
+
+    cardPhotoFile.value = processedFile
+    cardPhotoPreview.value = URL.createObjectURL(processedFile)
+  } catch (error) {
+    errors.value.cardPhoto = lt('No se pudo ajustar la foto automáticamente. Prueba con otra imagen.', 'No s ha pogut ajustar la foto automàticament. Prova amb una altra imatge.', 'Argazkia ezin izan da automatikoki egokitu. Saiatu beste irudi batekin.', 'Non se puido axustar a foto automaticamente. Proba con outra imaxe.')
+    cardPhotoFile.value = null
+    cardPhotoPreview.value = ''
+    target.value = ''
+  }
+}
+
 const validateStep1 = () => {
   errors.value = {}
   let valid = true
@@ -491,9 +639,43 @@ const validateStep1 = () => {
     valid = false; 
   }
 
-  if (!formData.phone) { errors.value.phone = t('affiliation.requiredPhone'); valid = false; }
+  if (!isValidEmail(formData.confirmEmail)) {
+    errors.value.confirmEmail = lt('Debes confirmar un email válido', 'Has de confirmar un correu vàlid', 'Baliozko email bat berretsi behar duzu', 'Debes confirmar un email válido')
+    valid = false
+  } else if (String(formData.email).toLowerCase().trim() !== String(formData.confirmEmail).toLowerCase().trim()) {
+    errors.value.confirmEmail = lt('Los emails no coinciden', 'Els correus no coincideixen', 'Emailak ez datoz bat', 'Os emails non coinciden')
+    valid = false
+  }
+
+  if (!formData.phone || String(formData.phone).trim().length < 6) {
+    errors.value.phone = t('affiliation.requiredPhone')
+    valid = false
+  }
+
+  if (!cardPhotoFile.value) {
+    errors.value.cardPhoto = lt('Debes subir una foto para generar el carné.', 'Has de pujar una foto per generar el carnet.', 'Txartela sortzeko argazki bat igo behar duzu.', 'Debes subir unha foto para xerar o carné.')
+    valid = false
+  }
 
   return valid
+}
+
+const submitAffiliation = async (payload) => {
+  const multipart = new FormData()
+
+  for (const [key, value] of Object.entries(payload)) {
+    if (value === undefined || value === null || value === '') continue
+    multipart.append(key, String(value))
+  }
+
+  if (cardPhotoFile.value) {
+    multipart.append('cardPhoto', cardPhotoFile.value)
+  }
+
+  return await $fetch('/api/afiliacion', {
+    method: 'POST',
+    body: multipart
+  })
 }
 
 const nextStep = () => {
@@ -533,56 +715,64 @@ const handleSubmit = async () => {
   paymentStatus.value = 'error' // Reset status
 
   try {
-    // 1. Create payment intent
-    const { data: paymentData, error: fetchError } = await useFetch('/api/payment-intent', {
-      method: 'POST',
-      body: {
-        amount: selectedQuotaAmount.value,
-        currency: 'eur',
-        metadata: {
-          name: `${formData.name} ${formData.lastname}`,
-          dni: formData.dni,
-          email: formData.email
-        }
-      }
-    })
+    const numericQuota = Number(selectedQuotaAmount.value)
+    if (!numericQuota || Number.isNaN(numericQuota) || numericQuota < 5) {
+      throw new Error(lt('CUOTA NO VÁLIDA. REVISA EL IMPORTE SELECCIONADO.', 'QUOTA NO VÀLIDA. REVISA L IMPORT SELECCIONAT.', 'KUOTA EZ DA BALIOZKOA. BERRIKUSI HAUTATUTAKO ZENBATEKOA.', 'COTA NON VÁLIDA. REVISA O IMPORTE SELECCIONADO.'))
+    }
 
-    // 2. Handle API errors / Simulation Mode
-    if (fetchError.value) {
-      const errorMsg = fetchError.value.data?.message || ''
-      
+    const affiliationPayload = {
+      ...formData,
+      quota: numericQuota
+    }
+
+    // 1. Create payment intent
+    let paymentData
+    try {
+      paymentData = await $fetch('/api/payment-intent', {
+        method: 'POST',
+        body: {
+          amount: numericQuota,
+          currency: 'eur',
+          metadata: {
+            name: `${formData.name} ${formData.lastname}`,
+            dni: formData.dni,
+            email: formData.email
+          }
+        }
+      })
+    } catch (paymentIntentError) {
+      const errorMsg = paymentIntentError?.data?.message || paymentIntentError?.message || ''
+      const lowerMsg = String(errorMsg).toLowerCase()
+
       // If error is about API keys, we allow simulation for testing
-      const lowerMsg = errorMsg.toLowerCase()
       if (lowerMsg.includes('api key') || lowerMsg.includes('secret') || lowerMsg.includes('stripe')) {
         console.warn('Entrando en modo simulación (Claves de Stripe no configuradas)')
-        
+
         paymentStatus.value = 'processing'
         paymentError.value = lt('VERIFICANDO DATOS DE TARJETA...', 'VERIFICANT DADES DE TARGETA...', 'TXARTEL DATUAK EGIAZTATZEN...', 'VERIFICANDO DATOS DA TARXETA...')
-        
+
         // Brief delay to simulate a real check
         await new Promise(resolve => setTimeout(resolve, 1500))
-        
+
         paymentStatus.value = 'success'
         paymentError.value = lt('¡PAGO ACEPTADO CORRECTAMENTE!', 'PAGAMENT ACCEPTAT CORRECTAMENT!', 'ORDAINKETA ONDO ONARTU DA!', 'PAGAMENTO ACEPTADO CORRECTAMENTE!')
         await new Promise(resolve => setTimeout(resolve, 1000))
 
         // Save to DB (Simulated)
-        await useFetch('/api/afiliacion', {
-          method: 'POST',
-          body: {
-            ...formData,
-            payment_intent_id: 'sim_' + Date.now(),
-            status: 'simulated_paid'
-          }
+        await submitAffiliation({
+          ...affiliationPayload,
+          payment_intent_id: 'sim_' + Date.now(),
+          status: 'simulated_paid'
         })
-        
+
         currentStep.value = 5
         return
       }
+
       throw new Error(errorMsg || lt('ERROR DE CONEXIÓN CON EL SERVIDOR', 'ERROR DE CONNEXIÓ AMB EL SERVIDOR', 'ZERBITZARIAREKIKO KONEXIO ERROREA', 'ERRO DE CONEXIÓN CO SERVIDOR'))
     }
 
-    if (!paymentData.value?.clientSecret) {
+    if (!paymentData?.clientSecret) {
       throw new Error(lt('NO SE RECIBIÓ RESPUESTA DEL SERVIDOR DE PAGOS', 'NO S HA REBUT RESPOSTA DEL SERVIDOR DE PAGAMENTS', 'EZ DA ORDAINKETA ZERBITZARIKO ERANTZUNIK JASO', 'NON SE RECIBIU RESPOSTA DO SERVIDOR DE PAGOS'))
     }
 
@@ -592,7 +782,7 @@ const handleSubmit = async () => {
 
     if (!stripeInstance.value) throw new Error(lt('ERROR AL INICIALIZAR STRIPE', 'ERROR EN INICIALITZAR STRIPE', 'ERROREA STRIPE ABIATZEAN', 'ERRO AO INICIALIZAR STRIPE'))
 
-    const { error } = await stripeInstance.value.confirmCardPayment(paymentData.value.clientSecret, {
+    const { error } = await stripeInstance.value.confirmCardPayment(paymentData.clientSecret, {
       payment_method: {
         card: stripeCardRef.value.card,
         billing_details: {
@@ -605,20 +795,18 @@ const handleSubmit = async () => {
     if (error) throw new Error(error.message)
 
     // 4. Save to Database (Real)
-    await useFetch('/api/afiliacion', {
-      method: 'POST',
-      body: {
-        ...formData,
-        payment_intent_id: paymentData.value.clientSecret.split('_secret')[0],
-        status: 'paid'
-      }
+    await submitAffiliation({
+      ...affiliationPayload,
+      payment_intent_id: paymentData.clientSecret.split('_secret')[0],
+      status: 'paid'
     })
 
     currentStep.value = 5
     
   } catch (error) {
     console.error('Payment error:', error)
-    paymentError.value = (error.message || lt('ERROR AL PROCESAR EL PAGO', 'ERROR EN PROCESSAR EL PAGAMENT', 'ERROREA ORDAINKETA PROZESATZEAN', 'ERRO AO PROCESAR O PAGO')).toUpperCase()
+    const backendMsg = error?.data?.message || error?.statusMessage || error?.message
+    paymentError.value = (backendMsg || lt('ERROR AL PROCESAR EL PAGO', 'ERROR EN PROCESSAR EL PAGAMENT', 'ERROREA ORDAINKETA PROZESATZEAN', 'ERRO AO PROCESAR O PAGO')).toUpperCase()
     paymentStatus.value = 'error'
     isProcessing.value = false
   }
@@ -857,6 +1045,22 @@ useHead(() => ({
   &.full-width {
     grid-column: 1 / -1;
   }
+}
+
+.photo-help {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.4;
+}
+
+.card-photo-preview {
+  width: 140px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
 
 /* Quota Options */

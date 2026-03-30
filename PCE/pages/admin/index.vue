@@ -39,31 +39,31 @@
         <div class="kpi-card">
           <div class="kpi-content-simple">
             <span class="kpi-label-simple">{{ lt('Ingresos:', 'Ingressos:', 'Diru-sarrerak:', 'Ingresos:') }}</span>
-            <span class="kpi-value-simple">{{ formatMoney(data.stats.monthly_income) }}</span>
+            <span class="kpi-value-simple kpi-value-money">{{ formatMoney(data.stats.monthly_income) }}</span>
           </div>
         </div>
         <div class="kpi-card">
           <div class="kpi-content-simple">
             <span class="kpi-label-simple">{{ lt('Donaciones:', 'Donacions:', 'Dohaintzak:', 'Doazóns:') }}</span>
-            <span class="kpi-value-simple">{{ formatMoney(data.stats.total_donations) }}</span>
+            <span class="kpi-value-simple kpi-value-money">{{ formatMoney(data.stats.total_donations) }}</span>
           </div>
         </div>
         <div class="kpi-card">
           <div class="kpi-content-simple">
-            <span class="kpi-label-simple">{{ lt('Mensajes:', 'Missatges:', 'Mezuak:', 'Mensaxes:') }}</span>
-            <span class="kpi-value-simple">{{ data.stats.total_messages }}</span>
+            <span class="kpi-label-simple">{{ lt('Candidaturas:', 'Candidatures:', 'Hautagaitzak:', 'Candidaturas:') }}</span>
+            <span class="kpi-value-simple">{{ data.stats.total_job_applications || 0 }}</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-content-simple">
+            <span class="kpi-label-simple">{{ lt('Carnés físicos:', 'Carnets físics:', 'Txartel fisikoak:', 'Carnés físicos:') }}</span>
+            <span class="kpi-value-simple">{{ data.stats.total_carnet_orders || 0 }}</span>
           </div>
         </div>
         <div class="kpi-card">
           <div class="kpi-content-simple">
             <span class="kpi-label-simple">{{ lt('Suscriptores:', 'Subscriptors:', 'Harpidedunak:', 'Subscritores:') }}</span>
             <span class="kpi-value-simple">{{ data.stats.total_subscribers }}</span>
-          </div>
-        </div>
-        <div class="kpi-card">
-          <div class="kpi-content-simple">
-            <span class="kpi-label-simple">{{ lt('Votos:', 'Vots:', 'Botoak:', 'Votos:') }}</span>
-            <span class="kpi-value-simple">{{ data.stats.total_votes }}</span>
           </div>
         </div>
       </div>
@@ -74,6 +74,8 @@
           <button :class="{ active: activeTab === 'affiliates' }" @click="activeTab = 'affiliates'">{{ lt('Afiliados', 'Afiliats', 'Afiliatuak', 'Afiliados') }}</button>
           <button :class="{ active: activeTab === 'donations' }" @click="activeTab = 'donations'">{{ lt('Donaciones', 'Donacions', 'Dohaintzak', 'Doazóns') }}</button>
           <button :class="{ active: activeTab === 'messages' }" @click="activeTab = 'messages'">{{ lt('Mensajes', 'Missatges', 'Mezuak', 'Mensaxes') }}</button>
+          <button :class="{ active: activeTab === 'job_applications' }" @click="activeTab = 'job_applications'">{{ lt('Candidaturas', 'Candidatures', 'Hautagaitzak', 'Candidaturas') }}</button>
+          <button :class="{ active: activeTab === 'carnet_orders' }" @click="activeTab = 'carnet_orders'">{{ lt('Carnés físicos', 'Carnets físics', 'Txartel fisikoak', 'Carnés físicos') }}</button>
           <button :class="{ active: activeTab === 'newsletter' }" @click="activeTab = 'newsletter'">Newsletter</button>
           <button :class="{ active: activeTab === 'votes' }" @click="activeTab = 'votes'">{{ lt('Escrutinio', 'Escrutini', 'Zenbaketa', 'Escrutinio') }}</button>
           <button :class="{ active: activeTab === 'users' }" @click="activeTab = 'users'">{{ lt('Usuarios', 'Usuaris', 'Erabiltzaileak', 'Usuarios') }}</button>
@@ -185,6 +187,125 @@
               <td class="text-muted">{{ formatDate(item.created_at) }}</td>
               <td class="text-right">
                 <button @click="deleteItem('contact_messages', item.id)" class="btn-delete" :title="lt('Eliminar', 'Eliminar', 'Ezabatu', 'Eliminar')">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Job Applications Table -->
+        <table v-if="activeTab === 'job_applications'" class="admin-table">
+          <thead>
+            <tr>
+              <th>{{ lt('Candidato', 'Candidat', 'Hautagaia', 'Candidato') }}</th>
+              <th>{{ lt('Oferta', 'Oferta', 'Eskaintza', 'Oferta') }}</th>
+              <th>{{ lt('CV', 'CV', 'CV', 'CV') }}</th>
+              <th>{{ lt('Disponibilidad', 'Disponibilitat', 'Eskuragarritasuna', 'Disponibilidade') }}</th>
+              <th>{{ lt('Estado', 'Estat', 'Egoera', 'Estado') }}</th>
+              <th>{{ lt('Fecha', 'Data', 'Data', 'Data') }}</th>
+              <th class="text-right">{{ lt('Acciones', 'Accions', 'Ekintzak', 'Accións') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in filteredJobApplications" :key="item.id" class="table-row">
+              <td>
+                <div class="user-info">
+                  <span class="user-name">{{ item.full_name }}</span>
+                  <span class="user-email">{{ item.email }} · {{ item.phone }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="user-info">
+                  <span class="user-name">{{ item.offer_id }}</span>
+                  <span class="user-email">{{ item.city }}</span>
+                </div>
+              </td>
+              <td>
+                <a
+                  v-if="item.cv_file_path"
+                  class="btn-action secondary"
+                  :href="`/api/admin/job_applications/${item.id}/cv`"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ lt('Descargar', 'Descarregar', 'Deskargatu', 'Descargar') }}
+                </a>
+                <span v-else class="text-muted">{{ lt('Sin archivo', 'Sense arxiu', 'Fitxategirik ez', 'Sen arquivo') }}</span>
+              </td>
+              <td class="msg-cell clickable" @click="openJobApplicationModal(item)" :title="item.motivation || ''">
+                {{ item.availability }}
+                <br>
+                <small class="text-muted">{{ (item.motivation || '').substring(0, 50) }}{{ (item.motivation || '').length > 50 ? '...' : '' }}</small>
+                <span class="read-more-hint">({{ lt('ver más', 'veure més', 'gehiago ikusi', 'ver máis') }})</span>
+              </td>
+              <td>
+                <select @change="updateStatus('job_applications', item.id, $event.target.value)" :class="['status-select', item.status]">
+                  <option value="new" :selected="item.status === 'new'">{{ lt('Nueva', 'Nova', 'Berria', 'Nova') }}</option>
+                  <option value="reviewing" :selected="item.status === 'reviewing'">{{ lt('En revisión', 'En revisió', 'Berrikusten', 'En revisión') }}</option>
+                  <option value="interview" :selected="item.status === 'interview'">{{ lt('Entrevista', 'Entrevista', 'Elkarrizketa', 'Entrevista') }}</option>
+                  <option value="accepted" :selected="item.status === 'accepted'">{{ lt('Aceptada', 'Acceptada', 'Onartuta', 'Aceptada') }}</option>
+                  <option value="rejected" :selected="item.status === 'rejected'">{{ lt('Rechazada', 'Rebutjada', 'Baztertua', 'Rexeitada') }}</option>
+                </select>
+              </td>
+              <td class="text-muted">{{ formatDate(item.created_at) }}</td>
+              <td class="text-right">
+                <button @click="deleteItem('job_applications', item.id)" class="btn-delete" :title="lt('Eliminar', 'Eliminar', 'Ezabatu', 'Eliminar')">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Carnet Orders Table -->
+        <table v-if="activeTab === 'carnet_orders'" class="admin-table">
+          <thead>
+            <tr>
+              <th>{{ lt('Afiliado', 'Afiliat', 'Afiliatua', 'Afiliado') }}</th>
+              <th>{{ lt('NIF / Nº socio', 'NIF / Nº soci', 'NIF / Bazkide zk', 'NIF / Nº socio') }}</th>
+              <th>{{ lt('Dirección', 'Adreça', 'Helbidea', 'Enderezo') }}</th>
+              <th>{{ lt('Pago', 'Pagament', 'Ordainketa', 'Pago') }}</th>
+              <th>{{ lt('Envío', 'Enviament', 'Bidalketa', 'Envío') }}</th>
+              <th>{{ lt('Fecha', 'Data', 'Data', 'Data') }}</th>
+              <th class="text-right">{{ lt('Acciones', 'Accions', 'Ekintzak', 'Accións') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="item in filteredCarnetOrders" :key="item.id" class="table-row">
+              <td>
+                <div class="user-info">
+                  <span class="user-name">{{ item.full_name }}</span>
+                  <span class="user-email">{{ item.email }}{{ item.phone ? ` · ${item.phone}` : '' }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="user-info">
+                  <span class="user-name">{{ item.nif || '-' }}</span>
+                  <span class="user-email">{{ item.numero_socio || '-' }}</span>
+                </div>
+              </td>
+              <td class="text-muted">
+                {{ item.address || '-' }}<br>
+                <small>{{ item.postal_code || '' }} {{ item.city || '' }}{{ item.country ? `, ${item.country}` : '' }}</small>
+              </td>
+              <td>
+                <span :class="['status-badge', item.status === 'completed' ? 'active' : 'pending']">
+                  {{ item.status || 'pending' }}
+                </span>
+              </td>
+              <td>
+                <select @change="updateStatus('carnet_orders', item.id, $event.target.value)" :class="['status-select', item.shipping_status]">
+                  <option value="pending" :selected="item.shipping_status === 'pending'">{{ lt('Pendiente', 'Pendent', 'Zain', 'Pendente') }}</option>
+                  <option value="processing" :selected="item.shipping_status === 'processing'">{{ lt('Preparando', 'Preparant', 'Prestatzen', 'Preparando') }}</option>
+                  <option value="shipped" :selected="item.shipping_status === 'shipped'">{{ lt('Enviado', 'Enviat', 'Bidalita', 'Enviado') }}</option>
+                  <option value="delivered" :selected="item.shipping_status === 'delivered'">{{ lt('Entregado', 'Entregat', 'Entregatuta', 'Entregado') }}</option>
+                  <option value="cancelled" :selected="item.shipping_status === 'cancelled'">{{ lt('Cancelado', 'Cancel·lat', 'Bertan behera', 'Cancelado') }}</option>
+                </select>
+              </td>
+              <td class="text-muted">{{ formatDate(item.created_at) }}</td>
+              <td class="text-right">
+                <button @click="deleteItem('carnet_orders', item.id)" class="btn-delete" :title="lt('Eliminar', 'Eliminar', 'Ezabatu', 'Eliminar')">
                   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                 </button>
               </td>
@@ -333,6 +454,53 @@
         </div>
       </div>
     </div>
+
+    <div v-if="showViewJobApplicationModal && selectedJobApplication" class="modal-overlay" @click.self="showViewJobApplicationModal = false">
+      <div class="modal-content glass animate-in">
+        <div class="modal-header">
+          <h2 class="form-subtitle">{{ lt('Detalle de candidatura', 'Detall de candidatura', 'Hautagaitzaren xehetasuna', 'Detalle da candidatura') }}</h2>
+          <button @click="showViewJobApplicationModal = false" class="btn-close">&times;</button>
+        </div>
+
+        <div class="modal-body message-detail">
+          <div class="detail-row">
+            <span class="detail-label">{{ lt('Candidato:', 'Candidat:', 'Hautagaia:', 'Candidato:') }}</span>
+            <span class="detail-value">{{ selectedJobApplication?.full_name || '-' }} &lt;{{ selectedJobApplication?.email || '-' }}&gt;</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{{ lt('Oferta:', 'Oferta:', 'Eskaintza:', 'Oferta:') }}</span>
+            <span class="detail-value">{{ selectedJobApplication?.offer_id || '-' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{{ lt('Disponibilidad:', 'Disponibilitat:', 'Eskuragarritasuna:', 'Disponibilidade:') }}</span>
+            <span class="detail-value">{{ selectedJobApplication?.availability || '-' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">{{ lt('Fecha:', 'Data:', 'Data:', 'Data:') }}</span>
+            <span class="detail-value">{{ formatDate(selectedJobApplication?.created_at) }}</span>
+          </div>
+
+          <div class="detail-divider"></div>
+
+          <div class="message-content-full">
+            {{ selectedJobApplication?.motivation || lt('Sin mensaje', 'Sense missatge', 'Mezurik ez', 'Sen mensaxe') }}
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <a
+            v-if="selectedJobApplication?.cv_file_path"
+            class="btn-action secondary"
+            :href="`/api/admin/job_applications/${selectedJobApplication.id}/cv`"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ lt('Descargar CV', 'Descarregar CV', 'CV deskargatu', 'Descargar CV') }}
+          </a>
+          <button @click="showViewJobApplicationModal = false" class="btn-action primary">{{ lt('Cerrar', 'Tancar', 'Itxi', 'Pechar') }}</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -399,6 +567,33 @@ const filteredMessages = computed(() => {
   )
 })
 
+const filteredJobApplications = computed(() => {
+  if (!data.value?.job_applications) return []
+  const q = toSearchable(searchQuery.value)
+  return data.value.job_applications.filter(item =>
+    toSearchable(item.full_name).includes(q) ||
+    toSearchable(item.email).includes(q) ||
+    toSearchable(item.offer_id).includes(q) ||
+    toSearchable(item.city).includes(q) ||
+    toSearchable(item.status).includes(q) ||
+    toSearchable(item.availability).includes(q)
+  )
+})
+
+const filteredCarnetOrders = computed(() => {
+  if (!data.value?.carnet_orders) return []
+  const q = toSearchable(searchQuery.value)
+  return data.value.carnet_orders.filter(item =>
+    toSearchable(item.full_name).includes(q) ||
+    toSearchable(item.email).includes(q) ||
+    toSearchable(item.nif).includes(q) ||
+    toSearchable(item.numero_socio).includes(q) ||
+    toSearchable(item.address).includes(q) ||
+    toSearchable(item.city).includes(q) ||
+    toSearchable(item.shipping_status).includes(q)
+  )
+})
+
 const filteredSubscribers = computed(() => {
   if (!data.value?.subscribers) return []
   const q = toSearchable(searchQuery.value)
@@ -457,10 +652,17 @@ const formatDate = (dateString) => {
 
 const showViewMessageModal = ref(false)
 const selectedMessage = ref(null)
+const showViewJobApplicationModal = ref(false)
+const selectedJobApplication = ref(null)
 
 const openMessageModal = (message) => {
   selectedMessage.value = message
   showViewMessageModal.value = true
+}
+
+const openJobApplicationModal = (application) => {
+  selectedJobApplication.value = application
+  showViewJobApplicationModal.value = true
 }
 
 // Actions
@@ -583,20 +785,22 @@ const sendBulkNewsletter = async () => {
 /* KPI Cards */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr); /* 6 columns to put everything in one line */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 15px;
   margin-bottom: 50px;
 }
 
 .kpi-card {
   background: rgba(114, 50, 51, 0.95); /* More opaque brand color */
-  padding: 20px 30px;
+  padding: 18px 20px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
   align-items: center;
+  min-width: 0;
+  overflow: hidden;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
 
@@ -612,6 +816,7 @@ const sendBulkNewsletter = async () => {
   align-items: center;
   gap: 5px;
   text-align: center;
+  width: 100%;
 }
 
 .kpi-label-simple {
@@ -624,9 +829,16 @@ const sendBulkNewsletter = async () => {
 
 .kpi-value-simple {
   font-family: var(--font-heading);
-  font-size: 1.8rem;
+  font-size: clamp(1.3rem, 2.1vw, 1.9rem);
   font-weight: bold;
   color: #fff;
+  line-height: 1.1;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.kpi-value-money {
+  font-size: clamp(1rem, 1.35vw, 1.55rem);
 }
 
 /* Controls */

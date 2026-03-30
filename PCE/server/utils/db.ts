@@ -11,6 +11,7 @@ export const useDb = () => {
             user: config.dbUser || 'pce_user',
             password: config.dbPassword || 'pce_password',
             database: config.dbName || 'pce_db',
+            charset: 'utf8mb4',
             waitForConnections: true,
             connectionLimit: 10,
             queueLimit: 0

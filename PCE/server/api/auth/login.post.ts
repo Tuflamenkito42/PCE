@@ -30,7 +30,9 @@ export default defineEventHandler(async (event) => {
         id: user.id,
         email: user.email,
         role: user.role,
-        full_name: user.fullName || undefined
+        full_name: user.fullName || undefined,
+        dni: user.dni || undefined,
+        created_at: user.createdAt ? user.createdAt.toISOString() : undefined
     });
 
     setCookie(event, 'auth_token', token, {
@@ -47,7 +49,9 @@ export default defineEventHandler(async (event) => {
             id: user.id,
             email: user.email,
             full_name: user.fullName,
-            role: user.role
+            role: user.role,
+            dni: user.dni,
+            created_at: user.createdAt
         }
     };
 });

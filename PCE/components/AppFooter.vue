@@ -54,6 +54,7 @@ const mapOffices = [
             <NuxtLink to="/">{{ t('nav.home') }}</NuxtLink>
             <NuxtLink to="/afiliacion">{{ t('nav.join') }}</NuxtLink>
             <NuxtLink to="/dona">{{ t('cta.donate') }}</NuxtLink>
+            <NuxtLink to="/trabaja-con-nosotros">{{ lt('TRABAJA CON NOSOTROS', 'TREBALLA AMB NOSALTRES', 'LAN EGIN GUREKIN', 'TRABALLA CONNOSCO') }}</NuxtLink>
             <NuxtLink to="/transparencia">{{ t('nav.transparency') }}</NuxtLink>
             <NuxtLink to="/politica-privacidad">{{ t('footer.privacy') }}</NuxtLink>
             <NuxtLink to="/condiciones-uso">{{ t('footer.terms') }}</NuxtLink>

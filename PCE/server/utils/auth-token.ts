@@ -5,6 +5,8 @@ export type AuthTokenPayload = {
   email: string
   role: string
   full_name?: string
+  dni?: string
+  created_at?: string
   exp: number
 }
 

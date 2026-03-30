@@ -22,11 +22,14 @@
         "bcryptjs": "^3.0.3",
         "canvas": "^2.11.2",
         "d3-geo": "^3.1.1",
+        "fabric": "^7.2.0",
         "face-api.js": "^0.20.0",
         "mysql2": "^3.16.1",
         "nodemailer": "^7.0.13",
         "nuxt": "^4.2.2",
+        "pdfkit": "^0.18.0",
         "pptxgenjs": "^4.0.1",
+        "qrcode": "^1.5.4",
         "stripe": "^20.3.0",
         "tesseract.js": "^7.0.0",
         "three": "^0.183.2",
@@ -37,6 +40,8 @@
     },
     "devDependencies": {
         "@types/node": "^25.0.10",
+        "@types/pdfkit": "^0.17.5",
+        "@types/qrcode": "^1.5.6",
         "prisma": "^6.19.2"
     }
 }
