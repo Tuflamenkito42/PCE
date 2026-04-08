@@ -13,7 +13,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   try {
-    const result = await $fetch('/api/afiliacion/check', {
+    const apiFetch = process.server ? useRequestFetch() : $fetch
+    const result = await apiFetch('/api/afiliacion/check', {
       method: 'GET',
       query: { email: user.value.email }
     })
@@ -21,7 +22,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     if (!result?.affiliated) {
       return navigateTo('/afiliacion')
     }
-  } catch (_error) {
-    return navigateTo('/afiliacion')
+  } catch (error) {
+    // No redirigir por errores transitorios en refresh (SSR/cookies/red).
+    console.warn('No se pudo verificar afiliación en este intento:', error)
   }
 })

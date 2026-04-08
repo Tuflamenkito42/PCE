@@ -8,6 +8,7 @@ const currentStep = ref(1)
 const isLogin = ref(true)
 const email = ref('')
 const password = ref('')
+const confirmPassword = ref('')
 const fullName = ref('')
 const dni = ref('')
 const registeredDni = ref('')
@@ -16,6 +17,7 @@ const errors = ref({})
 const toggleAuthMode = () => {
   isLogin.value = !isLogin.value
   errors.value = {}
+  confirmPassword.value = ''
 }
 
 const handleStep1 = async () => {
@@ -32,6 +34,12 @@ const handleStep1 = async () => {
   if (!isLogin.value) {
     if (!isValidDNI(dni.value)) {
       errors.value.dni = "DNI/NIE no válido. Formato incorrecto o letra no coincide."
+    }
+
+    if (!confirmPassword.value) {
+      errors.value.confirmPassword = 'Debes confirmar la contraseña.'
+    } else if (password.value !== confirmPassword.value) {
+      errors.value.confirmPassword = 'Las contraseñas no coinciden.'
     }
   }
 
@@ -61,6 +69,7 @@ const handleStep1 = async () => {
       await register({
         email: email.value,
         password: password.value,
+        confirmPassword: confirmPassword.value,
         fullName: fullName.value,
         dni: dni.value
       })
@@ -135,6 +144,11 @@ useHead(() => ({
               <label>{{ t('login.password') }}</label>
               <input v-model="password" type="password" :placeholder="t('login.passwordPlaceholder')" required :class="{ 'error': errors.password }" />
               <span v-if="errors.password" class="error-msg">{{ errors.password }}</span>
+            </div>
+            <div v-if="!isLogin" class="form-group slide-in">
+              <label>Confirmar contraseña</label>
+              <input v-model="confirmPassword" type="password" placeholder="Repite tu contraseña" required :class="{ 'error': errors.confirmPassword }" />
+              <span v-if="errors.confirmPassword" class="error-msg">{{ errors.confirmPassword }}</span>
             </div>
             
             <div class="auth-actions">

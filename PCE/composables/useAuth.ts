@@ -6,7 +6,8 @@ export const useAuth = () => {
     // Check auth on startup via server endpoint (works with httpOnly cookies)
     const checkAuth = async () => {
         try {
-            const data = await $fetch<any>('/api/auth/me', {
+            const apiFetch = process.server ? useRequestFetch() : $fetch;
+            const data = await apiFetch<any>('/api/auth/me', {
                 method: 'GET'
             });
 

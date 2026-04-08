@@ -5,6 +5,8 @@
     <div class="affiliation-layout">
       <!-- Left: Form -->
       <div class="form-container card">
+        <div v-if="affiliationNotice" class="affiliation-notice">{{ affiliationNotice }}</div>
+
         <!-- Steps Header -->
         <div class="form-steps" v-if="!isAlreadyAffiliated">
           <div v-for="step in 5" :key="step" :class="['step', { active: currentStep === step, completed: currentStep > step }]">
@@ -62,17 +64,17 @@
                 <div class="form-grid">
                   <div class="form-group">
                     <label>{{ t('affiliation.name') }}</label>
-                    <input v-model="formData.name" type="text" :placeholder="t('affiliation.namePlaceholder')" required :class="{ 'error': errors.name }" />
+                    <input v-model="formData.name" type="text" :placeholder="t('affiliation.namePlaceholder')" required :readonly="isNameLocked" :class="{ 'error': errors.name, 'locked': isNameLocked }" />
                     <span v-if="errors.name" class="error-msg">{{ errors.name }}</span>
                   </div>
                   <div class="form-group">
                     <label>{{ t('affiliation.lastname') }}</label>
-                    <input v-model="formData.lastname" type="text" :placeholder="t('affiliation.lastnamePlaceholder')" required :class="{ 'error': errors.lastname }" />
+                    <input v-model="formData.lastname" type="text" :placeholder="t('affiliation.lastnamePlaceholder')" required :readonly="isLastnameLocked" :class="{ 'error': errors.lastname, 'locked': isLastnameLocked }" />
                     <span v-if="errors.lastname" class="error-msg">{{ errors.lastname }}</span>
                   </div>
                   <div class="form-group">
                     <label>{{ t('affiliation.dni') }}</label>
-                    <input v-model="formData.dni" type="text" :placeholder="t('affiliation.dniPlaceholder')" required :class="{ 'error': errors.dni, 'valid': dniValid }" />
+                    <input v-model="formData.dni" type="text" :placeholder="t('affiliation.dniPlaceholder')" required :readonly="isDniLocked" :class="{ 'error': errors.dni, 'valid': dniValid, 'locked': isDniLocked }" />
                     <span v-if="errors.dni" class="error-msg">{{ errors.dni }}</span>
                     <span v-else-if="dniValid" class="success-msg">{{ t('affiliation.dniValid') }}</span>
                   </div>
@@ -83,12 +85,12 @@
                   </div>
                   <div class="form-group">
                     <label>{{ t('affiliation.emailPrimary') }}</label>
-                    <input v-model="formData.email" type="email" :placeholder="t('affiliation.emailPlaceholder')" required :class="{ 'error': errors.email }" />
+                    <input v-model="formData.email" type="email" :placeholder="t('affiliation.emailPlaceholder')" required :readonly="isEmailLocked" :class="{ 'error': errors.email, 'locked': isEmailLocked }" />
                     <span v-if="errors.email" class="error-msg">{{ errors.email }}</span>
                   </div>
                   <div class="form-group">
                     <label>{{ lt('Confirmar email', 'Confirmar correu', 'Emaila berretsi', 'Confirmar email') }}</label>
-                    <input v-model="formData.confirmEmail" type="email" :placeholder="lt('Repite tu email', 'Repeteix el teu correu', 'Errepikatu zure emaila', 'Repite o teu email')" required :class="{ 'error': errors.confirmEmail }" />
+                    <input v-model="formData.confirmEmail" type="email" :placeholder="lt('Repite tu email', 'Repeteix el teu correu', 'Errepikatu zure emaila', 'Repite o teu email')" required :readonly="isEmailLocked" :class="{ 'error': errors.confirmEmail, 'locked': isEmailLocked }" />
                     <span v-if="errors.confirmEmail" class="error-msg">{{ errors.confirmEmail }}</span>
                   </div>
                   <div class="form-group">
@@ -97,17 +99,102 @@
                     <span v-if="errors.phone" class="error-msg">{{ errors.phone }}</span>
                   </div>
 
-                  <div class="form-group">
+                  <div class="form-group full-width">
                     <label>{{ lt('Foto para el carné de socio', 'Foto per al carnet de soci', 'Bazkide txartelerako argazkia', 'Foto para o carné de socio') }} *</label>
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/webp"
-                      @change="handleCardPhotoChange"
-                      :class="{ 'error': errors.cardPhoto }"
-                    />
                     <p class="photo-help">{{ lt('Esta foto se utilizará exclusivamente para generar tu carné de socio.', 'Aquesta foto s utilitzarà exclusivament per generar el teu carnet de soci.', 'Argazki hau zure bazkide txartela sortzeko bakarrik erabiliko da.', 'Esta foto empregarase exclusivamente para xerar o teu carné de socio.') }}</p>
-                    <img v-if="cardPhotoPreview" :src="cardPhotoPreview" :alt="lt('Vista previa de la foto para el carné', 'Vista prèvia de la foto per al carnet', 'Txartelerako argazkiaren aurrebista', 'Vista previa da foto para o carné')" class="card-photo-preview" />
-                    <span v-if="errors.cardPhoto" class="error-msg">{{ errors.cardPhoto }}</span>
+
+                    <!-- Si hay foto procesada y NO hay preview de nuevo editor -->
+                    <div v-if="cardPhotoPreview && !cardPhotoEditorActive" class="photo-preview-section">
+                      <div class="photo-preview">
+                        <div class="photo-container">
+                          <img :src="cardPhotoPreview" alt="Foto seleccionada" class="photo-img" />
+                        </div>
+                      </div>
+                      <label class="photo-input-label">
+                        Cambiar foto
+                        <input
+                          type="file"
+                          accept="image/*"
+                          @change="handleCardPhotoSelect"
+                          :disabled="cardPhotoProcessing"
+                        />
+                      </label>
+                      <span v-if="errors.cardPhoto" class="error-msg">{{ errors.cardPhoto }}</span>
+                    </div>
+
+                    <!-- Si no hay foto -->
+                    <div v-else-if="!cardPhotoPreview && !cardPhotoEditorActive" class="photo-preview-section">
+                      <div class="photo-preview">
+                        <div class="photo-placeholder">{{ lt('Sin foto', 'Sense foto', 'Argazkirik gabe', 'Sen foto') }}</div>
+                      </div>
+                      <label class="photo-input-label">
+                        {{ lt('Seleccionar foto', 'Seleccionar foto', 'Argazkia hautatu', 'Seleccionar foto') }}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          @change="handleCardPhotoSelect"
+                          :disabled="cardPhotoProcessing"
+                        />
+                      </label>
+                      <span v-if="errors.cardPhoto" class="error-msg">{{ errors.cardPhoto }}</span>
+                    </div>
+
+                    <!-- EDITOR INTERACTIVO DE FOTO -->
+                    <div v-if="cardPhotoEditorActive && cardPhotoRawPreview" class="photo-editor-section">
+                      <div class="editor-container">
+                        <div class="crop-area">
+                          <img
+                            :src="cardPhotoRawPreview"
+                            :style="{
+                              transform: `scale(${cardPhotoZoom}) translateX(${cardPhotoPanX}px) translateY(${cardPhotoPanY}px)`,
+                              cursor: cardPhotoDragging ? 'grabbing' : 'grab',
+                              transition: cardPhotoDragging ? 'none' : 'transform 0.2s'
+                            }"
+                            @mousedown="startCardPhotoDrag"
+                            @mousemove="doCardPhotoDrag"
+                            @mouseup="endCardPhotoDrag"
+                            @mouseleave="endCardPhotoDrag"
+                            class="editable-img"
+                          />
+                        </div>
+                        
+                        <div class="editor-controls">
+                          <div class="zoom-control">
+                            <span class="control-label">{{ lt('Zoom', 'Zoom', 'Zoom', 'Zoom') }}</span>
+                            <input
+                              v-model.number="cardPhotoZoom"
+                              type="range"
+                              min="0.5"
+                              max="3"
+                              step="0.1"
+                              class="zoom-slider"
+                            />
+                            <span class="zoom-value">{{ Math.round(cardPhotoZoom * 100) }}%</span>
+                          </div>
+
+                          <div class="action-buttons">
+                            <button
+                              type="button"
+                              @click="cancelCardPhotoEdit"
+                              class="btn-cancel"
+                              :disabled="cardPhotoProcessing"
+                            >
+                              {{ lt('Cancelar', 'Cancelar', 'Ezeztatu', 'Cancelar') }}
+                            </button>
+                            <button
+                              type="button"
+                              @click="confirmCardPhotoEdit"
+                              class="btn-confirm"
+                              :disabled="cardPhotoProcessing"
+                            >
+                              <span v-if="cardPhotoProcessing">{{ lt('Guardando...', 'Guardant...', 'Gordetzean...', 'Gardando...') }}</span>
+                              <span v-else>{{ lt('Confirmar foto', 'Confirmar foto', 'Argazkia berretsi', 'Confirmar foto') }}</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <p v-if="cardPhotoError" class="msg error">{{ cardPhotoError }}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -325,7 +412,7 @@ import DniScanner from '@/components/DniScanner.vue'
 const { t, locale } = useI18n()
 import StripeCard from '@/components/StripeCard.vue'
 import { isValidEmail, isValidDNI } from '@/utils/validation'
-import { computed } from 'vue'
+import { computed, watchEffect } from 'vue'
 
 const lt = (es, ca, eu, gl) => {
   if (locale.value === 'ca') return ca
@@ -359,6 +446,18 @@ const formData = reactive({
 
 const cardPhotoFile = ref(null)
 const cardPhotoPreview = ref('')
+const cardPhotoRawPreview = ref('')
+const cardPhotoEditorActive = ref(false)
+const cardPhotoProcessing = ref(false)
+const cardPhotoError = ref('')
+const cardPhotoZoom = ref(1)
+const cardPhotoPanX = ref(0)
+const cardPhotoPanY = ref(0)
+const cardPhotoDragging = ref(false)
+const cardPhotoDragStartX = ref(0)
+const cardPhotoDragStartY = ref(0)
+const cardPhotoDragStartPanX = ref(0)
+const cardPhotoDragStartPanY = ref(0)
 const CARD_PHOTO_RATIO = 112 / 246
 
 const errors = ref({})
@@ -373,8 +472,46 @@ const stripeCardRef = ref(null)
 const isAlreadyAffiliated = ref(false)
 const isCancelling = ref(false)
 const affiliationData = ref({})
+const hasAffiliationRedirected = ref(false)
+const affiliationNotice = ref('')
 
 const { user } = useAuth()
+
+const splitFullName = (value) => {
+  const normalized = String(value || '').trim().replace(/\s+/g, ' ')
+  if (!normalized) return { name: '', lastname: '' }
+  const parts = normalized.split(' ')
+  const name = parts.shift() || ''
+  const lastname = parts.join(' ')
+  return { name, lastname }
+}
+
+const isNameLocked = computed(() => Boolean(String(user.value?.full_name || '').trim() && String(formData.name || '').trim()))
+const isLastnameLocked = computed(() => Boolean(String(user.value?.full_name || '').trim() && String(formData.lastname || '').trim()))
+const isDniLocked = computed(() => Boolean(String(user.value?.dni || '').trim()))
+const isEmailLocked = computed(() => Boolean(String(user.value?.email || '').trim()))
+
+watchEffect(() => {
+  if (!user.value) return
+
+  const fullName = String(user.value.full_name || '').trim()
+  if (fullName && (!formData.name || !formData.lastname)) {
+    const parts = splitFullName(fullName)
+    if (!formData.name && parts.name) formData.name = parts.name
+    if (!formData.lastname && parts.lastname) formData.lastname = parts.lastname
+  }
+
+  const dni = String(user.value.dni || '').toUpperCase().trim()
+  if (dni && !formData.dni) {
+    formData.dni = dni
+  }
+
+  const email = String(user.value.email || '').toLowerCase().trim()
+  if (email) {
+    if (!formData.email) formData.email = email
+    if (!formData.confirmEmail) formData.confirmEmail = email
+  }
+})
 
 onMounted(async () => {
     if (user.value?.email) {
@@ -396,6 +533,12 @@ const checkAffiliationExisting = async (email) => {
         if (data.value && data.value.affiliated) {
             isAlreadyAffiliated.value = true
             affiliationData.value = data.value.data
+
+      if (!hasAffiliationRedirected.value) {
+        hasAffiliationRedirected.value = true
+    affiliationNotice.value = lt('Ya te has afiliado. Te redirigimos al apartado de carné.', 'Ja t\'has afiliat. Et redirigim a l\'apartat de carnet.', 'Dagoeneko afiliatu zara. Karnet atalera birbideratuko zaitugu.', 'Xa te afiliache. Redirixímoste ao apartado do carné.')
+    await navigateTo('/carnet?notice=already-affiliated')
+      }
         }
     } catch (e) {
         console.error("Error checking affiliation:", e)
@@ -571,52 +714,137 @@ const processCardPhotoFile = async (file) => {
   }
 }
 
-const handleCardPhotoChange = async (event) => {
+const handleCardPhotoSelect = async (event) => {
+  cardPhotoError.value = ''
   const target = event.target
   const file = target?.files?.[0]
 
-  if (!file) {
-    if (cardPhotoPreview.value) {
-      URL.revokeObjectURL(cardPhotoPreview.value)
-    }
-    cardPhotoFile.value = null
-    cardPhotoPreview.value = ''
-    return
-  }
+  if (!file) return
 
   const allowedTypes = new Set(['image/jpeg', 'image/png', 'image/webp'])
   if (!allowedTypes.has(file.type)) {
-    errors.value.cardPhoto = lt('Formato no válido. Usa JPG, PNG o WEBP.', 'Format no vàlid. Usa JPG, PNG o WEBP.', 'Formatu baliogabea. Erabili JPG, PNG edo WEBP.', 'Formato non válido. Usa JPG, PNG ou WEBP.')
-    cardPhotoFile.value = null
-    cardPhotoPreview.value = ''
+    cardPhotoError.value = lt('Formato no válido. Usa JPG, PNG o WEBP.', 'Format no vàlid. Usa JPG, PNG o WEBP.', 'Formatu baliogabea. Erabili JPG, PNG edo WEBP.', 'Formato non válido. Usa JPG, PNG ou WEBP.')
     target.value = ''
     return
   }
 
   const maxSize = 5 * 1024 * 1024
   if (file.size > maxSize) {
-    errors.value.cardPhoto = lt('La foto no puede superar 5MB.', 'La foto no pot superar 5MB.', 'Argazkiak ezin du 5MB gainditu.', 'A foto non pode superar 5MB.')
-    cardPhotoFile.value = null
-    cardPhotoPreview.value = ''
+    cardPhotoError.value = lt('La foto no puede superar 5MB.', 'La foto no pot superar 5MB.', 'Argazkiak ezin du 5MB gainditu.', 'A foto non pode superar 5MB.')
     target.value = ''
     return
   }
 
-  try {
-    errors.value.cardPhoto = ''
-    const processedFile = await processCardPhotoFile(file)
+  // Mostrar el editor interactivo con la imagen sin procesar
+  const reader = new FileReader()
+  reader.onload = () => {
+    cardPhotoRawPreview.value = reader.result
+    cardPhotoEditorActive.value = true
+    cardPhotoZoom.value = 1
+    cardPhotoPanX.value = 0
+    cardPhotoPanY.value = 0
+    cardPhotoError.value = ''
+  }
+  reader.readAsDataURL(file)
+}
 
-    if (cardPhotoPreview.value) {
-      URL.revokeObjectURL(cardPhotoPreview.value)
+const startCardPhotoDrag = (e) => {
+  if (!cardPhotoRawPreview.value) return
+  cardPhotoDragging.value = true
+  cardPhotoDragStartX.value = e.clientX
+  cardPhotoDragStartY.value = e.clientY
+  cardPhotoDragStartPanX.value = cardPhotoPanX.value
+  cardPhotoDragStartPanY.value = cardPhotoPanY.value
+}
+
+const doCardPhotoDrag = (e) => {
+  if (!cardPhotoDragging.value) return
+  const dx = e.clientX - cardPhotoDragStartX.value
+  const dy = e.clientY - cardPhotoDragStartY.value
+  cardPhotoPanX.value = cardPhotoDragStartPanX.value + dx
+  cardPhotoPanY.value = cardPhotoDragStartPanY.value + dy
+}
+
+const endCardPhotoDrag = () => {
+  cardPhotoDragging.value = false
+}
+
+const cancelCardPhotoEdit = () => {
+  cardPhotoRawPreview.value = ''
+  cardPhotoEditorActive.value = false
+  cardPhotoZoom.value = 1
+  cardPhotoPanX.value = 0
+  cardPhotoPanY.value = 0
+  cardPhotoError.value = ''
+}
+
+const confirmCardPhotoEdit = async () => {
+  if (!cardPhotoRawPreview.value) return
+
+  cardPhotoProcessing.value = true
+  try {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+
+    if (!ctx) {
+      throw new Error('No se pudo inicializar canvas')
     }
 
-    cardPhotoFile.value = processedFile
-    cardPhotoPreview.value = URL.createObjectURL(processedFile)
+    // Aplicar el ratio del carnet (112/246)
+    const aspectRatio = CARD_PHOTO_RATIO
+    const containerSize = 300
+    const outputWidth = 560
+    const outputHeight = Math.round(outputWidth / aspectRatio)
+
+    canvas.width = outputWidth
+    canvas.height = outputHeight
+
+    const img = new Image()
+    img.onload = async () => {
+      // Dibujar la imagen con zoom y pan aplicados
+      const scaledWidth = img.width * cardPhotoZoom.value
+      const scaledHeight = img.height * cardPhotoZoom.value
+      const x = (containerSize - scaledWidth) / 2 + cardPhotoPanX.value
+      const y = (containerSize - scaledHeight) / 2 + cardPhotoPanY.value
+
+      // Escalar para el tamaño final
+      const scale = outputWidth / containerSize
+      ctx.drawImage(img, x * scale, y * scale, scaledWidth * scale, scaledHeight * scale)
+
+      // Convertir a blob
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            cardPhotoError.value = 'No se pudo procesar la imagen'
+            cardPhotoProcessing.value = false
+            return
+          }
+
+          const processedFile = new File(
+            [blob],
+            `card-photo-${Date.now()}.jpg`,
+            { type: 'image/jpeg' }
+          )
+
+          cardPhotoFile.value = processedFile
+          cardPhotoPreview.value = URL.createObjectURL(blob)
+          cardPhotoEditorActive.value = false
+          cardPhotoRawPreview.value = ''
+          cardPhotoProcessing.value = false
+          errors.value.cardPhoto = ''
+        },
+        'image/jpeg',
+        0.92
+      )
+    }
+    img.onerror = () => {
+      cardPhotoError.value = 'Error al procesar la imagen'
+      cardPhotoProcessing.value = false
+    }
+    img.src = cardPhotoRawPreview.value
   } catch (error) {
-    errors.value.cardPhoto = lt('No se pudo ajustar la foto automáticamente. Prueba con otra imagen.', 'No s ha pogut ajustar la foto automàticament. Prova amb una altra imatge.', 'Argazkia ezin izan da automatikoki egokitu. Saiatu beste irudi batekin.', 'Non se puido axustar a foto automaticamente. Proba con outra imaxe.')
-    cardPhotoFile.value = null
-    cardPhotoPreview.value = ''
-    target.value = ''
+    cardPhotoError.value = error?.message || 'No se pudo procesar la imagen'
+    cardPhotoProcessing.value = false
   }
 }
 
@@ -679,6 +907,12 @@ const submitAffiliation = async (payload) => {
 }
 
 const nextStep = () => {
+  if (isAlreadyAffiliated.value) {
+    affiliationNotice.value = lt('Ya tienes una afiliación activa. Te llevamos a tu carné.', 'Ja tens una afiliació activa. Et portem al teu carnet.', 'Dagoeneko afiliazio aktiboa duzu. Zure karnetera eramango zaitugu.', 'Xa tes unha afiliación activa. Levámoste ao teu carné.')
+    navigateTo('/carnet?notice=already-affiliated')
+    return
+  }
+
   if (currentStep.value === 1) {
     if (validateStep1()) {
       currentStep.value++
@@ -705,8 +939,15 @@ const handleCardChange = (complete) => {
 }
 
 const handleSubmit = async () => {
+  if (isAlreadyAffiliated.value) {
+    affiliationNotice.value = lt('Ya tienes una afiliación activa. Te llevamos a tu carné.', 'Ja tens una afiliació activa. Et portem al teu carnet.', 'Dagoeneko afiliazio aktiboa duzu. Zure karnetera eramango zaitugu.', 'Xa tes unha afiliación activa. Levámoste ao teu carné.')
+    navigateTo('/carnet?notice=already-affiliated')
+    return
+  }
+
   if (!formData.acceptTerms) {
-    alert(lt('DEBES ACEPTAR LOS TÉRMINOS Y CONDICIONES', 'HAS D ACCEPTAR ELS TERMES I CONDICIONS', 'BALDINTZAK ETA TERMINOAK ONARTU BEHAR DITUZU', 'DEBES ACEPTAR OS TERMOS E CONDICIÓNS'))
+    paymentStatus.value = 'error'
+    paymentError.value = lt('Debes aceptar los términos y condiciones.', 'Has d\'acceptar els termes i condicions.', 'Baldintzak eta terminoak onartu behar dituzu.', 'Debes aceptar os termos e condicións.')
     return
   }
 
@@ -828,6 +1069,21 @@ useHead(() => ({
 </script>
 
 <style scoped>
+.affiliation-notice {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(245, 216, 182, 0.28);
+  background: rgba(245, 216, 182, 0.12);
+  color: #f5d8b6;
+  font-size: 0.92rem;
+}
+
+.form-group input.locked {
+  background: rgba(0, 0, 0, 0.2);
+  cursor: not-allowed;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -1570,5 +1826,251 @@ useHead(() => ({
 @keyframes scaleIn {
   from { transform: scale(0); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+/* Photo Editor Styles */
+.photo-preview-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.photo-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.photo-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.photo-img {
+  max-width: 100%;
+  max-height: 350px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.photo-placeholder {
+  color: rgba(234, 223, 224, 0.5);
+  font-size: 1rem;
+}
+
+.photo-input-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f5d8b6, #e8c99c);
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  color: #5e2c2c;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  gap: 8px;
+  min-height: 48px;
+}
+
+.photo-input-label:hover {
+  background: linear-gradient(135deg, #f7e0c7, #ead3ad);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.photo-input-label input {
+  display: none;
+}
+
+.photo-input-label:has(input:disabled) {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.photo-editor-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 14px;
+}
+
+.editor-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.crop-area {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 500px;
+  margin: 0 auto;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(245, 216, 182, 0.5);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.editable-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  cursor: grab;
+  transition: cursor 0.2s;
+}
+
+.editable-img:active {
+  cursor: grabbing;
+}
+
+.editor-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.zoom-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 14px 16px;
+  border-radius: 12px;
+  flex-wrap: wrap;
+}
+
+.control-label {
+  color: #eadfe0;
+  font-weight: 700;
+  min-width: 50px;
+  font-size: 0.95rem;
+}
+
+.zoom-slider {
+  flex: 1;
+  min-width: 150px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f5d8b6, #e8c99c);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s;
+}
+
+.zoom-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.zoom-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f5d8b6, #e8c99c);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s;
+}
+
+.zoom-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+}
+
+.zoom-value {
+  color: #f5d8b6;
+  font-weight: 700;
+  min-width: 55px;
+  text-align: right;
+  font-size: 0.95rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-cancel,
+.btn-confirm {
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+  font-size: 0.95rem;
+}
+
+.btn-cancel {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #f4ecec;
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.btn-confirm {
+  background: linear-gradient(135deg, #f5d8b6, #e8c99c);
+  color: #5e2c2c;
+}
+
+.btn-confirm:hover:not(:disabled) {
+  background: linear-gradient(135deg, #f7e0c7, #ead3ad);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.btn-cancel:disabled,
+.btn-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.msg {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.msg.error {
+  background: rgba(255, 120, 120, 0.18);
+  border: 1px solid rgba(255, 120, 120, 0.35);
+  color: #ffd0d0;
 }
 </style>

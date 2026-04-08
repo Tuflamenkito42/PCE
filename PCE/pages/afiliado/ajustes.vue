@@ -10,15 +10,15 @@
           <p>Descarga tu carné digital y solicita versión física.</p>
         </NuxtLink>
 
-        <div class="action-card muted">
+        <NuxtLink to="/afiliado/datos" class="action-card">
           <h2>Datos de afiliación</h2>
-          <p>Próximamente podrás actualizar datos personales y de contacto.</p>
-        </div>
+          <p>Revisa y actualiza tus datos personales y de contacto.</p>
+        </NuxtLink>
 
-        <div class="action-card muted">
+        <NuxtLink to="/afiliado/cuotas" class="action-card">
           <h2>Historial de cuotas</h2>
-          <p>Próximamente podrás consultar pagos y renovaciones.</p>
-        </div>
+          <p>Consulta tu estado de renovación y últimos movimientos.</p>
+        </NuxtLink>
 
         <button type="button" class="action-card logout" @click="logout">
           <h2>{{ t('auth.logout') }}</h2>
@@ -100,10 +100,6 @@ useHead(() => ({
   margin: 0;
   color: #dcc9ca;
   line-height: 1.45;
-}
-
-.action-card.muted {
-  opacity: 0.8;
 }
 
 .action-card.logout {

@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS affiliations (
     message TEXT,
     payment_intent_id VARCHAR(255),
     status VARCHAR(50) DEFAULT 'pending',
+    photo_url VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_affiliations_email (email),
     INDEX idx_affiliations_dni (dni),

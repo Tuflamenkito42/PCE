@@ -35,9 +35,13 @@ export default defineEventHandler(async (event) => {
         created_at: user.createdAt ? user.createdAt.toISOString() : undefined
     });
 
+    const forwardedProto = String(getHeader(event, 'x-forwarded-proto') || '').toLowerCase();
+    const isHttpsRequest = forwardedProto === 'https' || Boolean((event.node.req.socket as any)?.encrypted);
+
     setCookie(event, 'auth_token', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        // Only mark secure when request is actually HTTPS, otherwise cookie is dropped on HTTP.
+        secure: isHttpsRequest,
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7, // 1 semana exacta 
         path: '/'

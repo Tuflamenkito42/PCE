@@ -7,14 +7,15 @@ export default defineEventHandler(async (event) => {
     const user = requireAuth(event);
     
     const query = getQuery(event);
-    const email = query.email as string;
+    const email = String(query.email || '').toLowerCase().trim();
+    const userEmail = String(user.email || '').toLowerCase().trim();
 
     if (!email) {
         return { affiliated: false };
     }
 
     // ✅ SECURITY: Only allow users to check their own email or admins
-    if (user.email !== email && user.role !== 'admin') {
+    if (userEmail !== email && user.role !== 'admin') {
         throw createError({
             statusCode: 403,
             message: 'Forbidden: Cannot check other users\' affiliation status'
@@ -24,8 +25,8 @@ export default defineEventHandler(async (event) => {
     const db = useDb();
     try {
         const [rows]: any = await db.query(
-            'SELECT id, status FROM affiliations WHERE email = ? AND status IN (?, ?, ?)',
-            [email, 'paid', 'active', 'simulated_paid']
+            'SELECT id, status FROM affiliations WHERE email = ? ORDER BY created_at DESC LIMIT 1',
+            [email]
         );
 
         // ✅ SECURITY: Only return boolean status, never personal data

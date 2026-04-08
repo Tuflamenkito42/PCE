@@ -5,6 +5,10 @@
         <h1>{{ t('nav.carnet') || 'Mi Carné de Socio' }}</h1>
       </div>
 
+      <div v-if="showAffiliatedNotice" class="carnet-notice">
+        {{ lt('Ya te has afiliado. Este es tu apartado de carné.', 'Ja t\'has afiliat. Aquest és el teu apartat de carnet.', 'Dagoeneko afiliatu zara. Hau da zure karnet atala.', 'Xa te afiliache. Este é o teu apartado de carné.') }}
+      </div>
+
       <ClientOnly>
         <div v-if="user" class="carnet-content">
           <div class="carnet-top">
@@ -33,6 +37,8 @@
                 <div class="card-field card-valid">{{ renovationDate }}</div>
                 <img v-if="affiliationPhotoUrl" :src="affiliationPhotoUrl" :alt="lt('Foto de socio', 'Foto de soci', 'Bazkidearen argazkia', 'Foto de socio')" class="card-photo" />
                 <div v-else class="card-avatar">{{ (user.full_name || 'U').trim().charAt(0).toUpperCase() }}</div>
+                <img v-if="qrImageSrc" :src="qrImageSrc" :alt="lt('QR de validación del carné', 'QR de validació del carnet', 'Karnetaren baliozkotze QR-a', 'QR de validación do carné')" class="card-qr" @error="qrImageSrc = ''" />
+                <div v-else class="card-qr-placeholder" :aria-label="lt('QR no disponible', 'QR no disponible', 'QR ez dago erabilgarri', 'QR non dispoñible')">QR</div>
               </div>
             </div>
           </div>
@@ -172,6 +178,96 @@
               <li>{{ lt('Descárgalo todas las veces que necesites', 'Descarrega l tantes vegades com necessitis', 'Deskargatu behar duzun aldi guztietan', 'Descárgao todas as veces que necesites') }}</li>
             </ul>
           </div>
+
+          <!-- Feature Cards Section -->
+          <div class="feature-cards-section">
+            <div class="feature-cards-grid">
+              <!-- Datos de Afiliación Card -->
+              <div class="feature-card">
+                <div class="feature-card-content">
+                  <h3 class="feature-card-title">
+                    {{ lt('Datos de afiliación', 'Dades d\'afiliació', 'Afilazioaren datuak', 'Datos de afiliación') }}
+                  </h3>
+                  <p class="feature-card-description">
+                    {{ lt('Aquí tienes tu ficha de socio con los datos clave de identificación y vigencia de tu afiliación.', 'Aquí tens la teva fitxa de soci amb les dades clau d\'identificació i vigència de la teva afiliació.', 'Hemen duzu zure bazkide-fitxa, identifikazio eta afiliazioaren indarraldiaren datu nagusiekin.', 'Aquí tes a túa ficha de socio cos datos clave de identificación e vixencia da túa afiliación.') }}
+                  </p>
+                  <div class="feature-card-info">
+                    <div class="info-item">
+                      <span class="info-label">{{ lt('Socio:', 'Soci:', 'Bazkidea:', 'Socio:') }}</span>
+                      <span class="info-value">{{ user.full_name || '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">{{ lt('Email:', 'Correu:', 'Eposta:', 'Correo:') }}</span>
+                      <span class="info-value">{{ user.email || '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">{{ lt('NIF:', 'DNI:', 'NIF:', 'NIF:') }}</span>
+                      <span class="info-value">{{ userNif || '-' }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">{{ lt('Nº de socio:', 'Núm. de soci:', 'Bazkide zk.:', 'Nº de socio:') }}</span>
+                      <span class="info-value">{{ userNumberId }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">{{ lt('Alta:', 'Alta:', 'Alta:', 'Alta:') }}</span>
+                      <span class="info-value">{{ affiliationDate }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">{{ lt('Estado:', 'Estat:', 'Egoera:', 'Estado:') }}</span>
+                      <span class="info-value status-active">{{ lt('Activo', 'Actiu', 'Aktiboa', 'Activo') }}</span>
+                    </div>
+                  </div>
+                  <div class="feature-card-actions">
+                    <NuxtLink to="/afiliacion" class="btn btn-card">
+                      {{ lt('Editar', 'Editar', 'Editatu', 'Editar') }} →
+                    </NuxtLink>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Historial de Cuotas Card -->
+              <div class="feature-card">
+                <div class="feature-card-content">
+                  <h3 class="feature-card-title">
+                    {{ lt('Historial de cuotas', 'Historial de quotes', 'Kuota historiak', 'Historial de cotas') }}
+                  </h3>
+                  <p class="feature-card-description">
+                    {{ lt('Consulta tus últimos movimientos de afiliación y seguimiento de renovaciones en un vistazo.', 'Consulta els teus últims moviments d\'afiliació i seguiment de renovacions d\'un cop d\'ull.', 'Begiratu batean ikus ditzakezu zure afiliazioaren azken mugimenduak eta berritzeen jarraipena.', 'Consulta nunha ollada os teus últimos movementos de afiliación e seguimento de renovacións.') }}
+                  </p>
+                  <div class="feature-card-info">
+                    <div class="info-item">
+                      <span class="info-label">{{ lt('Próxima renovación:', 'Pròxima renovació:', 'Hurrengo berritzea:', 'Próxima renovación:') }}</span>
+                      <span class="info-value">{{ renewalDate }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">{{ lt('Días restantes:', 'Dies restants:', 'Geratzen diren egunak:', 'Días restantes:') }}</span>
+                      <span class="info-value">{{ daysUntilExpiry }}</span>
+                    </div>
+                    <div class="info-item">
+                      <span class="info-label">{{ lt('Estado:', 'Estat:', 'Egoera:', 'Estado:') }}</span>
+                      <span class="info-value status-paid">{{ lt('Pagado', 'Pagat', 'Ordaindu', 'Pagado') }}</span>
+                    </div>
+                  </div>
+                  <div v-if="showPaymentHistory" class="history-list">
+                    <div v-for="event in recentMembershipEvents" :key="event.key" class="history-row">
+                      <div>
+                        <p class="history-title">{{ event.title }}</p>
+                        <p class="history-date">{{ event.date }}</p>
+                      </div>
+                      <span :class="['history-badge', event.statusClass]">{{ event.statusText }}</span>
+                    </div>
+                  </div>
+                  <div class="feature-card-actions">
+                    <button @click="showPaymentHistory = true" class="btn btn-card">
+                      {{ showPaymentHistory
+                        ? lt('Historial visible', 'Historial visible', 'Historia ikusgai', 'Historial visible')
+                        : lt('Ver historial', 'Veure historial', 'Historiak ikusi', 'Ver historial') }} →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div v-else class="auth-required">
@@ -192,6 +288,7 @@ import StripeCard from '@/components/StripeCard.vue'
 
 const { user, checkAuth } = useAuth()
 const { t, locale } = useI18n()
+const route = useRoute()
 const isDownloading = ref(false)
 const showPhysicalForm = ref(false)
 const isProcessingPhysical = ref(false)
@@ -205,7 +302,9 @@ const hasPhysicalOrder = ref(false)
 const lastPhysicalOrderDate = ref('')
 const isRenewalOrder = ref(false)
 const affiliationPhotoUrl = ref('')
+const qrImageSrc = ref('')
 const nowTick = ref(Date.now())
+const showPaymentHistory = ref(false)
 let expiryTimer
 
 const lt = (es, ca, eu, gl) => {
@@ -214,6 +313,8 @@ const lt = (es, ca, eu, gl) => {
   if (locale.value === 'gl') return gl
   return es
 }
+
+const showAffiliatedNotice = computed(() => String(route.query.notice || '') === 'already-affiliated')
 
 const formatDate = (value) => new Date(value).toLocaleDateString('es-ES')
 
@@ -264,6 +365,37 @@ const daysUntilExpiry = computed(() => {
 
   const diff = expiryDay.getTime() - today.getTime()
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
+})
+
+const recentMembershipEvents = computed(() => {
+  const events = [
+    {
+      key: 'alta',
+      title: lt('Alta de afiliación', 'Alta d\'afiliació', 'Afiliazio alta', 'Alta de afiliación'),
+      date: affiliationDate.value,
+      statusText: lt('Completado', 'Completat', 'Osatuta', 'Completado'),
+      statusClass: 'ok'
+    },
+    {
+      key: 'renovacion',
+      title: lt('Renovación de vigencia', 'Renovació de vigència', 'Indarraldiaren berritzea', 'Renovación de vixencia'),
+      date: renovationDate.value,
+      statusText: lt('Programado', 'Programat', 'Programatuta', 'Programado'),
+      statusClass: 'scheduled'
+    }
+  ]
+
+  if (hasPhysicalOrder.value && lastPhysicalOrderDate.value) {
+    events.push({
+      key: 'carnet_fisico',
+      title: lt('Pedido de carné físico', 'Comanda de carnet físic', 'Karnet fisikoaren eskaera', 'Pedido de carné físico'),
+      date: lastPhysicalOrderDate.value,
+      statusText: lt('Pagado', 'Pagat', 'Ordainduta', 'Pagado'),
+      statusClass: 'ok'
+    })
+  }
+
+  return events
 })
 
 const expiryCountdownText = computed(() => {
@@ -339,6 +471,24 @@ const loadAffiliationPhoto = async () => {
   } catch (error) {
     console.error('No se pudo cargar la foto del afiliado:', error)
     affiliationPhotoUrl.value = ''
+  }
+}
+
+const loadCardQrImage = async () => {
+  if (!user.value) return
+
+  try {
+    const response = await $fetch('/api/carnet/qr-token')
+    const token = String(response?.token || '')
+
+    if (!token) {
+      throw new Error('No se pudo obtener token QR')
+    }
+
+    qrImageSrc.value = `/api/carnet/qr-image?token=${encodeURIComponent(token)}&ts=${Date.now()}`
+  } catch (error) {
+    console.error('No se pudo preparar el QR del carné:', error)
+    qrImageSrc.value = ''
   }
 }
 
@@ -431,7 +581,8 @@ const downloadCarnet = async () => {
       number: { left: width * 0.362, top: height * 0.550, w: width * 0.118, size: Math.max(11, width * 0.0114) },
       alta: { left: width * 0.239, top: height * 0.622, w: width * 0.128, size: Math.max(11, width * 0.0112) },
       valid: { left: width * 0.366, top: height * 0.622, w: width * 0.118, size: Math.max(11, width * 0.0112) },
-      photo: { left: width * 0.083, top: height * 0.519, w: width * 0.112, h: height * 0.246 }
+      photo: { left: width * 0.083, top: height * 0.519, w: width * 0.112, h: height * 0.246 },
+      qr: { left: width * 0.399, top: height * 0.701, w: width * 0.079, h: height * 0.146 }
     }
 
     const photoCenterX = front.photo.left + front.photo.w / 2
@@ -453,27 +604,38 @@ const downloadCarnet = async () => {
           })
         })
 
-        const scale = Math.max(front.photo.w / photoImage.width, front.photo.h / photoImage.height)
-        const scaledWidth = photoImage.width * scale
-        const scaledHeight = photoImage.height * scale
+        const photoW = Math.max(1, Math.round(front.photo.w))
+        const photoH = Math.max(1, Math.round(front.photo.h))
+        const photoRenderCanvas = document.createElement('canvas')
+        photoRenderCanvas.width = photoW
+        photoRenderCanvas.height = photoH
+        const photoCtx = photoRenderCanvas.getContext('2d')
 
-        photoImage.set({
-          left: front.photo.left - (scaledWidth - front.photo.w) / 2,
-          top: front.photo.top - (scaledHeight - front.photo.h) / 2,
+        if (!photoCtx) {
+          throw new Error('No se pudo preparar el lienzo de foto')
+        }
+
+        const sourceWidth = photoImage.width
+        const sourceHeight = photoImage.height
+        const scale = Math.max(photoW / sourceWidth, photoH / sourceHeight)
+        const drawWidth = sourceWidth * scale
+        const drawHeight = sourceHeight * scale
+
+        const alignX = 0.5
+        const alignY = 0.28
+        const drawX = (photoW - drawWidth) * alignX
+        const drawY = (photoH - drawHeight) * alignY
+
+        photoCtx.drawImage(photoImage.getElement(), drawX, drawY, drawWidth, drawHeight)
+
+        const photoLayer = new fabric.Image(photoRenderCanvas, {
+          left: front.photo.left,
+          top: front.photo.top,
           selectable: false,
-          evented: false,
-          scaleX: scale,
-          scaleY: scale,
-          clipPath: new fabric.Rect({
-            left: front.photo.left,
-            top: front.photo.top,
-            width: front.photo.w,
-            height: front.photo.h,
-            absolutePositioned: true
-          })
+          evented: false
         })
 
-        cardCanvas.add(photoImage)
+        cardCanvas.add(photoLayer)
         hasDrawnRealPhoto = true
       } catch (photoError) {
         console.warn('No se pudo aplicar la foto en el carné, se usa inicial:', photoError)
@@ -562,6 +724,35 @@ const downloadCarnet = async () => {
       evented: false
     }))
 
+    if (qrImageSrc.value) {
+      try {
+        const qrLayer = await new Promise((resolve, reject) => {
+          fabric.Image.fromURL(qrImageSrc.value, (img) => {
+            if (!img) {
+              reject(new Error('No se pudo cargar el QR'))
+              return
+            }
+            resolve(img)
+          }, {
+            crossOrigin: 'anonymous'
+          })
+        })
+
+        qrLayer.set({
+          left: front.qr.left,
+          top: front.qr.top,
+          selectable: false,
+          evented: false,
+          scaleX: front.qr.w / (qrLayer.width || front.qr.w),
+          scaleY: front.qr.h / (qrLayer.height || front.qr.h)
+        })
+
+        cardCanvas.add(qrLayer)
+      } catch (qrError) {
+        console.warn('No se pudo insertar el QR en la descarga del carné:', qrError)
+      }
+    }
+
     cardCanvas.renderAll()
 
     const dataUrl = cardCanvas.toDataURL({
@@ -597,6 +788,7 @@ onMounted(async () => {
 
   await checkExistingPhysicalOrder()
   await loadAffiliationPhoto()
+  await loadCardQrImage()
 })
 
 onBeforeUnmount(() => {
@@ -885,14 +1077,43 @@ useHead(() => ({
 
 .carnet-mockup .card-photo {
   position: absolute;
-  left: 8.3%;
-  top: 51.9%;
-  width: 11.2%;
-  height: 24.6%;
+  left: 8.5%;
+  top: 52.3%;
+  width: 11.4%;
+  height: 24.8%;
   object-fit: cover;
   object-position: center 28%;
   border: 1px solid rgba(114, 50, 51, 0.35);
   border-radius: 2px;
+}
+
+.carnet-mockup .card-qr {
+  position: absolute;
+  left: 39.9%;
+  top: 70.1%;
+  width: 7.9%;
+  height: 14.6%;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid rgba(114, 50, 51, 0.25);
+  border-radius: 1px;
+}
+
+.carnet-mockup .card-qr-placeholder {
+  position: absolute;
+  left: 39.9%;
+  top: 70.1%;
+  width: 7.9%;
+  height: 14.6%;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  color: #723233;
+  font-family: 'Outfit', sans-serif;
+  font-size: clamp(0.34rem, 0.7vw, 0.62rem);
+  font-weight: 700;
+  border: 1px solid rgba(114, 50, 51, 0.25);
+  border-radius: 1px;
 }
 
 .carnet-actions {
@@ -931,6 +1152,16 @@ useHead(() => ({
   font-size: 0.9rem;
   text-align: center;
   margin: 0;
+}
+
+.carnet-notice {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(245, 216, 182, 0.28);
+  background: rgba(245, 216, 182, 0.12);
+  color: #f5d8b6;
+  font-size: 0.92rem;
 }
 
 .carnet-info {
@@ -1179,6 +1410,10 @@ useHead(() => ({
   .form-actions {
     grid-template-columns: 1fr;
   }
+
+  .feature-cards-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 900px) {
@@ -1189,5 +1424,187 @@ useHead(() => ({
   .carnet-top {
     grid-template-columns: 1fr;
   }
+
+  .feature-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Feature Cards Styles */
+.feature-cards-section {
+  margin-top: 32px;
+}
+
+.feature-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.feature-card {
+  background: linear-gradient(135deg, rgba(125, 60, 60, 0.25), rgba(114, 50, 51, 0.25));
+  border: 1px solid rgba(245, 216, 182, 0.15);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.feature-card:hover {
+  border-color: rgba(245, 216, 182, 0.35);
+  box-shadow: 0 8px 32px rgba(114, 50, 51, 0.3);
+  transform: translateY(-4px);
+}
+
+.feature-card-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.feature-card-title {
+  color: #f5d8b6;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 12px 0;
+  font-family: 'Cinzel', serif;
+}
+
+.feature-card-description {
+  color: #d9c7c8;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+  flex-grow: 1;
+}
+
+.feature-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 12px 0;
+  border-top: 1px solid rgba(245, 216, 182, 0.1);
+  border-bottom: 1px solid rgba(245, 216, 182, 0.1);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.info-label {
+  color: #c4a085;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.info-value {
+  color: #f5d8b6;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.status-active {
+  color: #a8d894 !important;
+  background: rgba(168, 216, 148, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  font-size: 0.85rem;
+}
+
+.status-paid {
+  color: #a8d894 !important;
+  background: rgba(168, 216, 148, 0.15);
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  font-size: 0.85rem;
+}
+
+.feature-card-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.btn-card {
+  flex: 1;
+  background: linear-gradient(135deg, #d9a580, #c89470) !important;
+  color: #fff !important;
+  padding: 10px 16px !important;
+  font-size: 0.9rem !important;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(217, 165, 128, 0.4) !important;
+}
+
+.btn-card:active {
+  transform: translateY(0) !important;
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(245, 216, 182, 0.1);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.history-title {
+  margin: 0;
+  color: #f5d8b6;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.history-date {
+  margin: 3px 0 0;
+  color: #c4a085;
+  font-size: 0.8rem;
+}
+
+.history-badge {
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 4px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.history-badge.ok {
+  color: #9ee0ac;
+  background: rgba(158, 224, 172, 0.16);
+}
+
+.history-badge.scheduled {
+  color: #f5d8b6;
+  background: rgba(245, 216, 182, 0.14);
 }
 </style>
+

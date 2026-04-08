@@ -13,16 +13,18 @@ const runtimeConfig = useRuntimeConfig()
 const localMapSrc = computed(() => `${runtimeConfig.app.baseURL}images/spain-real.svg`)
 
 const mapOffices = [
-  { name: 'Vigo', x: 214, y: 183, dx: 14, dy: 0, hq: false },
-  { name: 'Bilbao', x: 356, y: 145, dx: 10, dy: -12, hq: false },
-  { name: 'Madrid', x: 337, y: 226, dx: 8, dy: 18, hq: false },
-  { name: 'Zaragoza', x: 390, y: 188, dx: -14, dy: -10, anchor: 'end', hq: false },
-  { name: 'Barcelona', x: 455, y: 201, dx: 12, dy: -1, hq: true },
-  { name: 'Valencia', x: 432, y: 248, dx: 10, dy: 16, hq: false },
-  { name: 'Sevilla', x: 279, y: 310, dx: 12, dy: 0, hq: false },
-  { name: 'Mallorca', x: 535, y: 218, dx: 12, dy: 5, hq: false },
-  { name: 'Las Palmas', x: 86, y: 492, dx: 12, dy: -2, hq: false },
+  { name: 'Vigo', x: 255, y: 75, dx: 14, dy: 0, hq: false },
+  { name: 'Bilbao', x: 418, y: 35, dx: 10, dy: -12, hq: false },
+  { name: 'Madrid', x: 395, y: 140, dx: 8, dy: 18, hq: false },
+  { name: 'Zaragoza', x: 478, y: 110, dx: -14, dy: -10, anchor: 'end', hq: false },
+  { name: 'Barcelona', x: 565, y: 105, dx: 12, dy: -1, hq: true },
+  { name: 'Valencia', x: 493, y: 180, dx: 10, dy: 16, hq: false },
+  { name: 'Sevilla', x: 330, y: 250, dx: 12, dy: 0, hq: false },
+  { name: 'Mallorca', x: 584, y: 175, dx: 12, dy: 5, hq: false },
+  { name: 'Las Palmas', x: 69, y: 560, dx: 14, dy: -4, hq: false },
 ]
+
+const mainlandOffices = computed(() => mapOffices.filter(office => !office.inset))
 </script>
 
 <template>
@@ -102,10 +104,10 @@ const mapOffices = [
           <div class="footer-map">
             <h5>{{ lt('Sedes en España', 'Seus a Espanya', 'Egoitzak Espainian', 'Sedes en España') }}</h5>
             <div class="spain-map" role="img" :aria-label="lt('Mapa de España con sedes de PCE', 'Mapa d\'Espanya amb seus de PCE', 'Espainiako mapa PCE egoitzekin', 'Mapa de España con sedes de PCE')">
-              <svg class="map-svg" viewBox="0 0 613 544" aria-hidden="true">
+              <svg class="map-svg" viewBox="-32 0 720 544" aria-hidden="true">
                 <image class="map-shape" :href="localMapSrc" x="-10" y="16" width="632" height="562" preserveAspectRatio="xMidYMid meet" />
 
-                <g v-for="office in mapOffices" :key="`shape-${office.name}`" class="map-pin" :class="{ hq: office.hq }">
+                <g v-for="office in mainlandOffices" :key="`shape-${office.name}`" class="map-pin" :class="{ hq: office.hq }">
                   <line
                     class="map-leader"
                     :x1="office.x"
@@ -122,6 +124,17 @@ const mapOffices = [
                   >{{ office.name }}</text>
                 </g>
               </svg>
+
+            </div>
+            <div class="footer-map-badges" aria-label="Sedes de PCE">
+              <span
+                v-for="office in mapOffices"
+                :key="`badge-${office.name}`"
+                class="office-badge"
+                :class="{ hq: office.hq }"
+              >
+                {{ office.name }}
+              </span>
             </div>
             <p class="hq-note">{{ lt('Sede principal: Barcelona', 'Seu principal: Barcelona', 'Egoitza nagusia: Barcelona', 'Sede principal: Barcelona') }}</p>
           </div>
@@ -146,7 +159,7 @@ const mapOffices = [
 
 .footer-content {
   display: grid;
-  grid-template-columns: 1.05fr 0.9fr 0.95fr 1.3fr;
+  grid-template-columns: 1fr 0.85fr 0.9fr 1.7fr;
   gap: 28px;
   align-items: start;
 }
@@ -295,7 +308,7 @@ const mapOffices = [
 
 .spain-map {
   position: relative;
-  height: 300px;
+  height: 380px;
   border-radius: 10px;
   background:
     linear-gradient(145deg, rgba(91, 37, 37, 0.95), rgba(58, 23, 23, 0.95));
@@ -317,9 +330,9 @@ const mapOffices = [
 
 .map-svg {
   position: absolute;
-  inset: 8px;
-  width: calc(100% - 16px);
-  height: calc(100% - 16px);
+  inset: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
   border-radius: 8px;
   z-index: 2;
 }
@@ -346,12 +359,12 @@ const mapOffices = [
 }
 
 .map-label {
-  fill: #f5eef0;
-  font-size: 13px;
+  fill: #111111;
+  font-size: 20px;
   font-weight: 700;
   paint-order: stroke;
-  stroke: rgba(58, 23, 23, 0.95);
-  stroke-width: 2.1;
+  stroke: rgba(245, 238, 240, 0.95);
+  stroke-width: 1.8;
   stroke-linejoin: round;
   dominant-baseline: middle;
   pointer-events: none;
@@ -364,15 +377,40 @@ const mapOffices = [
 }
 
 .map-pin.hq .map-label {
-  fill: #ffffff;
-  stroke: #8d1f22;
-  stroke-width: 2.4;
+  fill: #111111;
+  stroke: rgba(245, 238, 240, 0.95);
+  stroke-width: 2;
 }
 
 .hq-note {
   margin: 10px 0 0;
   color: #ddd2d3;
   font-size: 0.84rem;
+}
+
+.footer-map-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.office-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(185, 175, 176, 0.34);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f5eef0;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+.office-badge.hq {
+  border-color: rgba(180, 46, 49, 0.8);
+  background: rgba(180, 46, 49, 0.16);
+  color: #ffffff;
 }
 
 .btn-reporting {
@@ -415,7 +453,7 @@ const mapOffices = [
   }
 
   .spain-map {
-    height: 260px;
+    height: 330px;
   }
 }
 

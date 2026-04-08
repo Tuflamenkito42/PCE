@@ -4,10 +4,14 @@ import { sendEmail } from '../../utils/email';
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
-    const { email, password, fullName, dni } = body;
+    const { email, password, confirmPassword, fullName, dni } = body;
 
-    if (!email || !password || !fullName || !dni) {
+    if (!email || !password || !confirmPassword || !fullName || !dni) {
         throw createError({ statusCode: 400, message: 'Faltan datos requeridos' });
+    }
+
+    if (String(password) !== String(confirmPassword)) {
+        throw createError({ statusCode: 400, message: 'Las contraseñas no coinciden' });
     }
 
     const db = useDb();
