@@ -84,64 +84,121 @@
             </label>
           </div>
 
-          <!-- EDITOR DE FOTO (cuando selecciona un archivo) -->
+          <!-- EDITOR DE FOTO (igual que afiliacion) -->
           <div v-if="photoPreview" class="photo-editor-section">
             <div class="editor-container">
-              <div class="crop-area">
-                <img
-                  :src="photoPreview"
-                  :style="{
-                    transform: `scale(${photoZoom}) translateX(${photoPanX}px) translateY(${photoPanY}px)`,
-                    cursor: photoDragging ? 'grabbing' : 'grab',
-                    transition: photoDragging ? 'none' : 'transform 0.2s'
-                  }"
-                  @mousedown="startDrag"
-                  @mousemove="doDrag"
-                  @mouseup="endDrag"
-                  @mouseleave="endDrag"
-                  class="editable-img"
-                />
-              </div>
-              
-              <div class="editor-controls">
-                <div class="zoom-control">
-                  <span class="control-label">Zoom</span>
-                  <input
-                    v-model.number="photoZoom"
-                    type="range"
-                    min="0.5"
-                    max="3"
-                    step="0.1"
-                    class="zoom-slider"
+              <div class="editor-workspace">
+                <div ref="photoCropAreaRef" class="crop-area" :style="{ aspectRatio: String(photoAspectRatio) }" @wheel.prevent="handlePhotoWheel">
+                  <img
+                    :src="photoPreview"
+                    :style="{
+                      transform: `translate(${photoPanX}px, ${photoPanY}px) scale(${photoBaseScale * photoZoom})`,
+                      transformOrigin: 'center center',
+                      cursor: photoDragging ? 'grabbing' : 'grab',
+                      transition: photoDragging ? 'none' : 'transform 0.2s'
+                    }"
+                    @mousedown="startDrag"
+                    @mousemove="doDrag"
+                    @mouseup="endDrag"
+                    @mouseleave="endDrag"
+                    class="editable-img"
                   />
-                  <span class="zoom-value">{{ Math.round(photoZoom * 100) }}%</span>
                 </div>
 
-                <div class="action-buttons">
+                <aside class="editor-side-panel">
+                  <p class="mouse-help">
+                    Ajusta con el raton: arrastra para mover y usa la rueda para hacer zoom.
+                  </p>
+
                   <button
                     type="button"
-                    @click="cancelPhotoEdit"
-                    class="btn-cancel"
+                    @click="resetPhotoTransform"
+                    class="btn-reset-adjust"
                     :disabled="savingPhoto"
                   >
-                    Cancelar
+                    Recentrar imagen
                   </button>
-                  <button
-                    type="button"
-                    @click="confirmPhotoEdit"
-                    class="btn-confirm"
-                    :disabled="savingPhoto"
-                  >
-                    <span v-if="savingPhoto">Guardando...</span>
-                    <span v-else>Confirmar foto</span>
-                  </button>
-                </div>
+
+                  <div class="editor-controls">
+                    <div class="zoom-control">
+                      <span class="control-label">Zoom</span>
+                      <input
+                        v-model.number="photoZoom"
+                        type="range"
+                        min="0.5"
+                        max="3"
+                        step="0.1"
+                        class="zoom-slider"
+                      />
+                      <span class="zoom-value">{{ Math.round(photoZoom * 100) }}%</span>
+                    </div>
+
+                    <div class="pan-control">
+                      <span class="control-label">X</span>
+                      <input
+                        v-model.number="photoPanX"
+                        type="range"
+                        min="-180"
+                        max="180"
+                        step="1"
+                        class="zoom-slider"
+                      />
+                      <span class="zoom-value">{{ Math.round(photoPanX) }}px</span>
+                    </div>
+
+                    <div class="pan-control">
+                      <span class="control-label">Y</span>
+                      <input
+                        v-model.number="photoPanY"
+                        type="range"
+                        min="-180"
+                        max="180"
+                        step="1"
+                        class="zoom-slider"
+                      />
+                      <span class="zoom-value">{{ Math.round(photoPanY) }}px</span>
+                    </div>
+
+                    <div class="action-buttons">
+                      <button
+                        type="button"
+                        @click="cancelPhotoEdit"
+                        class="btn-cancel"
+                        :disabled="savingPhoto"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="button"
+                        @click="confirmPhotoEdit"
+                        class="btn-confirm"
+                        :disabled="savingPhoto"
+                      >
+                        <span v-if="savingPhoto">Guardando...</span>
+                        <span v-else>Confirmar foto</span>
+                      </button>
+                    </div>
+                  </div>
+                </aside>
               </div>
             </div>
           </div>
 
           <p v-if="photoError" class="msg error">{{ photoError }}</p>
           <p v-if="photoSuccess" class="msg ok">{{ photoSuccess }}</p>
+        </div>
+
+        <!-- CARNET PREVIEW -->
+        <div v-if="profile?.affiliation" class="carnet-preview-section">
+          <h3>Vista previa del carné</h3>
+          <div class="carnet-mockup">
+            <img class="card-template" src="/images/carnesocio.png" alt="Plantilla del carné de socio" />
+            <div class="card-field card-name">{{ (profile.affiliation.name || '').toUpperCase() }} {{ (profile.affiliation.lastname || '').toUpperCase() }}</div>
+            <div class="card-field card-nif">{{ (profile.affiliation.dni || '').toUpperCase() }}</div>
+            <div class="card-field card-number">SOC{{ String(profile.user?.id || 0).padStart(6, '0') }}</div>
+            <img v-if="affiliationPhotoUrl" :src="affiliationPhotoUrl" :alt="'Foto de socio'" class="card-photo" />
+            <div v-else class="card-avatar">{{ (profile.affiliation.name || 'U').trim().charAt(0).toUpperCase() }}</div>
+          </div>
         </div>
 
         <div class="actions">
@@ -183,6 +240,7 @@ const form = reactive({
 const saving = ref(false)
 const message = ref('')
 const errorMessage = ref('')
+const affiliationPhotoUrl = ref('')
 
 const {
   photoPreview,
@@ -190,6 +248,9 @@ const {
   photoZoom,
   photoPanX,
   photoPanY,
+  photoBaseScale,
+  photoCropAreaRef,
+  photoAspectRatio,
   photoDragging,
   photoError,
   photoSuccess,
@@ -198,6 +259,8 @@ const {
   startDrag,
   doDrag,
   endDrag,
+  handlePhotoWheel,
+  resetPhotoTransform,
   cancelPhotoEdit,
   cropAndExportPhoto
 } = usePhotoEditor()
@@ -211,6 +274,7 @@ watchEffect(() => {
   form.dni = String(affiliation.dni || '')
   form.birthdate = affiliation.birthdate ? new Date(affiliation.birthdate).toISOString().slice(0, 10) : ''
   form.phone = String(affiliation.phone || '')
+  affiliationPhotoUrl.value = String(affiliation.photoUrl || '')
 })
 
 const saveData = async () => {
@@ -510,11 +574,23 @@ input:disabled {
   gap: 12px;
 }
 
+.editor-workspace {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (min-width: 1080px) {
+  .editor-workspace {
+    grid-template-columns: minmax(420px, 1fr) 320px;
+  }
+}
+
 .crop-area {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
-  max-width: 500px;
+  max-width: 340px;
   margin: 0 auto;
   background: rgba(0, 0, 0, 0.4);
   border: 2px solid rgba(245, 216, 182, 0.5);
@@ -527,9 +603,11 @@ input:disabled {
 }
 
 .editable-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  display: block;
   user-select: none;
   cursor: grab;
   transition: cursor 0.2s;
@@ -537,6 +615,35 @@ input:disabled {
 
 .editable-img:active {
   cursor: grabbing;
+}
+
+.editor-side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mouse-help {
+  margin: 0;
+  text-align: left;
+  color: rgba(234, 223, 224, 0.9);
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.btn-reset-adjust {
+  border: 1px solid rgba(245, 216, 182, 0.5);
+  background: rgba(0, 0, 0, 0.2);
+  color: #f5d8b6;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-reset-adjust:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .editor-controls {
@@ -560,6 +667,16 @@ input:disabled {
   font-weight: 700;
   min-width: 50px;
   font-size: 0.95rem;
+}
+
+.pan-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 14px 16px;
+  border-radius: 12px;
+  flex-wrap: wrap;
 }
 
 .zoom-slider {
@@ -663,5 +780,97 @@ input:disabled {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+.carnet-preview-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 28px;
+  margin-top: 28px;
+}
+
+.carnet-preview-section h3 {
+  color: #eadfe0;
+  font-size: 1.1rem;
+  margin: 0 0 14px;
+  font-weight: 600;
+}
+
+.carnet-mockup {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  background: #f5f5f5;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.carnet-mockup .card-template {
+  width: 100%;
+  display: block;
+  height: auto;
+}
+
+.card-field {
+  position: absolute;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  color: #1f1f1f;
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: clamp(0.58rem, 0.95vw, 0.75rem);
+}
+
+.card-name {
+  left: 23.9%;
+  top: 47.8%;
+  width: 23.3%;
+}
+
+.card-nif {
+  left: 23.5%;
+  top: 55%;
+  width: 12.4%;
+  font-size: clamp(0.36rem, 0.76vw, 0.7rem);
+}
+
+.card-number {
+  left: 36.2%;
+  top: 55%;
+  width: 11.8%;
+  font-size: clamp(0.36rem, 0.76vw, 0.7rem);
+}
+
+.carnet-mockup .card-photo {
+  position: absolute;
+  left: 8.5%;
+  top: 52.3%;
+  width: 11.4%;
+  height: 24.8%;
+  object-fit: cover;
+  object-position: center 28%;
+  border: 1px solid rgba(114, 50, 51, 0.35);
+  border-radius: 2px;
+}
+
+.card-avatar {
+  position: absolute;
+  left: 8.5%;
+  top: 52.3%;
+  transform: translate(0, 0);
+  width: 11.4%;
+  height: 24.8%;
+  display: grid;
+  place-items: center;
+  background: rgba(114, 50, 51, 0.15);
+  color: #723233;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: clamp(0.42rem, 0.9vw, 0.82rem);
+  border: 1px solid rgba(114, 50, 51, 0.35);
+  border-radius: 2px;
 }
 </style>

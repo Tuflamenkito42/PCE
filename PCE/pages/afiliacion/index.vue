@@ -142,55 +142,99 @@
                     <!-- EDITOR INTERACTIVO DE FOTO -->
                     <div v-if="cardPhotoEditorActive && cardPhotoRawPreview" class="photo-editor-section">
                       <div class="editor-container">
-                        <div class="crop-area">
-                          <img
-                            :src="cardPhotoRawPreview"
-                            :style="{
-                              transform: `scale(${cardPhotoZoom}) translateX(${cardPhotoPanX}px) translateY(${cardPhotoPanY}px)`,
-                              cursor: cardPhotoDragging ? 'grabbing' : 'grab',
-                              transition: cardPhotoDragging ? 'none' : 'transform 0.2s'
-                            }"
-                            @mousedown="startCardPhotoDrag"
-                            @mousemove="doCardPhotoDrag"
-                            @mouseup="endCardPhotoDrag"
-                            @mouseleave="endCardPhotoDrag"
-                            class="editable-img"
-                          />
-                        </div>
-                        
-                        <div class="editor-controls">
-                          <div class="zoom-control">
-                            <span class="control-label">{{ lt('Zoom', 'Zoom', 'Zoom', 'Zoom') }}</span>
-                            <input
-                              v-model.number="cardPhotoZoom"
-                              type="range"
-                              min="0.5"
-                              max="3"
-                              step="0.1"
-                              class="zoom-slider"
+                        <div class="editor-workspace">
+                          <div ref="cardPhotoCropAreaRef" class="crop-area" @wheel.prevent="handleCardPhotoWheel">
+                            <img
+                              :src="cardPhotoRawPreview"
+                              :style="{
+                                transform: `translate(${cardPhotoPanX}px, ${cardPhotoPanY}px) scale(${cardPhotoBaseScale * cardPhotoZoom})`,
+                                transformOrigin: 'center center',
+                                cursor: cardPhotoDragging ? 'grabbing' : 'grab',
+                                transition: cardPhotoDragging ? 'none' : 'transform 0.2s'
+                              }"
+                              @mousedown="startCardPhotoDrag"
+                              @mousemove="doCardPhotoDrag"
+                              @mouseup="endCardPhotoDrag"
+                              @mouseleave="endCardPhotoDrag"
+                              class="editable-img"
                             />
-                            <span class="zoom-value">{{ Math.round(cardPhotoZoom * 100) }}%</span>
                           </div>
 
-                          <div class="action-buttons">
+                          <aside class="editor-side-panel">
+                            <p class="mouse-help">
+                              {{ lt('Ajusta con el ratón: arrastra para mover y usa la rueda para hacer zoom.', 'Ajusta amb el ratolí: arrossega per moure i usa la roda per fer zoom.', 'Doitu saguarekin: arrastatu mugitzeko eta erabili gurpila zoom egiteko.', 'Axusta co rato: arrastra para mover e usa a roda para facer zoom.') }}
+                            </p>
+
                             <button
                               type="button"
-                              @click="cancelCardPhotoEdit"
-                              class="btn-cancel"
+                              @click="resetCardPhotoTransform"
+                              class="btn-reset-adjust"
                               :disabled="cardPhotoProcessing"
                             >
-                              {{ lt('Cancelar', 'Cancelar', 'Ezeztatu', 'Cancelar') }}
+                              {{ lt('Recentrar imagen', 'Recentra imatge', 'Irudia birzentratzea', 'Recentrar imaxe') }}
                             </button>
-                            <button
-                              type="button"
-                              @click="confirmCardPhotoEdit"
-                              class="btn-confirm"
-                              :disabled="cardPhotoProcessing"
-                            >
-                              <span v-if="cardPhotoProcessing">{{ lt('Guardando...', 'Guardant...', 'Gordetzean...', 'Gardando...') }}</span>
-                              <span v-else>{{ lt('Confirmar foto', 'Confirmar foto', 'Argazkia berretsi', 'Confirmar foto') }}</span>
-                            </button>
-                          </div>
+
+                            <div class="editor-controls">
+                              <div class="zoom-control">
+                                <span class="control-label">{{ lt('Zoom', 'Zoom', 'Zoom', 'Zoom') }}</span>
+                                <input
+                                  v-model.number="cardPhotoZoom"
+                                  type="range"
+                                  min="0.5"
+                                  max="3"
+                                  step="0.1"
+                                  class="zoom-slider"
+                                />
+                                <span class="zoom-value">{{ Math.round(cardPhotoZoom * 100) }}%</span>
+                              </div>
+
+                              <div class="pan-control">
+                                <span class="control-label">X</span>
+                                <input
+                                  v-model.number="cardPhotoPanX"
+                                  type="range"
+                                  min="-180"
+                                  max="180"
+                                  step="1"
+                                  class="zoom-slider"
+                                />
+                                <span class="zoom-value">{{ Math.round(cardPhotoPanX) }}px</span>
+                              </div>
+
+                              <div class="pan-control">
+                                <span class="control-label">Y</span>
+                                <input
+                                  v-model.number="cardPhotoPanY"
+                                  type="range"
+                                  min="-180"
+                                  max="180"
+                                  step="1"
+                                  class="zoom-slider"
+                                />
+                                <span class="zoom-value">{{ Math.round(cardPhotoPanY) }}px</span>
+                              </div>
+
+                              <div class="action-buttons">
+                                <button
+                                  type="button"
+                                  @click="cancelCardPhotoEdit"
+                                  class="btn-cancel"
+                                  :disabled="cardPhotoProcessing"
+                                >
+                                  {{ lt('Cancelar', 'Cancelar', 'Ezeztatu', 'Cancelar') }}
+                                </button>
+                                <button
+                                  type="button"
+                                  @click="confirmCardPhotoEdit"
+                                  class="btn-confirm"
+                                  :disabled="cardPhotoProcessing"
+                                >
+                                  <span v-if="cardPhotoProcessing">{{ lt('Guardando...', 'Guardant...', 'Gordetzean...', 'Gardando...') }}</span>
+                                  <span v-else>{{ lt('Confirmar foto', 'Confirmar foto', 'Argazkia berretsi', 'Confirmar foto') }}</span>
+                                </button>
+                              </div>
+                            </div>
+                          </aside>
                         </div>
                       </div>
                       <p v-if="cardPhotoError" class="msg error">{{ cardPhotoError }}</p>
@@ -458,7 +502,15 @@ const cardPhotoDragStartX = ref(0)
 const cardPhotoDragStartY = ref(0)
 const cardPhotoDragStartPanX = ref(0)
 const cardPhotoDragStartPanY = ref(0)
-const CARD_PHOTO_RATIO = 112 / 246
+const cardPhotoCropAreaRef = ref(null)
+const cardPhotoNaturalWidth = ref(0)
+const cardPhotoNaturalHeight = ref(0)
+const cardPhotoBaseScale = ref(1)
+const CARD_TEMPLATE_WIDTH = 1408
+const CARD_TEMPLATE_HEIGHT = 768
+const CARD_PHOTO_SLOT_WIDTH_RATIO = 0.112
+const CARD_PHOTO_SLOT_HEIGHT_RATIO = 0.246
+const CARD_PHOTO_RATIO = (CARD_TEMPLATE_WIDTH * CARD_PHOTO_SLOT_WIDTH_RATIO) / (CARD_TEMPLATE_HEIGHT * CARD_PHOTO_SLOT_HEIGHT_RATIO)
 
 const errors = ref({})
 const isProcessing = ref(false)
@@ -486,8 +538,8 @@ const splitFullName = (value) => {
   return { name, lastname }
 }
 
-const isNameLocked = computed(() => Boolean(String(user.value?.full_name || '').trim() && String(formData.name || '').trim()))
-const isLastnameLocked = computed(() => Boolean(String(user.value?.full_name || '').trim() && String(formData.lastname || '').trim()))
+const isNameLocked = computed(() => false)
+const isLastnameLocked = computed(() => false)
 const isDniLocked = computed(() => Boolean(String(user.value?.dni || '').trim()))
 const isEmailLocked = computed(() => Boolean(String(user.value?.email || '').trim()))
 
@@ -737,15 +789,46 @@ const handleCardPhotoSelect = async (event) => {
 
   // Mostrar el editor interactivo con la imagen sin procesar
   const reader = new FileReader()
-  reader.onload = () => {
-    cardPhotoRawPreview.value = reader.result
+  reader.onload = async () => {
+    const dataUrl = String(reader.result || '')
+    if (!dataUrl) return
+
+    const sourceImage = await new Promise((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => resolve(img)
+      img.onerror = () => reject(new Error('No se pudo leer la foto seleccionada'))
+      img.src = dataUrl
+    })
+
+    cardPhotoNaturalWidth.value = sourceImage.naturalWidth || sourceImage.width || 0
+    cardPhotoNaturalHeight.value = sourceImage.naturalHeight || sourceImage.height || 0
+    cardPhotoRawPreview.value = dataUrl
     cardPhotoEditorActive.value = true
     cardPhotoZoom.value = 1
     cardPhotoPanX.value = 0
     cardPhotoPanY.value = 0
     cardPhotoError.value = ''
+
+    await nextTick()
+    updateCardPhotoBaseScale()
   }
   reader.readAsDataURL(file)
+}
+
+const updateCardPhotoBaseScale = () => {
+  const cropAreaEl = cardPhotoCropAreaRef.value
+  const naturalW = cardPhotoNaturalWidth.value
+  const naturalH = cardPhotoNaturalHeight.value
+
+  if (!cropAreaEl || !naturalW || !naturalH) {
+    cardPhotoBaseScale.value = 1
+    return
+  }
+
+  const cropW = cropAreaEl.clientWidth || 1
+  const cropH = cropAreaEl.clientHeight || Math.round(cropW / CARD_PHOTO_RATIO)
+  const fitScale = Math.max(cropW / naturalW, cropH / naturalH)
+  cardPhotoBaseScale.value = Number(fitScale.toFixed(6))
 }
 
 const startCardPhotoDrag = (e) => {
@@ -765,6 +848,19 @@ const doCardPhotoDrag = (e) => {
   cardPhotoPanY.value = cardPhotoDragStartPanY.value + dy
 }
 
+const handleCardPhotoWheel = (e) => {
+  const direction = e.deltaY > 0 ? -1 : 1
+  const step = direction * 0.08
+  const nextZoom = Math.max(0.5, Math.min(3, cardPhotoZoom.value + step))
+  cardPhotoZoom.value = Number(nextZoom.toFixed(2))
+}
+
+const resetCardPhotoTransform = () => {
+  cardPhotoZoom.value = 1
+  cardPhotoPanX.value = 0
+  cardPhotoPanY.value = 0
+}
+
 const endCardPhotoDrag = () => {
   cardPhotoDragging.value = false
 }
@@ -772,6 +868,9 @@ const endCardPhotoDrag = () => {
 const cancelCardPhotoEdit = () => {
   cardPhotoRawPreview.value = ''
   cardPhotoEditorActive.value = false
+  cardPhotoNaturalWidth.value = 0
+  cardPhotoNaturalHeight.value = 0
+  cardPhotoBaseScale.value = 1
   cardPhotoZoom.value = 1
   cardPhotoPanX.value = 0
   cardPhotoPanY.value = 0
@@ -790,9 +889,11 @@ const confirmCardPhotoEdit = async () => {
       throw new Error('No se pudo inicializar canvas')
     }
 
-    // Aplicar el ratio del carnet (112/246)
+    // Aplicar el ratio real del hueco de foto del carnet
     const aspectRatio = CARD_PHOTO_RATIO
-    const containerSize = 300
+    const cropAreaEl = cardPhotoCropAreaRef.value
+    const containerWidth = cropAreaEl?.clientWidth || 280
+    const containerHeight = cropAreaEl?.clientHeight || Math.round(containerWidth / aspectRatio)
     const outputWidth = 560
     const outputHeight = Math.round(outputWidth / aspectRatio)
 
@@ -801,15 +902,21 @@ const confirmCardPhotoEdit = async () => {
 
     const img = new Image()
     img.onload = async () => {
+      const fitScale = cardPhotoBaseScale.value > 0
+        ? cardPhotoBaseScale.value
+        : Math.max(containerWidth / img.width, containerHeight / img.height)
+      const effectiveScale = fitScale * cardPhotoZoom.value
+
       // Dibujar la imagen con zoom y pan aplicados
-      const scaledWidth = img.width * cardPhotoZoom.value
-      const scaledHeight = img.height * cardPhotoZoom.value
-      const x = (containerSize - scaledWidth) / 2 + cardPhotoPanX.value
-      const y = (containerSize - scaledHeight) / 2 + cardPhotoPanY.value
+      const scaledWidth = img.width * effectiveScale
+      const scaledHeight = img.height * effectiveScale
+      const x = (containerWidth - scaledWidth) / 2 + cardPhotoPanX.value
+      const y = (containerHeight - scaledHeight) / 2 + cardPhotoPanY.value
 
       // Escalar para el tamaño final
-      const scale = outputWidth / containerSize
-      ctx.drawImage(img, x * scale, y * scale, scaledWidth * scale, scaledHeight * scale)
+      const scaleX = outputWidth / containerWidth
+      const scaleY = outputHeight / containerHeight
+      ctx.drawImage(img, x * scaleX, y * scaleY, scaledWidth * scaleX, scaledHeight * scaleY)
 
       // Convertir a blob
       canvas.toBlob(
@@ -1913,11 +2020,24 @@ useHead(() => ({
   gap: 12px;
 }
 
+.editor-workspace {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (min-width: 1080px) {
+  .editor-workspace {
+    grid-template-columns: minmax(420px, 1fr) 320px;
+  }
+}
+
 .crop-area {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
-  max-width: 500px;
+  aspect-ratio: 157 / 189;
+  max-width: 340px;
   margin: 0 auto;
   background: rgba(0, 0, 0, 0.4);
   border: 2px solid rgba(245, 216, 182, 0.5);
@@ -1930,9 +2050,11 @@ useHead(() => ({
 }
 
 .editable-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  display: block;
   user-select: none;
   cursor: grab;
   transition: cursor 0.2s;
@@ -1942,13 +2064,48 @@ useHead(() => ({
   cursor: grabbing;
 }
 
+.mouse-help {
+  margin: 0;
+  text-align: left;
+  color: rgba(234, 223, 224, 0.9);
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.editor-side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.btn-reset-adjust {
+  width: 100%;
+  border: 1px solid rgba(245, 216, 182, 0.35);
+  background: rgba(245, 216, 182, 0.08);
+  color: #f5d8b6;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-reset-adjust:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .editor-controls {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-.zoom-control {
+.zoom-control,
+.pan-control {
   display: flex;
   align-items: center;
   gap: 12px;

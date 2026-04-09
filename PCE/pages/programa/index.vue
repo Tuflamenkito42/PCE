@@ -52,7 +52,12 @@ const promises = computed(() => [
   { title: t('program.promise6'), desc: t('program.promise6Desc') },
   { title: t('program.promise7'), desc: t('program.promise7Desc') },
   { title: t('program.promise8'), desc: t('program.promise8Desc') },
-  { title: t('program.promise9'), desc: t('program.promise9Desc') }
+  { title: t('program.promise9'), desc: t('program.promise9Desc') },
+  { title: t('program.promise10'), desc: t('program.promise10Desc') },
+  { title: t('program.promise11'), desc: t('program.promise11Desc') },
+  { title: t('program.promise12'), desc: t('program.promise12Desc') },
+  { title: t('program.promise13'), desc: t('program.promise13Desc') },
+  { title: t('program.promise14'), desc: t('program.promise14Desc') }
 ])
 
 useHead(() => ({

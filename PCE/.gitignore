@@ -12,11 +12,13 @@ node_modules
 # Logs
 logs
 *.log
+remotion-video/build_log.txt
 
 # Misc
 .DS_Store
 .fleet
 .idea
+stripe.exe
 
 # Local env files
 .env

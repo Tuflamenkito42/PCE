@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 
 const { user, logout } = useAuth()
 const { t, setLocale, locale, supportedLocales } = useI18n()
+const runtimeConfig = useRuntimeConfig()
 const languageMenuRef = ref(null)
 const languageMenuOpen = ref(false)
 // Optional: user initials
@@ -16,15 +17,79 @@ const userInitials = computed(() => {
 const mobileMenuOpen = ref(false)
 const isDarkMode = ref(false)
 const isAffiliated = ref(false)
+const affiliateProfilePhotoUrl = ref('')
 const bullpatriotLogoSrc = computed(() => (isDarkMode.value ? '/images/bullpatriot2.png' : '/images/bullpatriot.png'))
 
-const refreshAffiliationStatus = async () => {
+const hasAffiliateProfilePhoto = computed(() => Boolean(affiliateProfilePhotoUrl.value))
+
+function normalizeAssetUrl (value) {
+  const raw = String(value || '').trim()
+  if (!raw) {
+    return ''
+  }
+
+  if (/^https?:\/\//i.test(raw)) {
+    return raw
+  }
+
+  const base = String(runtimeConfig.app?.baseURL || '/')
+  const normalizedBase = base.endsWith('/') ? base.slice(0, -1) : base
+  const normalizedPath = raw.startsWith('/') ? raw : `/${raw}`
+  return `${normalizedBase}${normalizedPath}`
+}
+
+watch(
+  () => user.value?.photoUrl,
+  (photoUrl) => {
+    const normalized = normalizeAssetUrl(photoUrl)
+    affiliateProfilePhotoUrl.value = normalized ? `${normalized}${normalized.includes('?') ? '&' : '?'}t=${Date.now()}` : ''
+  },
+  { immediate: true }
+)
+
+const onAffiliatePhotoError = () => {
+  affiliateProfilePhotoUrl.value = ''
+}
+
+const loadAffiliateProfilePhoto = async () => {
+  if (user.value?.photoUrl) {
+    return
+  }
+
   if (!user.value?.email) {
-    isAffiliated.value = false
+    affiliateProfilePhotoUrl.value = ''
     return
   }
 
   try {
+    const response = await $fetch('/api/afiliacion/photo', {
+      method: 'GET'
+    })
+
+    const photoPath = String(response?.photoUrl || '')
+    if (!photoPath) {
+      affiliateProfilePhotoUrl.value = ''
+      return
+    }
+
+    const cacheBust = `t=${Date.now()}`
+    const resolved = normalizeAssetUrl(photoPath)
+    affiliateProfilePhotoUrl.value = `${resolved}${resolved.includes('?') ? '&' : '?'}${cacheBust}`
+  } catch (_error) {
+    affiliateProfilePhotoUrl.value = ''
+  }
+}
+
+const refreshAffiliationStatus = async () => {
+  if (!user.value?.email) {
+    isAffiliated.value = false
+    affiliateProfilePhotoUrl.value = ''
+    return
+  }
+
+  try {
+    await loadAffiliateProfilePhoto()
+
     const response = await $fetch('/api/afiliacion/check', {
       method: 'GET',
       query: { email: user.value.email }
@@ -33,6 +98,7 @@ const refreshAffiliationStatus = async () => {
     isAffiliated.value = Boolean(response?.affiliated)
   } catch (_error) {
     isAffiliated.value = false
+    affiliateProfilePhotoUrl.value = ''
   }
 }
 
@@ -209,7 +275,14 @@ watch(() => user.value?.email, () => {
                </svg>
              </NuxtLink>
              <div class="user-badge" :title="t('auth.connectedUser')">
-                {{ userInitials }}
+               <img
+                v-if="hasAffiliateProfilePhoto"
+                :src="affiliateProfilePhotoUrl"
+                :alt="t('auth.connectedUser')"
+                class="user-badge-photo"
+                  @error="onAffiliatePhotoError"
+               />
+               <template v-else>{{ userInitials }}</template>
              </div>
              <button @click="logout" class="btn-logout" :title="t('auth.logout')">
                 <svg viewBox="0 0 24 24" class="logout-icon">
@@ -283,7 +356,16 @@ watch(() => user.value?.email, () => {
              <div v-if="user" class="mobile-auth">
                <NuxtLink v-if="isAffiliated" to="/afiliado/ajustes" class="btn btn-donate btn-block">{{ t('nav.settings') }}</NuxtLink>
                <NuxtLink v-if="(user.role || '').toLowerCase() === 'admin'" to="/admin" class="btn btn-donate btn-block">{{ t('auth.adminPanel') }}</NuxtLink>
-                <div class="user-badge" :title="t('auth.connectedUser')">{{ userInitials }}</div>
+                <div class="user-badge" :title="t('auth.connectedUser')">
+                  <img
+                    v-if="hasAffiliateProfilePhoto"
+                    :src="affiliateProfilePhotoUrl"
+                    :alt="t('auth.connectedUser')"
+                    class="user-badge-photo"
+                    @error="onAffiliatePhotoError"
+                  />
+                  <template v-else>{{ userInitials }}</template>
+                </div>
                 <button @click="logout" class="btn-logout btn-block">{{ t('auth.logout') }}</button>
              </div>
              <NuxtLink v-else to="/login" class="btn btn-join btn-block">{{ t('auth.login') }}</NuxtLink>
@@ -749,6 +831,13 @@ watch(() => user.value?.email, () => {
   font-weight: bold;
   font-family: 'Cinzel', serif;
   border: 2px solid #fff;
+  overflow: hidden;
+}
+
+.user-badge-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .btn-logout {

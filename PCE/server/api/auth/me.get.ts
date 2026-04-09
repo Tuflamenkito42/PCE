@@ -1,5 +1,37 @@
 import { verifyAuthToken } from '../../utils/auth-token';
 import { usePrisma } from '../../utils/prisma';
+import { useDb } from '../../utils/db';
+
+const getAffiliationPhotoUrl = async (email?: string | null, dni?: string | null) => {
+    const db = useDb();
+    const normalizedEmail = String(email || '').toLowerCase().trim();
+    const normalizedDni = String(dni || '').toUpperCase().trim();
+
+    if (!normalizedEmail && !normalizedDni) {
+        return null;
+    }
+
+    try {
+        const [rows]: any = await db.query(
+            `SELECT card_photo_path
+             FROM affiliations
+             WHERE (
+               email = ?
+               OR (? <> '' AND dni = ?)
+             )
+               AND card_photo_path IS NOT NULL
+               AND card_photo_path <> ''
+             ORDER BY created_at DESC
+             LIMIT 1`,
+            [normalizedEmail, normalizedDni, normalizedDni]
+        );
+
+        const latest = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
+        return latest?.card_photo_path || null;
+    } catch {
+        return null;
+    }
+};
 
 export default defineEventHandler(async (event) => {
     const token = getCookie(event, 'auth_token');
@@ -19,6 +51,8 @@ export default defineEventHandler(async (event) => {
             return { user: null };
         }
 
+        const photoUrl = await getAffiliationPhotoUrl(user.email, user.dni);
+
         return {
             user: {
                 id: user.id,
@@ -26,7 +60,8 @@ export default defineEventHandler(async (event) => {
                 role: user.role,
                 full_name: user.fullName,
                 dni: user.dni,
-                created_at: user.createdAt
+                created_at: user.createdAt,
+                photoUrl
             }
         };
     } catch (e) {

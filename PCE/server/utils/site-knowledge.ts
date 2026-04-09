@@ -1,5 +1,6 @@
-import { promises as fs } from 'node:fs'
-import path from 'node:path'
+// @ts-nocheck
+import { promises as fs } from 'fs'
+import path from 'path'
 
 type KnowledgeChunk = {
   source: string
@@ -19,7 +20,7 @@ type SearchOptions = {
   minScore?: number
 }
 
-const INCLUDED_EXTENSIONS = new Set(['.vue', '.md', '.txt'])
+const INCLUDED_EXTENSIONS = new Set(['.vue', '.md', '.txt', '.ts'])
 const ROOT_FILES = [
   'README.md',
   'INTEGRATION_GUIDE.md',
@@ -27,7 +28,7 @@ const ROOT_FILES = [
   'GUIA_COLABORACION.md',
   'QUICK_START.md'
 ]
-const ROOT_DIRS = ['pages', 'components', 'docs']
+const ROOT_DIRS = ['pages', 'components', 'docs', 'utils']
 const MAX_FILE_SIZE_BYTES = 300_000
 const MIN_CHUNK_LENGTH = 70
 const MAX_CHUNK_LENGTH = 520

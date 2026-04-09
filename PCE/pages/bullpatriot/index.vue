@@ -150,7 +150,7 @@ const router = useRouter()
 
 const createWelcomeMessage = (): Message => ({
   role: 'assistant',
-  content: 'Hola, soy BULLPATRIOT. Puedo ayudarte con preguntas sobre el partido y su actividad.',
+  content: 'Hola, soy BULLPATRIOT. Solo respondo sobre Proteccion Civil Espanola (PCE) y sobre el contenido publicado en esta web.',
   createdAt: Date.now()
 })
 
@@ -337,7 +337,10 @@ const formatMessageMeta = (msg: Message) => {
   })
 
   if (msg.role === 'assistant' && typeof msg.responseSeconds === 'number') {
-    return `${clock} · ${msg.responseSeconds.toFixed(1)}s`
+    const timeLabel = msg.responseSeconds > 1 
+      ? `${msg.responseSeconds.toFixed(1)}s pensando`
+      : 'respuesta inmediata'
+    return `${clock} · ${timeLabel}`
   }
 
   return clock

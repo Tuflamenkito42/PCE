@@ -1,6 +1,38 @@
 import bcrypt from 'bcryptjs';
 import { usePrisma } from '../../utils/prisma';
 import { createAuthToken } from '../../utils/auth-token';
+import { useDb } from '../../utils/db';
+
+const getAffiliationPhotoUrl = async (email?: string | null, dni?: string | null) => {
+    const db = useDb();
+    const normalizedEmail = String(email || '').toLowerCase().trim();
+    const normalizedDni = String(dni || '').toUpperCase().trim();
+
+    if (!normalizedEmail && !normalizedDni) {
+        return null;
+    }
+
+    try {
+        const [rows]: any = await db.query(
+            `SELECT card_photo_path
+             FROM affiliations
+             WHERE (
+               email = ?
+               OR (? <> '' AND dni = ?)
+             )
+               AND card_photo_path IS NOT NULL
+               AND card_photo_path <> ''
+             ORDER BY created_at DESC
+             LIMIT 1`,
+            [normalizedEmail, normalizedDni, normalizedDni]
+        );
+
+        const latest = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
+        return latest?.card_photo_path || null;
+    } catch {
+        return null;
+    }
+};
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
@@ -24,6 +56,8 @@ export default defineEventHandler(async (event) => {
     if (!validPassword) {
         throw createError({ statusCode: 401, message: 'Credenciales inválidas' });
     }
+
+    const photoUrl = await getAffiliationPhotoUrl(user.email, user.dni);
 
     // Set signed auth cookie for session
     const token = createAuthToken({
@@ -55,7 +89,8 @@ export default defineEventHandler(async (event) => {
             full_name: user.fullName,
             role: user.role,
             dni: user.dni,
-            created_at: user.createdAt
+            created_at: user.createdAt,
+            photoUrl
         }
     };
 });

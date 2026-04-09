@@ -37,8 +37,6 @@
                 <div class="card-field card-valid">{{ renovationDate }}</div>
                 <img v-if="affiliationPhotoUrl" :src="affiliationPhotoUrl" :alt="lt('Foto de socio', 'Foto de soci', 'Bazkidearen argazkia', 'Foto de socio')" class="card-photo" />
                 <div v-else class="card-avatar">{{ (user.full_name || 'U').trim().charAt(0).toUpperCase() }}</div>
-                <img v-if="qrImageSrc" :src="qrImageSrc" :alt="lt('QR de validación del carné', 'QR de validació del carnet', 'Karnetaren baliozkotze QR-a', 'QR de validación do carné')" class="card-qr" @error="qrImageSrc = ''" />
-                <div v-else class="card-qr-placeholder" :aria-label="lt('QR no disponible', 'QR no disponible', 'QR ez dago erabilgarri', 'QR non dispoñible')">QR</div>
               </div>
             </div>
           </div>
@@ -172,7 +170,6 @@
           <div class="carnet-info">
             <h3>{{ lt('Información sobre tu carné', 'Informació sobre el teu carnet', 'Zure karnetari buruzko informazioa', 'Información sobre o teu carné') }}</h3>
             <ul>
-              <li>{{ lt('El carné contiene un código QR con tus datos de socio', 'El carnet conté un codi QR amb les teves dades de soci', 'Karnetak zure bazkide datuekin QR kode bat dauka', 'O carné contén un código QR cos teus datos de socio') }}</li>
               <li>{{ lt('Puedes imprimirlo en papel o presentarlo digitalmente', 'Pots imprimir-lo en paper o presentar-lo digitalment', 'Paperean inprimatu edo digitalki aurkeztu dezakezu', 'Podes imprimilo en papel ou presentalo dixitalmente') }}</li>
               <li>{{ lt('Es válido por periodos de 5 años y se renueva automáticamente por quinquenios', 'És vàlid per períodes de 5 anys i es renova automàticament per quinquennis', '5 urteko aldietan balio du eta bosturtekoetan automatikoki berritzen da', 'É válido por períodos de 5 anos e renóvase automaticamente por quinquenios') }}</li>
               <li>{{ lt('Descárgalo todas las veces que necesites', 'Descarrega l tantes vegades com necessitis', 'Deskargatu behar duzun aldi guztietan', 'Descárgao todas as veces que necesites') }}</li>
@@ -302,7 +299,7 @@ const hasPhysicalOrder = ref(false)
 const lastPhysicalOrderDate = ref('')
 const isRenewalOrder = ref(false)
 const affiliationPhotoUrl = ref('')
-const qrImageSrc = ref('')
+const photoRefreshIntervalId = ref(null)
 const nowTick = ref(Date.now())
 const showPaymentHistory = ref(false)
 let expiryTimer
@@ -467,28 +464,15 @@ const loadAffiliationPhoto = async () => {
 
   try {
     const response = await $fetch('/api/afiliacion/photo')
-    affiliationPhotoUrl.value = String(response?.photoUrl || '')
+    const photoUrl = String(response?.photoUrl || '')
+    if (photoUrl) {
+      affiliationPhotoUrl.value = `${photoUrl}?t=${Date.now()}`
+    } else {
+      affiliationPhotoUrl.value = ''
+    }
   } catch (error) {
     console.error('No se pudo cargar la foto del afiliado:', error)
     affiliationPhotoUrl.value = ''
-  }
-}
-
-const loadCardQrImage = async () => {
-  if (!user.value) return
-
-  try {
-    const response = await $fetch('/api/carnet/qr-token')
-    const token = String(response?.token || '')
-
-    if (!token) {
-      throw new Error('No se pudo obtener token QR')
-    }
-
-    qrImageSrc.value = `/api/carnet/qr-image?token=${encodeURIComponent(token)}&ts=${Date.now()}`
-  } catch (error) {
-    console.error('No se pudo preparar el QR del carné:', error)
-    qrImageSrc.value = ''
   }
 }
 
@@ -581,8 +565,7 @@ const downloadCarnet = async () => {
       number: { left: width * 0.362, top: height * 0.550, w: width * 0.118, size: Math.max(11, width * 0.0114) },
       alta: { left: width * 0.239, top: height * 0.622, w: width * 0.128, size: Math.max(11, width * 0.0112) },
       valid: { left: width * 0.366, top: height * 0.622, w: width * 0.118, size: Math.max(11, width * 0.0112) },
-      photo: { left: width * 0.083, top: height * 0.519, w: width * 0.112, h: height * 0.246 },
-      qr: { left: width * 0.399, top: height * 0.701, w: width * 0.079, h: height * 0.146 }
+      photo: { left: width * 0.083, top: height * 0.519, w: width * 0.112, h: height * 0.246 }
     }
 
     const photoCenterX = front.photo.left + front.photo.w / 2
@@ -592,8 +575,11 @@ const downloadCarnet = async () => {
 
     if (affiliationPhotoUrl.value) {
       try {
+        // Limpiar la URL para eliminar parámetros de cache-busting si los tiene
+        const cleanPhotoUrl = affiliationPhotoUrl.value.split('?')[0]
+        
         const photoImage = await new Promise((resolve, reject) => {
-          fabric.Image.fromURL(affiliationPhotoUrl.value, (img) => {
+          fabric.Image.fromURL(cleanPhotoUrl, (img) => {
             if (!img) {
               reject(new Error('No se pudo cargar la foto del afiliado'))
               return
@@ -724,34 +710,6 @@ const downloadCarnet = async () => {
       evented: false
     }))
 
-    if (qrImageSrc.value) {
-      try {
-        const qrLayer = await new Promise((resolve, reject) => {
-          fabric.Image.fromURL(qrImageSrc.value, (img) => {
-            if (!img) {
-              reject(new Error('No se pudo cargar el QR'))
-              return
-            }
-            resolve(img)
-          }, {
-            crossOrigin: 'anonymous'
-          })
-        })
-
-        qrLayer.set({
-          left: front.qr.left,
-          top: front.qr.top,
-          selectable: false,
-          evented: false,
-          scaleX: front.qr.w / (qrLayer.width || front.qr.w),
-          scaleY: front.qr.h / (qrLayer.height || front.qr.h)
-        })
-
-        cardCanvas.add(qrLayer)
-      } catch (qrError) {
-        console.warn('No se pudo insertar el QR en la descarga del carné:', qrError)
-      }
-    }
 
     cardCanvas.renderAll()
 
@@ -788,12 +746,18 @@ onMounted(async () => {
 
   await checkExistingPhysicalOrder()
   await loadAffiliationPhoto()
-  await loadCardQrImage()
+
+  photoRefreshIntervalId.value = setInterval(async () => {
+    await loadAffiliationPhoto()
+  }, 2000)
 })
 
 onBeforeUnmount(() => {
   if (expiryTimer) {
     clearInterval(expiryTimer)
+  }
+  if (photoRefreshIntervalId.value) {
+    clearInterval(photoRefreshIntervalId.value)
   }
 })
 
@@ -1085,35 +1049,6 @@ useHead(() => ({
   object-position: center 28%;
   border: 1px solid rgba(114, 50, 51, 0.35);
   border-radius: 2px;
-}
-
-.carnet-mockup .card-qr {
-  position: absolute;
-  left: 39.9%;
-  top: 70.1%;
-  width: 7.9%;
-  height: 14.6%;
-  object-fit: contain;
-  background: #fff;
-  border: 1px solid rgba(114, 50, 51, 0.25);
-  border-radius: 1px;
-}
-
-.carnet-mockup .card-qr-placeholder {
-  position: absolute;
-  left: 39.9%;
-  top: 70.1%;
-  width: 7.9%;
-  height: 14.6%;
-  display: grid;
-  place-items: center;
-  background: #fff;
-  color: #723233;
-  font-family: 'Outfit', sans-serif;
-  font-size: clamp(0.34rem, 0.7vw, 0.62rem);
-  font-weight: 700;
-  border: 1px solid rgba(114, 50, 51, 0.25);
-  border-radius: 1px;
 }
 
 .carnet-actions {
