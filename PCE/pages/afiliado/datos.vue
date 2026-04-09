@@ -3,18 +3,18 @@
     <section class="card">
       <div class="header-row">
         <div>
-          <h1>Datos de afiliacion</h1>
-          <p>Consulta tus datos de socio y verifica el estado de tu afiliacion.</p>
+          <h1>{{ lt('Datos de afiliación', 'Dades d\'afiliació', 'Afiliazio datuak', 'Datos de afiliación') }}</h1>
+          <p>{{ lt('Consulta tus datos de socio y verifica el estado de tu afiliación.', 'Consulta les teves dades de soci i verifica l\'estat de la teva afiliació.', 'Kontsultatu zure bazkide-datuak eta egiaztatu zure afiliazioaren egoera.', 'Consulta os teus datos de socio e verifica o estado da túa afiliación.') }}</p>
         </div>
-        <NuxtLink to="/afiliado/ajustes" class="btn-back">Volver</NuxtLink>
+        <NuxtLink to="/afiliado/ajustes" class="btn-back">{{ lt('Volver', 'Tornar', 'Itzuli', 'Volver') }}</NuxtLink>
       </div>
 
       <div class="info-grid">
         <article class="panel">
-          <h2>Ficha personal</h2>
+          <h2>{{ lt('Ficha personal', 'Fitxa personal', 'Fitxa pertsonala', 'Ficha persoal') }}</h2>
           <div class="rows">
             <div class="row-item">
-              <span>Nombre completo</span>
+              <span>{{ lt('Nombre completo', 'Nom complet', 'Izen osoa', 'Nome completo') }}</span>
               <strong>{{ user?.full_name || '-' }}</strong>
             </div>
             <div class="row-item">
@@ -22,42 +22,42 @@
               <strong>{{ user?.email || '-' }}</strong>
             </div>
             <div class="row-item">
-              <span>DNI/NIF</span>
+              <span>{{ lt('DNI/NIF', 'DNI/NIF', 'NAN/NIF', 'DNI/NIF') }}</span>
               <strong>{{ userNif || '-' }}</strong>
             </div>
             <div class="row-item">
-              <span>Numero de socio</span>
+              <span>{{ lt('Número de socio', 'Número de soci', 'Bazkide zenbakia', 'Número de socio') }}</span>
               <strong>{{ userNumberId }}</strong>
             </div>
           </div>
         </article>
 
         <article class="panel">
-          <h2>Estado de afiliacion</h2>
+          <h2>{{ lt('Estado de afiliación', 'Estat d\'afiliació', 'Afiliazio egoera', 'Estado de afiliación') }}</h2>
           <div class="rows">
             <div class="row-item">
-              <span>Alta</span>
+              <span>{{ lt('Alta', 'Alta', 'Alta', 'Alta') }}</span>
               <strong>{{ affiliationDate }}</strong>
             </div>
             <div class="row-item">
-              <span>Proxima renovacion</span>
+              <span>{{ lt('Próxima renovación', 'Pròxima renovació', 'Hurrengo berritzea', 'Próxima renovación') }}</span>
               <strong>{{ renovationDate }}</strong>
             </div>
             <div class="row-item">
-              <span>Vigencia restante</span>
-              <strong>{{ daysUntilExpiry }} dias</strong>
+              <span>{{ lt('Vigencia restante', 'Vigència restant', 'Geratzen den indarraldia', 'Vixencia restante') }}</span>
+              <strong>{{ lt(`${daysUntilExpiry} días`, `${daysUntilExpiry} dies`, `${daysUntilExpiry} egun`, `${daysUntilExpiry} días`) }}</strong>
             </div>
             <div class="row-item">
-              <span>Estado</span>
-              <strong class="badge ok">Activo</strong>
+              <span>{{ lt('Estado', 'Estat', 'Egoera', 'Estado') }}</span>
+              <strong class="badge ok">{{ lt('Activo', 'Actiu', 'Aktiboa', 'Activo') }}</strong>
             </div>
           </div>
         </article>
       </div>
 
       <div class="actions">
-        <NuxtLink to="/afiliado/actualizar" class="btn-primary">Actualizar datos de afiliacion</NuxtLink>
-        <NuxtLink to="/carnet" class="btn-secondary">Ir a mi carne</NuxtLink>
+        <NuxtLink to="/afiliado/actualizar" class="btn-primary">{{ lt('Actualizar datos de afiliación', 'Actualitzar dades d\'afiliació', 'Afiliazio datuak eguneratu', 'Actualizar datos de afiliación') }}</NuxtLink>
+        <NuxtLink to="/carnet" class="btn-secondary">{{ lt('Ir a mi carné', 'Anar al meu carnet', 'Joan nire karnetera', 'Ir ao meu carné') }}</NuxtLink>
       </div>
     </section>
   </main>
@@ -69,8 +69,26 @@ definePageMeta({
 })
 
 const { user } = useAuth()
+const { locale } = useI18n()
 
-const formatDate = (value) => new Date(value).toLocaleDateString('es-ES')
+const lt = (es, ca, eu, gl) => {
+  if (locale.value === 'ca') return ca
+  if (locale.value === 'eu') return eu
+  if (locale.value === 'gl') return gl
+  return es
+}
+
+const formatDate = (value) => {
+  const localeCode = locale.value === 'ca'
+    ? 'ca-ES'
+    : locale.value === 'eu'
+      ? 'eu-ES'
+      : locale.value === 'gl'
+        ? 'gl-ES'
+        : 'es-ES'
+
+  return new Date(value).toLocaleDateString(localeCode)
+}
 
 const userCreatedAt = computed(() => {
   const raw = user.value?.created_at
@@ -118,11 +136,16 @@ const daysUntilExpiry = computed(() => {
 })
 
 useHead({
-  title: 'Datos de afiliacion - PCE',
+  title: `${lt('Datos de afiliación', 'Dades d\'afiliació', 'Afiliazio datuak', 'Datos de afiliación')} - PCE`,
   meta: [
     {
       name: 'description',
-      content: 'Panel de datos de afiliacion y estado de socio en PCE.'
+      content: lt(
+        'Panel de datos de afiliación y estado de socio en PCE.',
+        'Panell de dades d\'afiliació i estat de soci a PCE.',
+        'PCEko afiliazio datuen eta bazkide egoeraren panela.',
+        'Panel de datos de afiliación e estado de socio en PCE.'
+      )
     }
   ]
 })

@@ -3,36 +3,36 @@
     <section class="card">
       <div class="header-row">
         <div>
-          <h1>Historial de cuotas</h1>
-          <p>Consulta tus pedidos y pagos asociados a renovaciones y carné fisico.</p>
+          <h1>{{ lt('Historial de cuotas', 'Historial de quotes', 'Kuoten historiala', 'Historial de cotas') }}</h1>
+          <p>{{ lt('Consulta tus pedidos y pagos asociados a renovaciones y carné físico.', 'Consulta les teves comandes i pagaments associats a renovacions i carnet físic.', 'Kontsultatu zure eskaerak eta berritzeekin eta karnet fisikoarekin lotutako ordainketak.', 'Consulta os teus pedidos e pagos asociados ás renovacións e ao carné físico.') }}</p>
         </div>
-        <NuxtLink to="/afiliado/ajustes" class="btn-back">Volver</NuxtLink>
+        <NuxtLink to="/afiliado/ajustes" class="btn-back">{{ lt('Volver', 'Tornar', 'Itzuli', 'Volver') }}</NuxtLink>
       </div>
 
       <div class="summary">
         <div class="summary-item">
-          <span>Total de movimientos</span>
+          <span>{{ lt('Total de movimientos', 'Total de moviments', 'Mugimenduen guztira', 'Total de movementos') }}</span>
           <strong>{{ orders.length }}</strong>
         </div>
         <div class="summary-item">
-          <span>Importe acumulado</span>
+          <span>{{ lt('Importe acumulado', 'Import acumulat', 'Zenbateko metatua', 'Importe acumulado') }}</span>
           <strong>{{ totalAmount }} EUR</strong>
         </div>
       </div>
 
-      <div v-if="pending" class="state-box">Cargando historial...</div>
-      <div v-else-if="error" class="state-box error">No se pudo cargar el historial.</div>
-      <div v-else-if="!orders.length" class="state-box">Todavia no tienes movimientos registrados.</div>
+      <div v-if="pending" class="state-box">{{ lt('Cargando historial...', 'Carregant historial...', 'Historia kargatzen...', 'Cargando historial...') }}</div>
+      <div v-else-if="error" class="state-box error">{{ lt('No se pudo cargar el historial.', 'No s\'ha pogut carregar l\'historial.', 'Ezin izan da historia kargatu.', 'Non se puido cargar o historial.') }}</div>
+      <div v-else-if="!orders.length" class="state-box">{{ lt('Todavía no tienes movimientos registrados.', 'Encara no tens moviments registrats.', 'Oraindik ez duzu erregistratutako mugimendurik.', 'Aínda non tes movementos rexistrados.') }}</div>
 
       <div v-else class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Fecha</th>
-              <th>Importe</th>
-              <th>Pago</th>
-              <th>Envio</th>
-              <th>Referencia</th>
+              <th>{{ lt('Fecha', 'Data', 'Data', 'Data') }}</th>
+              <th>{{ lt('Importe', 'Import', 'Zenbatekoa', 'Importe') }}</th>
+              <th>{{ lt('Pago', 'Pagament', 'Ordainketa', 'Pago') }}</th>
+              <th>{{ lt('Envío', 'Enviament', 'Bidalketa', 'Envío') }}</th>
+              <th>{{ lt('Referencia', 'Referència', 'Erreferentzia', 'Referencia') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -59,6 +59,15 @@ definePageMeta({
   middleware: ['afiliado']
 })
 
+const { locale } = useI18n()
+
+const lt = (es, ca, eu, gl) => {
+  if (locale.value === 'ca') return ca
+  if (locale.value === 'eu') return eu
+  if (locale.value === 'gl') return gl
+  return es
+}
+
 const { data, pending, error } = await useFetch('/api/carnet/my-orders')
 
 const orders = computed(() => Array.isArray(data.value?.orders) ? data.value.orders : [])
@@ -72,13 +81,26 @@ const totalAmount = computed(() => {
 const formatDate = (value) => {
   const parsed = new Date(value)
   if (Number.isNaN(parsed.getTime())) return '-'
-  return parsed.toLocaleDateString('es-ES')
+
+  const localeCode = locale.value === 'ca'
+    ? 'ca-ES'
+    : locale.value === 'eu'
+      ? 'eu-ES'
+      : locale.value === 'gl'
+        ? 'gl-ES'
+        : 'es-ES'
+
+  return parsed.toLocaleDateString(localeCode)
 }
 
 const paymentStatusLabel = (status) => {
-  if (status === 'completed' || status === 'simulated_paid') return 'Pagado'
-  if (status === 'pending') return 'Pendiente'
-  return status || 'N/A'
+  if (status === 'completed' || status === 'simulated_paid') {
+    return lt('Pagado', 'Pagat', 'Ordainduta', 'Pagado')
+  }
+  if (status === 'pending') {
+    return lt('Pendiente', 'Pendent', 'Zain', 'Pendiente')
+  }
+  return status || lt('N/A', 'N/D', 'E/E', 'N/D')
 }
 
 const paymentStatusClass = (status) => {
@@ -88,10 +110,10 @@ const paymentStatusClass = (status) => {
 }
 
 const shippingStatusLabel = (status) => {
-  if (status === 'pending') return 'Pendiente'
-  if (status === 'shipped') return 'Enviado'
-  if (status === 'delivered') return 'Entregado'
-  return status || 'N/A'
+  if (status === 'pending') return lt('Pendiente', 'Pendent', 'Zain', 'Pendiente')
+  if (status === 'shipped') return lt('Enviado', 'Enviat', 'Bidalita', 'Enviado')
+  if (status === 'delivered') return lt('Entregado', 'Entregat', 'Entregatuta', 'Entregado')
+  return status || lt('N/A', 'N/D', 'E/E', 'N/D')
 }
 
 const shippingStatusClass = (status) => {
@@ -100,15 +122,20 @@ const shippingStatusClass = (status) => {
   return 'unknown'
 }
 
-useHead({
-  title: 'Historial de cuotas - PCE',
+useHead(() => ({
+  title: `${lt('Historial de cuotas', 'Historial de quotes', 'Kuoten historiala', 'Historial de cotas')} - PCE`,
   meta: [
     {
       name: 'description',
-      content: 'Historial de cuotas y pedidos del afiliado en PCE.'
+      content: lt(
+        'Historial de cuotas y pedidos del afiliado en PCE.',
+        'Historial de quotes i comandes de l\'afiliat a PCE.',
+        'PCEko afiliatuaren kuoten eta eskaeren historia.',
+        'Historial de cotas e pedidos do afiliado en PCE.'
+      )
     }
   ]
-})
+}))
 </script>
 
 <style scoped>
