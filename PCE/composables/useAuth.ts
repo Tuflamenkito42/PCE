@@ -57,8 +57,16 @@ export const useAuth = () => {
         } catch (e) {
             console.error('Logout API error:', e);
         }
+
         user.value = null;
-        navigateTo('/login');
+        try {
+            await navigateTo('/login', { replace: true });
+        } catch (e) {
+            console.error('Logout navigation error:', e);
+            if (process.client) {
+                window.location.href = '/login';
+            }
+        }
     };
 
     return {

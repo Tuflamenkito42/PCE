@@ -3,28 +3,28 @@
     <section class="card">
       <div class="head">
         <div>
-          <h1>Actualizar datos de afiliacion</h1>
-          <p>Modifica tus datos personales y de contacto sin volver a afiliarte.</p>
+          <h1>{{ lt('Actualizar datos de afiliación', 'Actualitzar dades d\'afiliació', 'Afiliazio datuak eguneratu', 'Actualizar datos de afiliación') }}</h1>
+          <p>{{ lt('Modifica tus datos personales y de contacto sin volver a afiliarte.', 'Modifica les teves dades personals i de contacte sense tornar-te a afiliar.', 'Aldatu datu pertsonalak eta kontaktukoak berriro afiliatu gabe.', 'Modifica os teus datos persoais e de contacto sen afiliarte de novo.') }}</p>
         </div>
-        <NuxtLink to="/afiliado/ajustes" class="btn-back">Volver</NuxtLink>
+        <NuxtLink to="/afiliado/ajustes" class="btn-back">{{ lt('Volver', 'Tornar', 'Itzuli', 'Volver') }}</NuxtLink>
       </div>
 
-      <div v-if="pending" class="state-box">Cargando tus datos...</div>
-      <div v-else-if="loadError" class="state-box error">No se pudieron cargar tus datos.</div>
+      <div v-if="pending" class="state-box">{{ lt('Cargando tus datos...', 'Carregant les teves dades...', 'Zure datuak kargatzen...', 'Cargando os teus datos...') }}</div>
+      <div v-else-if="loadError" class="state-box error">{{ lt('No se pudieron cargar tus datos.', 'No s\'han pogut carregar les teves dades.', 'Ezin izan dira zure datuak kargatu.', 'Non se puideron cargar os teus datos.') }}</div>
       <div v-else-if="!hasActiveAffiliation" class="state-box warning">
-        Aun no tienes una afiliacion activa. Primero debes completar tu afiliacion.
-        <NuxtLink to="/afiliacion" class="inline-link">Ir a afiliarme</NuxtLink>
+        {{ lt('Aún no tienes una afiliación activa. Primero debes completar tu afiliación.', 'Encara no tens una afiliació activa. Primer has de completar la teva afiliació.', 'Oraindik ez duzu afiliazio aktiborik. Lehenik zure afiliazioa osatu behar duzu.', 'Aínda non tes unha afiliación activa. Primeiro debes completar a túa afiliación.') }}
+        <NuxtLink to="/afiliacion" class="inline-link">{{ lt('Ir a afiliarme', 'Anar a afiliar-me', 'Afiliatzera joan', 'Ir a afiliarme') }}</NuxtLink>
       </div>
 
       <form v-else class="form" @submit.prevent="saveData">
         <div class="grid">
           <label>
-            Nombre
+            {{ lt('Nombre', 'Nom', 'Izena', 'Nome') }}
             <input v-model="form.name" type="text" required />
           </label>
 
           <label>
-            Apellidos
+            {{ lt('Apellidos', 'Cognoms', 'Abizenak', 'Apelidos') }}
             <input v-model="form.lastname" type="text" required />
           </label>
 
@@ -34,12 +34,12 @@
           </label>
 
           <label>
-            Fecha de nacimiento
+            {{ lt('Fecha de nacimiento', 'Data de naixement', 'Jaiotze data', 'Data de nacemento') }}
             <input v-model="form.birthdate" type="date" required />
           </label>
 
           <label>
-            Telefono
+            {{ lt('Teléfono', 'Telèfon', 'Telefonoa', 'Teléfono') }}
             <input v-model="form.phone" type="tel" required />
           </label>
 
@@ -58,7 +58,7 @@
               </div>
             </div>
             <label class="photo-input-label">
-              Cambiar foto
+              {{ lt('Cambiar foto', 'Canviar foto', 'Argazkia aldatu', 'Cambiar foto') }}
               <input
                 type="file"
                 accept="image/*"
@@ -71,10 +71,10 @@
           <!-- Si no hay foto guardada -->
           <div v-else-if="!profile?.affiliation?.photoUrl && !photoPreview">
             <div class="photo-preview">
-              <div class="photo-placeholder">Sin foto</div>
+              <div class="photo-placeholder">{{ lt('Sin foto', 'Sense foto', 'Argazkirik ez', 'Sen foto') }}</div>
             </div>
             <label class="photo-input-label">
-              Seleccionar foto
+              {{ lt('Seleccionar foto', 'Seleccionar foto', 'Argazkia hautatu', 'Seleccionar foto') }}
               <input
                 type="file"
                 accept="image/*"
@@ -107,7 +107,7 @@
 
                 <aside class="editor-side-panel">
                   <p class="mouse-help">
-                    Ajusta con el raton: arrastra para mover y usa la rueda para hacer zoom.
+                    {{ lt('Ajusta con el ratón: arrastra para mover y usa la rueda para hacer zoom.', 'Ajusta amb el ratolí: arrossega per moure i usa la roda per fer zoom.', 'Doitu saguarekin: arrastatu mugitzeko eta erabili gurpila zooma egiteko.', 'Axusta co rato: arrastra para mover e usa a roda para facer zoom.') }}
                   </p>
 
                   <button
@@ -116,12 +116,12 @@
                     class="btn-reset-adjust"
                     :disabled="savingPhoto"
                   >
-                    Recentrar imagen
+                    {{ lt('Recentrar imagen', 'Recentrar imatge', 'Irudia erdiratu', 'Recentrar imaxe') }}
                   </button>
 
                   <div class="editor-controls">
                     <div class="zoom-control">
-                      <span class="control-label">Zoom</span>
+                      <span class="control-label">{{ lt('Zoom', 'Zoom', 'Zoom', 'Zoom') }}</span>
                       <input
                         v-model.number="photoZoom"
                         type="range"
@@ -166,7 +166,7 @@
                         class="btn-cancel"
                         :disabled="savingPhoto"
                       >
-                        Cancelar
+                        {{ lt('Cancelar', 'Cancel·lar', 'Ezeztatu', 'Cancelar') }}
                       </button>
                       <button
                         type="button"
@@ -174,8 +174,8 @@
                         class="btn-confirm"
                         :disabled="savingPhoto"
                       >
-                        <span v-if="savingPhoto">Guardando...</span>
-                        <span v-else>Confirmar foto</span>
+                        <span v-if="savingPhoto">{{ lt('Guardando...', 'Desant...', 'Gordetzen...', 'Gardando...') }}</span>
+                        <span v-else>{{ lt('Confirmar foto', 'Confirmar foto', 'Argazkia baieztatu', 'Confirmar foto') }}</span>
                       </button>
                     </div>
                   </div>
@@ -190,7 +190,7 @@
 
         <!-- CARNET PREVIEW -->
         <div v-if="profile?.affiliation" class="carnet-preview-section">
-          <h3>Vista previa del carné</h3>
+          <h3>{{ lt('Vista previa del carné', 'Vista prèvia del carnet', 'Karnetaren aurrebista', 'Vista previa do carné') }}</h3>
           <div class="carnet-mockup">
             <img class="card-template" src="/images/carnesocio.png" alt="Plantilla del carné de socio" />
             <div class="card-field card-name">{{ (profile.affiliation.name || '').toUpperCase() }} {{ (profile.affiliation.lastname || '').toUpperCase() }}</div>
@@ -203,10 +203,10 @@
 
         <div class="actions">
           <button class="btn-primary" type="submit" :disabled="saving">
-            <span v-if="saving">Guardando...</span>
-            <span v-else>Guardar cambios</span>
+            <span v-if="saving">{{ lt('Guardando...', 'Desant...', 'Gordetzen...', 'Gardando...') }}</span>
+            <span v-else>{{ lt('Guardar cambios', 'Desar canvis', 'Aldaketak gorde', 'Gardar cambios') }}</span>
           </button>
-          <NuxtLink class="btn-secondary" to="/afiliado/datos">Ver ficha</NuxtLink>
+          <NuxtLink class="btn-secondary" to="/afiliado/datos">{{ lt('Ver ficha', 'Veure fitxa', 'Fitxa ikusi', 'Ver ficha') }}</NuxtLink>
         </div>
 
         <p v-if="message" class="msg ok">{{ message }}</p>
@@ -220,6 +220,15 @@
 definePageMeta({
   middleware: ['afiliado']
 })
+
+const { locale } = useI18n()
+
+const lt = (es, ca, eu, gl) => {
+  if (locale.value === 'ca') return ca
+  if (locale.value === 'eu') return eu
+  if (locale.value === 'gl') return gl
+  return es
+}
 
 const { data, pending, error: loadError, refresh } = await useFetch('/api/afiliacion/my-data')
 
@@ -295,9 +304,9 @@ const saveData = async () => {
     })
 
     await refresh()
-    message.value = 'Tus datos se han actualizado correctamente.'
+    message.value = lt('Tus datos se han actualizado correctamente.', 'Les teves dades s\'han actualitzat correctament.', 'Zure datuak ondo eguneratu dira.', 'Os teus datos actualizáronse correctamente.')
   } catch (err) {
-    errorMessage.value = err?.data?.message || err?.message || 'No se pudieron guardar los cambios.'
+    errorMessage.value = err?.data?.message || err?.message || lt('No se pudieron guardar los cambios.', 'No s\'han pogut desar els canvis.', 'Ezin izan dira aldaketak gorde.', 'Non se puideron gardar os cambios.')
   } finally {
     saving.value = false
   }
@@ -309,7 +318,7 @@ const confirmPhotoEdit = async () => {
   savingPhoto.value = true
   try {
     const blob = await cropAndExportPhoto()
-    if (!blob) throw new Error('No se pudo procesar la imagen')
+    if (!blob) throw new Error(lt('No se pudo procesar la imagen', 'No s\'ha pogut processar la imatge', 'Ezin izan da irudia prozesatu', 'Non se puido procesar a imaxe'))
 
     const formData = new FormData()
     formData.append('photo', blob, 'photo.jpg')
@@ -320,24 +329,29 @@ const confirmPhotoEdit = async () => {
     })
 
     await refresh()
-    photoSuccess.value = 'Foto actualizada correctamente.'
+    photoSuccess.value = lt('Foto actualizada correctamente.', 'Foto actualitzada correctament.', 'Argazkia ondo eguneratu da.', 'Foto actualizada correctamente.')
     cancelPhotoEdit()
   } catch (err) {
-    photoError.value = err?.data?.message || err?.message || 'No se pudo actualizar la foto.'
+    photoError.value = err?.data?.message || err?.message || lt('No se pudo actualizar la foto.', 'No s\'ha pogut actualitzar la foto.', 'Ezin izan da argazkia eguneratu.', 'Non se puido actualizar a foto.')
   } finally {
     savingPhoto.value = false
   }
 }
 
-useHead({
-  title: 'Actualizar datos de afiliacion - PCE',
+useHead(() => ({
+  title: `${lt('Actualizar datos de afiliación', 'Actualitzar dades d\'afiliació', 'Afiliazio datuak eguneratu', 'Actualizar datos de afiliación')} - PCE`,
   meta: [
     {
       name: 'description',
-      content: 'Apartado privado para actualizar datos de afiliacion en PCE.'
+      content: lt(
+        'Apartado privado para actualizar datos de afiliación en PCE.',
+        'Apartat privat per actualitzar dades d\'afiliació a PCE.',
+        'PCEko afiliazio datuak eguneratzeko gune pribatua.',
+        'Apartado privado para actualizar datos de afiliación en PCE.'
+      )
     }
   ]
-})
+}))
 </script>
 
 <style scoped>

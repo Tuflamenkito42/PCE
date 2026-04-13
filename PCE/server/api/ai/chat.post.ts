@@ -1,7 +1,8 @@
-import { createError, defineEventHandler, getHeader, readBody } from 'h3'
+import { createError, defineEventHandler, getCookie, getHeader, readBody } from 'h3'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { searchWebsiteKnowledge } from '../../utils/site-knowledge'
+import { verifyAuthToken } from '../../utils/auth-token'
 
 type ChatTurn = {
   role: 'user' | 'assistant'
@@ -43,14 +44,12 @@ let programPromisesCache: ProgramPromise[] | null = null
 
 const chatAttempts = new Map<string, { count: number; resetAt: number }>()
 
-const checkRateLimit = (ip: string) => {
+const checkRateLimit = (key: string, limit: number, windowMs: number) => {
   const now = Date.now()
-  const windowMs = 15 * 60 * 1000
-  const limit = 40
 
-  const entry = chatAttempts.get(ip)
+  const entry = chatAttempts.get(key)
   if (!entry || now > entry.resetAt) {
-    chatAttempts.set(ip, { count: 1, resetAt: now + windowMs })
+    chatAttempts.set(key, { count: 1, resetAt: now + windowMs })
     return true
   }
 
@@ -669,18 +668,44 @@ const pickReasoningHits = (intent: Intent, canonicalHits: Hit[], knowledgeHits: 
   return knowledgeHits.slice(0, 4)
 }
 
+const getClientIp = (event: any) => {
+  const forwarded = String(getHeader(event, 'x-forwarded-for') || '').trim()
+  if (forwarded) {
+    return forwarded.split(',')[0]?.trim() || 'unknown'
+  }
+  return String(getHeader(event, 'x-real-ip') || 'unknown').trim() || 'unknown'
+}
+
 export default defineEventHandler(async (event) => {
-  const clientIp = String(getHeader(event, 'x-forwarded-for') || getHeader(event, 'x-real-ip') || 'unknown')
-  if (!checkRateLimit(clientIp)) {
+  const clientIp = getClientIp(event)
+  const windowMs = 15 * 60 * 1000
+  const ipLimit = 40
+  const userLimit = 60
+
+  const authToken = getCookie(event, 'auth_token')
+  let userRateKey: string | null = null
+  if (authToken) {
+    try {
+      const decoded = verifyAuthToken(authToken)
+      userRateKey = decoded.id ? `id:${decoded.id}` : `email:${String(decoded.email || '').toLowerCase()}`
+    } catch {
+      userRateKey = null
+    }
+  }
+
+  const ipAllowed = checkRateLimit(`ip:${clientIp}`, ipLimit, windowMs)
+  const userAllowed = userRateKey ? checkRateLimit(`user:${userRateKey}`, userLimit, windowMs) : true
+  if (!ipAllowed || !userAllowed) {
     throw createError({
       statusCode: 429,
-      statusMessage: 'Demasiadas peticiones de chat. Espera un poco e intentalo de nuevo.'
+      statusMessage: 'Demasiadas peticiones de chat. Espera unos minutos e intentalo de nuevo.'
     })
   }
 
   const config = useRuntimeConfig()
   const ollamaBaseUrl = config.ollamaBaseUrl || 'http://127.0.0.1:11434'
   const model = config.ollamaChatModel || 'llama3.1:8b'
+  const chatNumPredict = Number(config.ollamaChatNumPredict || 800)
   const needsDockerFallback = /localhost|127\.0\.0\.1/i.test(ollamaBaseUrl)
   const candidateBaseUrls = Array.from(new Set([
     ollamaBaseUrl,
@@ -974,7 +999,7 @@ ${knowledgeContext}`
     options: {
       temperature: 0.15,
       top_p: 0.85,
-      num_predict: 260
+      num_predict: chatNumPredict
     }
   }
 

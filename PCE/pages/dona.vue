@@ -137,7 +137,7 @@
         <div class="card-logo">
           <img src="/images/logo.png" alt="Logo PCE" />
         </div>
-        <h3>{{ lt('¿A DÓNDE VA TU DINERO?', 'ON VA ELS TEUS DINERS?', 'NORA DOA ZURE DIRUA?', 'A ONDE VAI O TEU DIÑEIRO?') }}</h3>
+        <h3 class="sidebar-title">{{ lt('¿A DÓNDE VA TU DINERO?', 'ON VA ELS TEUS DINERS?', 'NORA DOA ZURE DIRUA?', 'A ONDE VAI O TEU DIÑEIRO?') }}</h3>
         <ul class="benefits-list">
           <li>{{ lt('1. CAMPAÑAS DE PREVENCIÓN', '1. CAMPANYES DE PREVENCIÓ', '1. PREBENTZIO KANPAINAK', '1. CAMPAÑAS DE PREVENCIÓN') }}</li>
           <li>{{ lt('2. MATERIAL DE PROTECCIÓN', '2. MATERIAL DE PROTECCIÓ', '2. BABES MATERIALA', '2. MATERIAL DE PROTECCIÓN') }}</li>
@@ -503,11 +503,15 @@ useHead({
 
 .donation-info h3 {
   font-family: 'Cinzel', serif;
-  color: #5E2C2C;
+  color: #723233;
   font-size: 1.5rem;
   margin-bottom: 40px;
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+.donation-info .sidebar-title {
+  color: #723233 !important;
 }
 
 .benefits-list {

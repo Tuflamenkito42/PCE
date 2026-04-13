@@ -1,6 +1,6 @@
 import { createError, defineEventHandler, getRouterParam, sendStream, setHeader } from 'h3'
 import { createReadStream, existsSync } from 'node:fs'
-import { basename } from 'node:path'
+import { basename, join, resolve } from 'node:path'
 import { validateAdmin } from '../../../../utils/admin'
 import { useDb } from '../../../../utils/db'
 
@@ -24,7 +24,14 @@ export default defineEventHandler(async (event) => {
   }
 
   const filePath = String(record.cv_file_path)
-  if (!existsSync(filePath)) {
+  const allowedBasePath = resolve(join(process.cwd(), 'private_uploads', 'curriculum'))
+  const resolvedFilePath = resolve(filePath)
+
+  if (!resolvedFilePath.startsWith(allowedBasePath)) {
+    throw createError({ statusCode: 403, message: 'Ruta de archivo no permitida.' })
+  }
+
+  if (!existsSync(resolvedFilePath)) {
     throw createError({ statusCode: 404, message: 'No se encontró el archivo del currículum.' })
   }
 
@@ -34,5 +41,5 @@ export default defineEventHandler(async (event) => {
   setHeader(event, 'Content-Type', mimeType)
   setHeader(event, 'Content-Disposition', `attachment; filename="${originalName}"`)
 
-  return sendStream(event, createReadStream(filePath))
+  return sendStream(event, createReadStream(resolvedFilePath))
 })

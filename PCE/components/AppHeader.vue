@@ -4,6 +4,8 @@ import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 const { user, logout } = useAuth()
 const { t, setLocale, locale, supportedLocales } = useI18n()
 const runtimeConfig = useRuntimeConfig()
+const route = useRoute()
+const affiliationRefreshKey = useState('pce-affiliation-refresh-key', () => 0)
 const languageMenuRef = ref(null)
 const languageMenuOpen = ref(false)
 // Optional: user initials
@@ -168,6 +170,14 @@ onBeforeUnmount(() => {
 })
 
 watch(() => user.value?.email, () => {
+  refreshAffiliationStatus()
+})
+
+watch(() => route.fullPath, () => {
+  refreshAffiliationStatus()
+})
+
+watch(affiliationRefreshKey, () => {
   refreshAffiliationStatus()
 })
 

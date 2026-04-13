@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     `)
 
     const existingColumns = new Set((columns || []).map((col: any) => String(col.COLUMN_NAME || '').toLowerCase()))
-    if (!existingColumns.has('photo_url')) {
+    if (!existingColumns.has('photo_url') && !existingColumns.has('card_photo_path')) {
       return { photoUrl: null }
     }
 
@@ -21,14 +21,13 @@ export default defineEventHandler(async (event) => {
     const normalizedDni = String(user.dni || '').toUpperCase().trim()
 
     const [rows]: any = await db.query(
-      `SELECT photo_url
+      `SELECT COALESCE(photo_url, card_photo_path) AS photo_url
        FROM affiliations
        WHERE (
          email = ?
          OR (? <> '' AND dni = ?)
        )
-         AND photo_url IS NOT NULL
-         AND photo_url <> ''
+         AND (photo_url IS NOT NULL OR card_photo_path IS NOT NULL)
        ORDER BY created_at DESC
        LIMIT 1`,
       [normalizedEmail, normalizedDni, normalizedDni]

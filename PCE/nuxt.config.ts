@@ -37,6 +37,7 @@ export default defineNuxtConfig({
     geminiApiKey: process.env.GEMINI_API_KEY || '',
     ollamaBaseUrl: process.env.OLLAMA_BASE_URL || 'http://127.0.0.1:11434',
     ollamaChatModel: process.env.OLLAMA_CHAT_MODEL || 'llama3.1:8b',
+    ollamaChatNumPredict: Number(process.env.OLLAMA_CHAT_NUM_PREDICT || '800'),
     ollamaNewsModel: process.env.OLLAMA_NEWS_MODEL || 'mistral:7b',
 
 

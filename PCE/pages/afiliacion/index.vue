@@ -414,7 +414,7 @@
                 </div>
 
                 <div class="success-actions">
-                  <NuxtLink to="/" class="btn btn-finish">{{ lt('VOLVER AL INICIO', 'TORNAR A L INICI', 'HASIERARA ITZULI', 'VOLVER AO INICIO') }}</NuxtLink>
+                  <button type="button" class="btn btn-finish" @click="goHomeAfterAffiliation">{{ lt('VOLVER AL INICIO', 'TORNAR A L INICI', 'HASIERARA ITZULI', 'VOLVER AO INICIO') }}</button>
                 </div>
               </div>
             </div>
@@ -528,6 +528,7 @@ const hasAffiliationRedirected = ref(false)
 const affiliationNotice = ref('')
 
 const { user } = useAuth()
+const affiliationRefreshKey = useState('pce-affiliation-refresh-key', () => 0)
 
 const splitFullName = (value) => {
   const normalized = String(value || '').trim().replace(/\s+/g, ' ')
@@ -1045,6 +1046,11 @@ const handleCardChange = (complete) => {
   cardComplete.value = complete
 }
 
+const goHomeAfterAffiliation = async () => {
+  affiliationRefreshKey.value++
+  await navigateTo(`/?refresh=${Date.now()}`)
+}
+
 const handleSubmit = async () => {
   if (isAlreadyAffiliated.value) {
     affiliationNotice.value = lt('Ya tienes una afiliación activa. Te llevamos a tu carné.', 'Ja tens una afiliació activa. Et portem al teu carnet.', 'Dagoeneko afiliazio aktiboa duzu. Zure karnetera eramango zaitugu.', 'Xa tes unha afiliación activa. Levámoste ao teu carné.')
@@ -1113,6 +1119,8 @@ const handleSubmit = async () => {
           status: 'simulated_paid'
         })
 
+        affiliationRefreshKey.value++
+
         currentStep.value = 5
         return
       }
@@ -1148,6 +1156,8 @@ const handleSubmit = async () => {
       payment_intent_id: paymentData.clientSecret.split('_secret')[0],
       status: 'paid'
     })
+
+    affiliationRefreshKey.value++
 
     currentStep.value = 5
     

@@ -1,10 +1,6 @@
-export type SupportedLocale = 'es' | 'ca' | 'eu' | 'gl'
+import type { LocaleOption, SupportedLocale } from '~/types/i18n'
 
-export type LocaleOption = {
-  code: SupportedLocale
-  name: string
-  flag: string
-}
+export type { SupportedLocale }
 
 export const localeOptions: LocaleOption[] = [
   { code: 'es', name: 'Castellano', flag: '/icons/flags/es.svg' },
@@ -13,6 +9,8 @@ export const localeOptions: LocaleOption[] = [
   { code: 'gl', name: 'Galego', flag: '/icons/flags/gl.svg' }
 ]
 
+// Spanish strings (source language - these are automatically translated by LibreTranslate)
+// Remove all non-Spanish translations as they are now auto-generated
 export const translations: Record<SupportedLocale, Record<string, string>> = {
   es: {
     'brand.proteccion': 'PROTECCIÓN',

@@ -746,8 +746,10 @@ useHead(() => ({
   align-items: center;
   justify-content: center;
   gap: 8px;
+  flex-shrink: 0;
+  min-width: 162px;
   background: linear-gradient(180deg, #f4eeef 0%, #e7dddf 100%);
-  color: #3f1f1f;
+  color: #3f1f1f !important;
   border: 1px solid rgba(100, 46, 46, 0.35);
   border-radius: 10px;
   padding: 10px 15px;
@@ -765,8 +767,15 @@ useHead(() => ({
 }
 
 .file-picker .file-cta:disabled {
-  opacity: 0.6;
+  opacity: 0.85;
+  color: #5a3a3a !important;
+  background: #efe7e8;
   cursor: not-allowed;
+}
+
+.file-picker .file-cta span {
+  color: inherit !important;
+  opacity: 1;
 }
 
 .file-name {

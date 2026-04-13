@@ -52,6 +52,17 @@ services:
     networks:
       - pce_network
 
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - LT_LOAD_ONLY=es,ca,eu,gl
+      - LT_DISABLE_WEB_UI=False
+    networks:
+      - pce_network
+
 volumes:
   mysql_data:
 

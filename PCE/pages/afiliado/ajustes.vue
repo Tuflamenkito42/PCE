@@ -20,6 +20,11 @@
           <p>{{ lt('Consulta tu estado de renovación y últimos movimientos.', 'Consulta el teu estat de renovació i els últims moviments.', 'Kontsultatu zure berritze egoera eta azken mugimenduak.', 'Consulta o teu estado de renovación e os últimos movementos.') }}</p>
         </NuxtLink>
 
+        <NuxtLink to="/afiliado/seguridad" class="action-card">
+          <h2>{{ lt('Seguridad y suscripción', 'Seguretat i subscripció', 'Segurtasuna eta harpidetza', 'Seguridade e subscrición') }}</h2>
+          <p>{{ lt('Cambia tu contraseña y gestiona la baja de afiliación.', 'Canvia la teva contrasenya i gestiona la baixa d\'afiliació.', 'Aldatu pasahitza eta kudeatu afiliazio baja.', 'Cambia o teu contrasinal e xestiona a baixa de afiliación.') }}</p>
+        </NuxtLink>
+
         <button type="button" class="action-card logout" @click="logout">
           <h2>{{ t('auth.logout') }}</h2>
           <p>{{ lt('Cierra sesión de forma segura.', 'Tanca la sessió de manera segura.', 'Itxi saioa modu seguruan.', 'Pecha sesión de forma segura.') }}</p>

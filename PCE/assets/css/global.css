@@ -37,7 +37,7 @@ body {
 
 body.theme-dark {
     color: #d8d1d2;
-    background: linear-gradient(180deg, #2b2324 0%, #1a1718 100%);
+    background: #161316;
     background-attachment: fixed;
 }
 
@@ -58,7 +58,7 @@ body::before {
 
 body.theme-dark::before {
     opacity: 0.08;
-    filter: grayscale(0.3);
+    filter: grayscale(0.35) contrast(0.95);
 }
 
 body.theme-dark h1,
@@ -75,8 +75,8 @@ body.theme-dark label {
 }
 
 body.theme-dark .main-header {
-    background-color: #2f2829;
-    border-bottom-color: rgba(255, 255, 255, 0.08);
+    background-color: #211b1d;
+    border-bottom-color: #3b3134;
 }
 
 body.theme-dark .main-nav .nav-link,
@@ -113,22 +113,139 @@ body.theme-dark .language-option span {
 }
 
 body.theme-dark .language-current {
-    background: #2f2829 !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
+    background: #221c1e !important;
+    border-color: #4e4246 !important;
 }
 
 body.theme-dark .language-menu {
-    background: #2f2829 !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
+    background: #221c1e !important;
+    border-color: #4e4246 !important;
 }
 
 body.theme-dark .language-option:hover {
-    background: rgba(185, 175, 176, 0.12) !important;
+    background: #30282a !important;
 }
 
 body.theme-dark .language-option.is-active {
-    border-color: #b9afb0 !important;
-    background: rgba(185, 175, 176, 0.18) !important;
+    border-color: #7f6f73 !important;
+    background: #393033 !important;
+}
+
+body.theme-dark main,
+body.theme-dark section,
+body.theme-dark article {
+    background: transparent !important;
+}
+
+body.theme-dark .card,
+body.theme-dark .state-box,
+body.theme-dark .action-card,
+body.theme-dark .form-container,
+body.theme-dark .benefits-sidebar,
+body.theme-dark .newsletter,
+body.theme-dark .modal-content,
+body.theme-dark .table-wrap,
+body.theme-dark .panel,
+body.theme-dark .carnet-card,
+body.theme-dark .payment-step,
+body.theme-dark .content-card,
+body.theme-dark .glass,
+body.theme-dark .form-shell,
+body.theme-dark .legal-content,
+body.theme-dark .hero,
+body.theme-dark .card-shell,
+body.theme-dark .kpi-card,
+body.theme-dark .error-card,
+body.theme-dark .search-box,
+body.theme-dark .poll-result-card,
+body.theme-dark .contact-offices-box,
+body.theme-dark .social-links-container,
+body.theme-dark .feature-card,
+body.theme-dark .event-card,
+body.theme-dark .scanner-section,
+body.theme-dark .form-section,
+body.theme-dark .form-group-box {
+    background-color: #2a2325 !important;
+    border: 1px solid #5a4c50 !important;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+    backdrop-filter: none;
+}
+
+body.theme-dark .card,
+body.theme-dark .state-box,
+body.theme-dark .action-card,
+body.theme-dark .panel,
+body.theme-dark .kpi-card,
+body.theme-dark .feature-card,
+body.theme-dark .event-card,
+body.theme-dark .legal-content,
+body.theme-dark .contact-offices-box,
+body.theme-dark .social-links-container {
+    outline: 1px solid #3f3437;
+    outline-offset: -1px;
+}
+
+/* Home/news/promises/newsletter blocks that used semi-transparent scoped styles */
+body.theme-dark .news-card,
+body.theme-dark .promise-card,
+body.theme-dark .newsletter-section,
+body.theme-dark .social-box,
+body.theme-dark .ia-promo-card {
+    background: #2a2325 !important;
+    border: 1px solid #5a4c50 !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Home welcome: only one block, no square inside square */
+body.theme-dark .welcome-section,
+body.theme-dark .welcome-box {
+    border: none !important;
+    outline: none !important;
+}
+
+body.theme-dark .welcome-section {
+    background: #2a2325 !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.theme-dark .welcome-container,
+body.theme-dark .welcome-box {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+body.theme-dark .news-card .news-image,
+body.theme-dark .newsletter-section .newsletter-input,
+body.theme-dark .newsletter-section input[type="email"] {
+    background: #181416 !important;
+    border-color: #5a4c50 !important;
+}
+
+body.theme-dark .promise-card::before,
+body.theme-dark .news-card,
+body.theme-dark .social-box {
+    border-color: #5a4c50 !important;
+}
+
+body.theme-dark input,
+body.theme-dark textarea,
+body.theme-dark select {
+    background: #1c1719 !important;
+    color: #e7e0e1 !important;
+    border-color: #5a4c50 !important;
+}
+
+body.theme-dark input::placeholder,
+body.theme-dark textarea::placeholder {
+    color: #9f9598 !important;
+}
+
+body.theme-dark .btn-secondary,
+body.theme-dark .btn-back,
+body.theme-dark .btn-ghost {
+    background: #2d2528 !important;
+    color: #e7e0e1 !important;
+    border-color: #5a4c50 !important;
 }
 
 h1,

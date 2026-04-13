@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   const db = useDb()
 
   const [rows]: any = await db.query(
-    `SELECT id, name, lastname, dni, email, birthdate, phone, quota, status, created_at, card_photo_path
+    `SELECT id, name, lastname, dni, email, birthdate, phone, quota, status, created_at, COALESCE(card_photo_path, photo_url) AS card_photo_path
      FROM affiliations
      WHERE id = ?
      LIMIT 1`,

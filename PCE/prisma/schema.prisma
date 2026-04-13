@@ -32,6 +32,9 @@ model Affiliation {
   phone            String?
   quota            Decimal  @db.Decimal(10, 2)
   message          String?  @db.Text
+  cardPhotoPath    String?  @map("card_photo_path")
+  cardPhotoMime    String?  @map("card_photo_mime")
+  photoUrl         String?  @map("photo_url")
   paymentIntentId String?  @map("payment_intent_id")
   status           String?  @default("pending")
   createdAt        DateTime @default(now()) @map("created_at")
@@ -81,4 +84,50 @@ model Vote {
   createdAt       DateTime @default(now()) @map("created_at")
 
   @@map("votes")
+}
+
+model JobApplication {
+  id             Int      @id @default(autoincrement())
+  offerId        String   @map("offer_id")
+  fullName       String   @map("full_name")
+  email          String
+  phone          String
+  city           String
+  availability   String
+  motivation     String   @db.Text
+  cvFilePath     String?  @map("cv_file_path")
+  cvOriginalName String?  @map("cv_original_name")
+  cvMimeType     String?  @map("cv_mime_type")
+  status         String?  @default("new")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([status], map: "idx_job_status")
+  @@index([createdAt], map: "idx_job_created_at")
+  @@map("job_applications")
+}
+
+model CarnetOrder {
+  id              Int      @id @default(autoincrement())
+  userId          Int?     @map("user_id")
+  fullName        String   @map("full_name")
+  email           String
+  phone           String?
+  address         String?
+  city            String?
+  postalCode      String?  @map("postal_code")
+  country         String?
+  nif             String?
+  numeroSocio     String?  @map("numero_socio")
+  amount          Decimal  @default(5.00) @db.Decimal(10, 2)
+  paymentIntentId String?  @map("payment_intent_id")
+  status          String?  @default("completed")
+  shippingStatus  String?  @default("pending") @map("shipping_status")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([email], map: "idx_carnet_email")
+  @@index([status], map: "idx_carnet_status")
+  @@index([shippingStatus], map: "idx_carnet_shipping_status")
+  @@index([createdAt], map: "idx_carnet_created_at")
+  @@map("carnet_orders")
 }

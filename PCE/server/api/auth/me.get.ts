@@ -13,14 +13,13 @@ const getAffiliationPhotoUrl = async (email?: string | null, dni?: string | null
 
     try {
         const [rows]: any = await db.query(
-            `SELECT card_photo_path
+                        `SELECT COALESCE(card_photo_path, photo_url) AS card_photo_path
              FROM affiliations
              WHERE (
                email = ?
                OR (? <> '' AND dni = ?)
              )
-               AND card_photo_path IS NOT NULL
-               AND card_photo_path <> ''
+                             AND (card_photo_path IS NOT NULL OR photo_url IS NOT NULL)
              ORDER BY created_at DESC
              LIMIT 1`,
             [normalizedEmail, normalizedDni, normalizedDni]

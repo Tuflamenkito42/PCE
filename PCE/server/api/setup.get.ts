@@ -40,8 +40,11 @@ export default defineEventHandler(async (event) => {
                 phone VARCHAR(20),
                 quota DECIMAL(10, 2) NOT NULL,
                 message TEXT,
+                card_photo_path VARCHAR(255),
+                card_photo_mime VARCHAR(120),
                 payment_intent_id VARCHAR(255),
                 status VARCHAR(50) DEFAULT 'pending',
+                photo_url VARCHAR(255),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
@@ -87,6 +90,52 @@ export default defineEventHandler(async (event) => {
                 option_selected VARCHAR(255) NOT NULL,
                 user_id INT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS job_applications (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                offer_id VARCHAR(120) NOT NULL,
+                full_name VARCHAR(160) NOT NULL,
+                email VARCHAR(160) NOT NULL,
+                phone VARCHAR(80) NOT NULL,
+                city VARCHAR(120) NOT NULL,
+                availability VARCHAR(255) NOT NULL,
+                motivation TEXT NOT NULL,
+                cv_file_path VARCHAR(255) NULL,
+                cv_original_name VARCHAR(255) NULL,
+                cv_mime_type VARCHAR(120) NULL,
+                status VARCHAR(40) DEFAULT 'new',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_job_status (status),
+                INDEX idx_job_created_at (created_at)
+            )
+        `);
+
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS carnet_orders (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NULL,
+                full_name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                phone VARCHAR(20) NULL,
+                address VARCHAR(255) NULL,
+                city VARCHAR(120) NULL,
+                postal_code VARCHAR(10) NULL,
+                country VARCHAR(120) NULL,
+                nif VARCHAR(20) NULL,
+                numero_socio VARCHAR(50) NULL,
+                amount DECIMAL(10, 2) DEFAULT 5.00,
+                payment_intent_id VARCHAR(255) NULL,
+                status VARCHAR(50) DEFAULT 'completed',
+                shipping_status VARCHAR(50) DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                INDEX idx_carnet_email (email),
+                INDEX idx_carnet_status (status),
+                INDEX idx_carnet_shipping_status (shipping_status),
+                INDEX idx_carnet_created_at (created_at)
             )
         `);
 

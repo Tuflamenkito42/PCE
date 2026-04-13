@@ -31,6 +31,7 @@ En tu archivo .env (a partir de .env.example) usa:
 OLLAMA_BASE_URL=http://127.0.0.1:11434
 OLLAMA_CHAT_MODEL=llama3.1:8b
 OLLAMA_NEWS_MODEL=mistral:7b
+OLLAMA_CHAT_NUM_PREDICT=800
 
 ## 5) Ejecutar la web
 

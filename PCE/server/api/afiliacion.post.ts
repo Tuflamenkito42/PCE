@@ -22,6 +22,7 @@ const ensureAffiliationsTableExists = async (db: ReturnType<typeof useDb>) => {
             card_photo_mime VARCHAR(120),
             payment_intent_id VARCHAR(255),
             status VARCHAR(50) DEFAULT 'pending',
+            photo_url VARCHAR(255),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_affiliations_email (email),
             INDEX idx_affiliations_dni (dni),
@@ -43,11 +44,17 @@ const ensureAffiliationsTableExists = async (db: ReturnType<typeof useDb>) => {
     if (!existingColumns.has('status')) {
         await db.query("ALTER TABLE affiliations ADD COLUMN status VARCHAR(50) DEFAULT 'pending'");
     }
+    if (!existingColumns.has('message')) {
+        await db.query('ALTER TABLE affiliations ADD COLUMN message TEXT NULL');
+    }
     if (!existingColumns.has('card_photo_path')) {
         await db.query('ALTER TABLE affiliations ADD COLUMN card_photo_path VARCHAR(255) NULL');
     }
     if (!existingColumns.has('card_photo_mime')) {
         await db.query('ALTER TABLE affiliations ADD COLUMN card_photo_mime VARCHAR(120) NULL');
+    }
+    if (!existingColumns.has('photo_url')) {
+        await db.query('ALTER TABLE affiliations ADD COLUMN photo_url VARCHAR(255) NULL');
     }
 };
 

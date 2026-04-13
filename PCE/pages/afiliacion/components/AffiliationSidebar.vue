@@ -3,7 +3,7 @@
     <div class="card-logo">
       <img src="/images/logo.png" alt="Logo PCE" />
     </div>
-    <h3>{{ lt('POR QUÉ AFILIARTE?', 'PER QUÈ AFILIAR-TE?', 'ZERGATIK AFILIATU?', 'POR QUE AFILIARTE?') }}</h3>
+    <h3 class="sidebar-title">{{ lt('POR QUÉ AFILIARTE?', 'PER QUÈ AFILIAR-TE?', 'ZERGATIK AFILIATU?', 'POR QUE AFILIARTE?') }}</h3>
     <ul class="benefits-list">
       <li>{{ lt('1. Seguridad y Bienestar', '1. Seguretat i Benestar', '1. Segurtasuna eta Ongizatea', '1. Seguridade e Benestar') }}</li>
       <li>{{ lt('2. Transparencia Total', '2. Transparència Total', '2. Gardentasun Osoa', '2. Transparencia Total') }}</li>
@@ -60,11 +60,15 @@ defineEmits(['join'])
 
 h3 {
   font-family: 'Cinzel', serif;
-  color: #5E2C2C;
+  color: #723233;
   font-size: 1.5rem;
   margin-bottom: 40px;
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+.sidebar-title {
+  color: #723233 !important;
 }
 
 .benefits-list {

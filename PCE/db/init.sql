@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS affiliations (
     phone VARCHAR(20),
     quota DECIMAL(10, 2) NOT NULL,
     message TEXT,
+    card_photo_path VARCHAR(255),
+    card_photo_mime VARCHAR(120),
     payment_intent_id VARCHAR(255),
     status VARCHAR(50) DEFAULT 'pending',
     photo_url VARCHAR(255),
@@ -60,11 +62,20 @@ CREATE TABLE IF NOT EXISTS carnet_orders (
     numero_socio VARCHAR(50),
     amount DECIMAL(10, 2) DEFAULT 5.00,
     payment_intent_id VARCHAR(255),
-    status VARCHAR(50) DEFAULT 'pending',
+    status VARCHAR(50) DEFAULT 'completed',
     shipping_status VARCHAR(50) DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_carnet_email (email),
     INDEX idx_carnet_status (status),
+    INDEX idx_carnet_shipping_status (shipping_status),
     INDEX idx_carnet_created_at (created_at)
+);
+
+CREATE TABLE IF NOT EXISTS votes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    poll_title VARCHAR(255) NOT NULL,
+    option_selected VARCHAR(255) NOT NULL,
+    user_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

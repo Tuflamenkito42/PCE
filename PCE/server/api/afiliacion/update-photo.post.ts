@@ -86,9 +86,9 @@ export default defineEventHandler(async (event) => {
 
     await db.query(
       `UPDATE affiliations
-       SET photo_url = ?
+       SET card_photo_path = ?, photo_url = ?
        WHERE id = ?`,
-      [photoUrl, affiliationId]
+      [photoUrl, photoUrl, affiliationId]
     )
 
     return {

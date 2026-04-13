@@ -1,5 +1,4 @@
 import { validateAdmin } from '../../utils/admin';
-import { usePrisma } from '../../utils/prisma';
 
 export default defineEventHandler(async (event) => {
     console.log('[AdminData] Request received');
@@ -11,11 +10,14 @@ export default defineEventHandler(async (event) => {
         throw e;
     }
 
-    const prisma = usePrisma();
-    console.log('[AdminData] Prisma initialized');
+    const db = useDb();
+    console.log('[AdminData] Database initialized');
 
     try {
-        await prisma.$executeRawUnsafe(`
+        // Create tables if they don't exist
+        console.log('[AdminData] Creating tables if needed...');
+        
+        await db.query(`
             CREATE TABLE IF NOT EXISTS job_applications (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 offer_id VARCHAR(120) NOT NULL,
@@ -35,7 +37,7 @@ export default defineEventHandler(async (event) => {
             )
         `);
 
-        await prisma.$executeRawUnsafe(`
+        await db.query(`
             CREATE TABLE IF NOT EXISTS carnet_orders (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 user_id INT NULL,
@@ -61,79 +63,68 @@ export default defineEventHandler(async (event) => {
             )
         `);
 
-        const jobAppColumns = await prisma.$queryRawUnsafe(`
-            SELECT COLUMN_NAME
-            FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'job_applications'
-        `) as any[];
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS votes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                poll_title VARCHAR(255) NOT NULL,
+                option_selected VARCHAR(255) NOT NULL,
+                user_id INT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
 
-        const columnSet = new Set((jobAppColumns || []).map((c: any) => String(c.COLUMN_NAME || '').toLowerCase()));
-        if (!columnSet.has('cv_file_path')) {
-            await prisma.$executeRawUnsafe('ALTER TABLE job_applications ADD COLUMN cv_file_path VARCHAR(255) NULL');
-        }
-        if (!columnSet.has('cv_original_name')) {
-            await prisma.$executeRawUnsafe('ALTER TABLE job_applications ADD COLUMN cv_original_name VARCHAR(255) NULL');
-        }
-        if (!columnSet.has('cv_mime_type')) {
-            await prisma.$executeRawUnsafe('ALTER TABLE job_applications ADD COLUMN cv_mime_type VARCHAR(120) NULL');
-        }
-
-        // Fetch stats using Prisma
         console.log('[AdminData] Fetching statistical data...');
-        const [affiliates, donations, users, messages, subscribers, jobApplicationsRaw, carnetOrdersRaw] = await Promise.all([
-            prisma.affiliation.findMany({ orderBy: { createdAt: 'desc' } }),
-            prisma.donation.findMany({ orderBy: { createdAt: 'desc' } }),
-            prisma.user.findMany({
-                select: { id: true, fullName: true, email: true, role: true, createdAt: true },
-                orderBy: { createdAt: 'desc' }
-            }),
-            prisma.contactMessage.findMany({ orderBy: { createdAt: 'desc' } }),
-            prisma.newsletterSubscriber.findMany({ orderBy: { subscribedAt: 'desc' } }),
-            prisma.$queryRawUnsafe(`
-                SELECT id, offer_id, full_name, email, phone, city, availability, motivation, cv_file_path, cv_original_name, cv_mime_type, status, created_at
-                FROM job_applications
-                ORDER BY created_at DESC
-            `),
-            prisma.$queryRawUnsafe(`
-                SELECT id, user_id, full_name, email, phone, address, city, postal_code, country, nif, numero_socio, amount, payment_intent_id, status, shipping_status, created_at, updated_at
-                FROM carnet_orders
-                ORDER BY created_at DESC
-            `)
-        ]);
+        const [affiliatesRows] = await db.query(`SELECT * FROM affiliations ORDER BY created_at DESC`);
+        const [donationsRows] = await db.query(`SELECT * FROM donations ORDER BY created_at DESC`);
+        const [usersRows] = await db.query(`SELECT id, full_name, email, role, created_at FROM users ORDER BY created_at DESC`);
+        const [messagesRows] = await db.query(`SELECT * FROM contact_messages ORDER BY created_at DESC`);
+        const [subscribersRows] = await db.query(`SELECT * FROM newsletter_subscribers ORDER BY subscribed_at DESC`);
+        const [jobApplicationsRows] = await db.query(`SELECT * FROM job_applications ORDER BY created_at DESC`);
+        const [carnetOrdersRows] = await db.query(`SELECT * FROM carnet_orders ORDER BY created_at DESC`);
+        
         console.log('[AdminData] Core data fetched successfully');
 
-        // Handle votes separately since it might not be in schema
-        let votes: any[] = [];
+        // Handle votes separately
+        let votesRows: any[] = [];
         try {
             console.log('[AdminData] Fetching votes...');
-            votes = await prisma.$queryRawUnsafe(`
+            const [votes] = await db.query(`
                 SELECT poll_title, option_selected, COUNT(*) as total 
                 FROM votes 
                 GROUP BY poll_title, option_selected
                 ORDER BY poll_title, total DESC
             `);
+            votesRows = votes || [];
             console.log('[AdminData] Votes fetched successfully');
         } catch (e: any) {
             console.warn('[AdminData] Votes table not found or error fetching votes:', e.message);
         }
 
+        const affiliates = affiliatesRows as any[] || [];
+        const donations = donationsRows as any[] || [];
+        const users = usersRows as any[] || [];
+        const messages = messagesRows as any[] || [];
+        const subscribers = subscribersRows as any[] || [];
+        const jobApplicationsRaw = jobApplicationsRows as any[] || [];
+        const carnetOrdersRaw = carnetOrdersRows as any[] || [];
+        const votes = votesRows;
+
         // Calculate totals
         console.log('[AdminData] Calculating totals...');
-        const totalDonations = donations.reduce((sum, d) => sum + Number(d.amount), 0);
+        const totalDonations = donations.reduce((sum, d: any) => sum + Number(d.amount), 0);
         const totalAffiliates = affiliates.length;
         const totalMessages = messages.length;
         const totalSubscribers = subscribers.length;
         const totalJobApplications = Array.isArray(jobApplicationsRaw) ? jobApplicationsRaw.length : 0;
         const totalCarnetOrders = Array.isArray(carnetOrdersRaw) ? carnetOrdersRaw.length : 0;
-        const totalVotes = votes.reduce((sum, v) => sum + Number(v.total), 0);
+        const totalVotes = votes.reduce((sum, v: any) => sum + Number(v.total || 0), 0);
 
-        const monthlyIncome = affiliates.reduce((sum, a) => {
+        const monthlyIncome = affiliates.reduce((sum, a: any) => {
             const val = Number(a.quota);
             return isNaN(val) ? sum : sum + val;
         }, 0);
 
-        // Return data with mapped field names for frontend compatibility (snake_case)
-        // Return data with mapped field names explicitly converted to Numbers
+        // Return data with mapped field names for frontend compatibility
         return {
             stats: {
                 total_affiliates: Number(totalAffiliates),
@@ -146,40 +137,40 @@ export default defineEventHandler(async (event) => {
                 monthly_income: Number(monthlyIncome)
             },
             // ✅ SECURITY: Remove sensitive fields (DNI, full data) from affiliate data
-            affiliates: affiliates.map(a => ({
+            affiliates: affiliates.map((a: any) => ({
                 id: a.id,
                 email: a.email,
                 status: a.status,
                 quota: Number(a.quota),
-                created_at: a.createdAt
+                created_at: a.created_at
                 // Note: DNI, fullName, phone removed for security
             })),
-            donations: donations.map(d => ({
+            donations: donations.map((d: any) => ({
                 id: d.id,
                 amount: Number(d.amount),
                 status: d.status,
-                created_at: d.createdAt
+                created_at: d.created_at
                 // Note: payer personal data not exposed
             })),
-            users: users.map(u => ({
+            users: users.map((u: any) => ({
                 id: u.id,
                 email: u.email,
                 role: u.role,
-                full_name: u.fullName,
-                created_at: u.createdAt
+                full_name: u.full_name,
+                created_at: u.created_at
             })),
-            messages: messages.map(m => ({
+            messages: messages.map((m: any) => ({
                 id: m.id,
                 email: m.email,
                 subject: m.subject,
                 status: m.status,
-                created_at: m.createdAt
+                created_at: m.created_at
                 // Note: Message content excluded
             })),
-            subscribers: subscribers.map(s => ({
+            subscribers: subscribers.map((s: any) => ({
                 id: s.id,
                 email: s.email,
-                subscribed_at: s.subscribedAt
+                subscribed_at: s.subscribed_at
             })),
             job_applications: (jobApplicationsRaw as any[]).map(item => ({
                 id: Number(item.id),
@@ -215,7 +206,7 @@ export default defineEventHandler(async (event) => {
                 created_at: item.created_at,
                 updated_at: item.updated_at
             })),
-            votes: votes.map(v => ({
+            votes: votes.map((v: any) => ({
                 poll_title: v.poll_title,
                 option_selected: v.option_selected,
                 total: Number(v.total)

@@ -148,7 +148,7 @@ export default defineEventHandler(async (event) => {
   await ensureTableExists(db)
 
   const safeExtension = allowedExtensions.has(extension) ? extension : '.pdf'
-  const uploadsDir = join(process.cwd(), 'uploads', 'curriculum')
+  const uploadsDir = join(process.cwd(), 'private_uploads', 'curriculum')
   await mkdir(uploadsDir, { recursive: true })
 
   const storedFilename = `${Date.now()}-${randomUUID()}${safeExtension}`
