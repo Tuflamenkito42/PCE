@@ -18,6 +18,15 @@ El desarrollo de este proyecto se ha caracterizado por un enfoque híbrido **Hum
 *   **ORM**: **Prisma**. Utilizamos Prisma para interactuar con la base de datos mediante código tipado (TypeScript), evitando errores de SQL manual y aumentando la seguridad.
 *   **Contenerización**: **Docker & Docker Compose**. Todo el entorno (App, Base de Datos, Admin) está encapsulado en contenedores, garantizando que el despliegue sea idéntico en desarrollo y producción.
 
+#### ¿Qué es Prisma y qué función cumple en este proyecto?
+**Prisma** es un ORM (Object Relational Mapper) que actúa como puente entre el código de la aplicación y MySQL. En lugar de escribir consultas SQL manuales en cada endpoint, el proyecto trabaja con un cliente tipado (`PrismaClient`) generado automáticamente desde `prisma/schema.prisma`.
+
+En esta plataforma, Prisma cumple funciones clave:
+1. **Modelado de datos**: define la estructura de negocio (por ejemplo `User`, `Membership`, `Role`, `MembershipStatus`) y sus relaciones.
+2. **Acceso a datos centralizado**: el helper `server/utils/prisma.ts` expone `usePrisma()` para reutilizar una instancia del cliente en toda la API.
+3. **Operaciones críticas del backend**: se usa para login y gestión de usuarios, creación de afiliaciones, estadísticas del panel admin, inicialización de datos (`seed`) y actualización de estado de afiliación tras pagos de Stripe.
+4. **Mantenibilidad y seguridad**: al trabajar con tipos y consultas estructuradas, reduce errores de integración y evita concatenaciones SQL inseguras.
+
 ### Seguridad
 *   **Autenticación**: Sistema propio basado en **JWT** y **Cookies seguras (httpOnly)**.
 *   **Encriptación**: Uso de **Bcryptjs** para el hashing de contraseñas.
