@@ -98,6 +98,7 @@ Variables principales:
 - DB_NAME
 - DATABASE_URL
 - AUTH_TOKEN_SECRET
+- GEMINI_API_KEY
 - STRIPE_SECRET_KEY
 - STRIPE_PUBLIC_KEY
 - OLLAMA_BASE_URL
@@ -152,6 +153,12 @@ Notas:
 
 - Si `OLLAMA_CHAT_NUM_PREDICT` es demasiado bajo, las respuestas pueden quedar cortadas.
 - Valor recomendado de inicio: 800.
+
+### Modelos de IA utilizados en el repositorio
+
+- **Chat general del sitio (Ollama):** `llama3.1:8b` por defecto (`OLLAMA_CHAT_MODEL`) en `server/api/ai/chat.post.ts`.
+- **Generación de noticias (Ollama):** `mistral:7b` por defecto (`OLLAMA_NEWS_MODEL`) en `server/api/ai/news.post.ts`.
+- **Escáner de DNI (Google Gemini):** `gemini-3-flash-preview` en `server/api/scan-dni.post.ts` (requiere `GEMINI_API_KEY`).
 
 ## Roadmap
 
